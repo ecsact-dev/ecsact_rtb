@@ -5,6 +5,10 @@ cc_binary(
 	visibility = ["//visibility:public"],
 	srcs = ["cli.cc"],
 	deps = [
+		"//fetch_sources",
+		"//find_cpp_compiler",
+		"//generate_files",
+		"//runtime_compile",
         "@ecsact//parser2",
 		"@bazelregistry_docopt_cpp//:docopt",
 	],

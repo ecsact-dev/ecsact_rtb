@@ -1,0 +1,13 @@
+load("@rules_cc//cc:defs.bzl", "cc_library")
+
+cc_library(
+    name = "runtime_compile",
+    visibility = ["//visibility:public"],
+    hdrs = ["runtime_compile.hh"],
+    srcs = ["runtime_compile.cc"],
+    deps = [
+        "//generate_files",
+        "//fetch_sources",
+        "//find_cpp_compiler",
+    ],
+)

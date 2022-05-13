@@ -3,6 +3,11 @@
 #include "docopt.h"
 #include <ecsact/parser2.hh>
 
+#include "fetch_sources/fetch_sources.hh"
+#include "find_cpp_compiler/find_cpp_compiler.hh"
+#include "generate_files/generate_files.hh"
+#include "runtime_compile/runtime_compile.hh"
+
 namespace fs = std::filesystem;
 
 constexpr auto USAGE = R"(
@@ -18,6 +23,11 @@ Options:
 
 
 int main(int argc, char* argv[]) {
+	using ecsact::rtb::generate_files;
+	using ecsact::rtb::fetch_sources;
+	using ecsact::rtb::find_cpp_compiler;
+	using ecsact::rtb::runtime_compile;
+
 	auto args = docopt::docopt(USAGE, {argv + 1, argv + argc});
 
 	ecsact::parse_options parse_options;
@@ -50,8 +60,32 @@ int main(int argc, char* argv[]) {
 		std::cerr << "[Parse Error] " << err.message() << "\n";
 		return 2;
 	}
+
+	runtime_compile({
+		.generated_files = generate_files({
+			// TODO: Fill in generate_files options
+		}),
+		.fetched_sources = fetch_sources({
+			// TODO: Fill in fetch_sources options
+		}),
+		.cpp_compiler = find_cpp_compiler({
+			// TODO: Fill in find_cpp_compiler options
+		}),
+		.output_path = output_path,
+	});
 	
-	// TODO(zaucy): Run code generators and finally compile with a C++ compiler
+	// TODO(zaucy): Generate ecsact cpp header
+	// TODO(zaucy): Generate ecsact c systems
+	// TODO(zaucy): Generate ecsact cpp systems
+	// TODO(zaucy): Generate ecsact cpp meta
+	// TODO(zaucy): Generate ecsact static sources
+	// TODO(zaucy): Fetch ecsact EnTT runtime sources
+	// TODO(zaucy): Fetch EnTT sources
+	// TODO(zaucy): Fetch boost.mp11 sources
+	// TODO(zaucy): Fetch ecsact lib C++ sources
+	// TODO(zaucy): Fetch ecsact runtime C++ sources
+	// TODO(zaucy): find a valid C++ compiler
+	// TODO(zaucy): compile with a C++ compiler
 
 	std::cout << "Exiting...\n";
 	return 0;
