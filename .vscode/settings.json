@@ -3,14 +3,13 @@
     "**/*.bazel": "starlark",
     "**/*.bzl": "starlark",
     "WORKSPACE": "starlark",
-    "*.inc": "cpp",
-    "memory_resource": "cpp",
-    "chrono": "cpp"
+    "*.inc": "cpp"
   },
   "editor.defaultFormatter": "xaver.clang-format",
   "clang-format.executable": "${workspaceRoot}/bazel-ecsact-net/external/llvm_toolchain_llvm/bin/clang-format",
   "C_Cpp.intelliSenseEngine": "Default",
   "C_Cpp.intelliSenseEngineFallback": "Disabled",
   "files.insertFinalNewline": true,
-  "files.eol": "\n"
+  "files.eol": "\n",
+  "C_Cpp.autoAddFileAssociations": false
 }
