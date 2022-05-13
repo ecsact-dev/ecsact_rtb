@@ -1,0 +1,17 @@
+diff --git a/BUILD.bazel b/BUILD.bazel
+index e57c1d8b..7a10d6b3 100644
+--- a/BUILD.bazel
++++ b/BUILD.bazel
+@@ -1,6 +1,12 @@
+ _msvc_copts = ["/std:c++17"]	
+ _gcc_copts = ["-std=c++17"]
+ 
++filegroup(
++  name = "sources",
++  visibility = ["//visibility:public"],
++  srcs = glob(["src/**/*.h", "src/**/*.hpp"]),
++)
++
+ cc_library(
+     name = "entt",
+     visibility = ["//visibility:public"],

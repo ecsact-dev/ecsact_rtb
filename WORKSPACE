@@ -50,6 +50,15 @@ git_repository(
     shallow_since = "1652477290 -0700",
 )
 
+http_archive(
+    name = "com_github_skypjack_entt",
+    strip_prefix = "entt-3.10.1",
+    url = "https://github.com/skypjack/entt/archive/refs/tags/v3.10.1.tar.gz",
+    sha256 = "f7031545130bfc06f5fe6b2f8c87dcbd4c1254fab86657e2788b70dfeea57965",
+    patch_args = ["-p1"],
+    patches = ["//patches:entt_export_source_files.patch"],
+)
+
 git_repository(
     name = "ecsact_entt",
     commit = "cc23d95e2ea5b030434f2ebf7ffd6f78b56b6c8c",

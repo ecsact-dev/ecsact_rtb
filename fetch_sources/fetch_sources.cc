@@ -26,11 +26,33 @@ result::fetch_sources ecsact::rtb::fetch_sources
 
 	auto entt_runtime_source_dir =
 		options.runfiles->Rlocation("ecsact_entt/runtime");
+	auto entt_source_dir = 
+		options.runfiles->Rlocation("com_github_skypjack_entt/src");
 
 	if(!entt_runtime_source_dir.empty()) {
 		fs::copy(entt_runtime_source_dir, src_dir);
 	}
 
+	if(!entt_source_dir.empty()) {
+		for(const auto& entry : fs::recursive_directory_iterator(entt_source_dir)) {
+			const fs::path rel_path(
+				entry.path().string().substr(entt_source_dir.size() + 1)
+			);
+			auto path = include_dir / rel_path;
+			if(entry.is_directory()) {
+				fs::create_directory(path);
+			} else {
+				fs::copy_file(entry.path(), path);
+			}
+		}
+	}
+
+	std::cout << "Fetched files:\n";
+	for(const auto& entry : fs::recursive_directory_iterator(base_dir)) {
+		if(entry.is_regular_file()) {
+			std::cout << " - " << entry.path().string() << "\n";
+		}
+	}
 
 	return {};
 }
