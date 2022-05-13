@@ -65,3 +65,19 @@ git_repository(
     remote = "git@github.com:seaube/ecsact-entt.git",
     shallow_since = "1651764189 -0700",
 )
+
+_export_all_build_file_content = """
+package(default_visibility = ["//visibility:public"])
+filegroup(
+    name = "files",
+    srcs = glob(["**/*"]),
+)
+"""
+
+http_archive(
+    name = "boost_mp11_files",
+    strip_prefix = "mp11-boost-1.79.0",
+    url = "https://github.com/boostorg/mp11/archive/refs/tags/boost-1.79.0.tar.gz",
+    sha256 = "d3f8ef486f2001c24eb0bc766b838fcce65dbb4edd099f136bf1ac4b51469f7c",
+    build_file_content = _export_all_build_file_content,
+)

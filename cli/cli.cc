@@ -83,7 +83,6 @@ int main(int argc, char* argv[]) {
 		.output_path = output_path,
 	});
 
-	// TODO(zaucy): Fetch boost.mp11 sources
 	// TODO(zaucy): Fetch ecsact lib C++ sources
 	// TODO(zaucy): Fetch ecsact runtime C++ sources
 	// TODO(zaucy): find a valid C++ compiler
