@@ -1,9 +1,15 @@
 #pragma once
 
+#include "tools/cpp/runfiles/runfiles.h"
+
 namespace ecsact::rtb {
 	namespace options {
 		struct fetch_sources {
-
+			/**
+			 * If files are available as bazel runfiles attempt to get from them. May
+			 * be `nullptr`.
+			 */
+			bazel::tools::cpp::runfiles::Runfiles* runfiles;
 		};
 	}
 

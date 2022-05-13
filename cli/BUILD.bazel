@@ -1,4 +1,5 @@
 load("@rules_cc//cc:defs.bzl", "cc_binary")
+load("//fetch_sources:index.bzl", "ecsact_rtb_runfiles")
 
 cc_binary(
 	name = "ecsact-rtb",
@@ -11,7 +12,9 @@ cc_binary(
 		"//runtime_compile",
         "@ecsact//parser2",
 		"@bazelregistry_docopt_cpp//:docopt",
+		"@bazel_tools//tools/cpp/runfiles",
 	],
+	data = ecsact_rtb_runfiles,
 )
 
 filegroup(

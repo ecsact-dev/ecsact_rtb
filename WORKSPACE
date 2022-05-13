@@ -49,3 +49,10 @@ git_repository(
     commit = "07c29b81db1dd708e2cdb458f34349d00b9037b3",
     shallow_since = "1652477290 -0700",
 )
+
+git_repository(
+    name = "ecsact_entt",
+    commit = "cc23d95e2ea5b030434f2ebf7ffd6f78b56b6c8c",
+    remote = "git@github.com:seaube/ecsact-entt.git",
+    shallow_since = "1651764189 -0700",
+)
