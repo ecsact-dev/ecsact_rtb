@@ -23,6 +23,8 @@ result::fetch_sources ecsact::rtb::fetch_sources
 	fs::create_directory(base_dir);
 	fs::create_directory(include_dir);
 	fs::create_directory(src_dir);
+	fs::create_directory(include_dir / "ecsact");
+	fs::create_directory(src_dir / "ecsact-runtime-cpp");
 
 	auto entt_runtime_source_dir =
 		options.runfiles->Rlocation("ecsact_entt/runtime");
@@ -32,6 +34,8 @@ result::fetch_sources ecsact::rtb::fetch_sources
 		options.runfiles->Rlocation("boost_mp11_files/include");
 	auto ecsact_runtime_cpp =
 		options.runfiles->Rlocation("ecsact/lib/runtime-cpp");
+	auto ecsact_lib_dir =
+		options.runfiles->Rlocation("ecsact/lib");
 
 	auto ecsact_runtime_cpp_hdrs = {
 		"execution_events_collector.hh",
@@ -51,8 +55,6 @@ result::fetch_sources ecsact::rtb::fetch_sources
 
 	if(!ecsact_runtime_cpp.empty()) {
 		fs::path ecsact_runtime_cpp_dir{ecsact_runtime_cpp};
-		fs::create_directory(include_dir / "ecsact");
-		fs::create_directory(src_dir / "ecsact-runtime-cpp");
 
 		for(auto hdr : ecsact_runtime_cpp_hdrs) {
 			fs::copy(ecsact_runtime_cpp_dir / hdr, include_dir / "ecsact");
@@ -61,6 +63,11 @@ result::fetch_sources ecsact::rtb::fetch_sources
 		for(auto src : ecsact_runtime_cpp_srcs) {
 			fs::copy(ecsact_runtime_cpp_dir / src, src_dir / "ecsact-runtime-cpp");
 		}
+	}
+
+	if(!ecsact_lib_dir.empty()) {
+		fs::path ecsact_lib_dir_path{ecsact_lib_dir};
+		fs::copy(ecsact_lib_dir_path / "lib.hh", include_dir / "ecsact");
 	}
 
 	if(!entt_source_dir.empty()) {

@@ -3,5 +3,6 @@ ecsact_rtb_runfiles = [
     "@com_github_skypjack_entt//:sources",
     "@boost_mp11_files//:files",
     "@ecsact//lib/runtime-cpp:hdrs",
-    "@ecsact//lib/runtime-cpp:srcs"
+    "@ecsact//lib/runtime-cpp:srcs",
+    "@ecsact//lib:lib.hh",
 ]

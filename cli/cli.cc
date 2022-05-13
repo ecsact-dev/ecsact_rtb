@@ -83,7 +83,6 @@ int main(int argc, char* argv[]) {
 		.output_path = output_path,
 	});
 
-	// TODO(zaucy): Fetch ecsact lib C++ sources
 	// TODO(zaucy): find a valid C++ compiler
 	// TODO(zaucy): compile with a C++ compiler
 
