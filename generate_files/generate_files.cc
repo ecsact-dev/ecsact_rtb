@@ -70,13 +70,6 @@ result::generate_files ecsact::rtb::generate_files
 		});
 	}
 
-	for(auto& pkg : options.parse_results.packages) {
-		auto source_path = src_dir / pkg.source_file_path.filename();
-		source_path.replace_extension(
-			source_path.extension().string() + ".static.cc"
-		);
-	}
-
 	return {
 		.include_dir = include_dir,
 	};
