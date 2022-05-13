@@ -1,0 +1,14 @@
+{
+  "files.associations": {
+    "**/*.bazel": "starlark",
+    "**/*.bzl": "starlark",
+    "WORKSPACE": "starlark",
+    "*.inc": "cpp"
+  },
+  "editor.defaultFormatter": "xaver.clang-format",
+  "clang-format.executable": "${workspaceRoot}/bazel-ecsact-net/external/llvm_toolchain_llvm/bin/clang-format",
+  "C_Cpp.intelliSenseEngine": "Default",
+  "C_Cpp.intelliSenseEngineFallback": "Disabled",
+  "files.insertFinalNewline": true,
+  "files.eol": "\n"
+}

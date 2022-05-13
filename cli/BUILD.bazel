@@ -1,0 +1,15 @@
+load("@rules_cc//cc:defs.bzl", "cc_binary")
+
+cc_binary(
+	name = "ecsact-rtb",
+	visibility = ["//visibility:public"],
+	srcs = ["cli.cc"],
+	deps = [
+		"@bazelregistry_docopt_cpp//:docopt",
+	],
+)
+
+filegroup(
+    name = "cli",
+    srcs = [":ecsact-rtb"],
+)

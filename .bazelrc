@@ -1,0 +1,13 @@
+build --enable_platform_specific_config
+build --incompatible_enable_cc_toolchain_resolution
+
+build:linux --platforms=//bazel/platforms:linux
+build:linux --extra_toolchains=@llvm_toolchain//:cc-toolchain-x86_64-linux
+build:linux --extra_execution_platforms=//bazel/platforms:linux
+build:linux --cxxopt=-stdlib=libstdc++
+build:linux --host_cxxopt=-stdlib=libstdc++
+build:linux --linkopt=-lstdc++
+build:linux --host_linkopt=-lstdc++
+
+try-import %workspace%/user.bazelrc
+
