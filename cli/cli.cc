@@ -84,7 +84,6 @@ int main(int argc, char* argv[]) {
 	});
 
 	// TODO(zaucy): Fetch ecsact lib C++ sources
-	// TODO(zaucy): Fetch ecsact runtime C++ sources
 	// TODO(zaucy): find a valid C++ compiler
 	// TODO(zaucy): compile with a C++ compiler
 

@@ -30,9 +30,37 @@ result::fetch_sources ecsact::rtb::fetch_sources
 		options.runfiles->Rlocation("com_github_skypjack_entt/src");
 	auto mp11_inc_dir =
 		options.runfiles->Rlocation("boost_mp11_files/include");
+	auto ecsact_runtime_cpp =
+		options.runfiles->Rlocation("ecsact/lib/runtime-cpp");
+
+	auto ecsact_runtime_cpp_hdrs = {
+		"execution_events_collector.hh",
+		"execution_options.hh",
+		"runtime-cpp-c-interop.hh",
+		"runtime.hh",
+	};
+
+	auto ecsact_runtime_cpp_srcs = {
+		"registry.cc",
+	};
 
 	if(!entt_runtime_source_dir.empty()) {
-		fs::copy(entt_runtime_source_dir, src_dir);
+		fs::create_directory(src_dir / "entt-runtime");
+		fs::copy(entt_runtime_source_dir, src_dir / "entt-runtime");
+	}
+
+	if(!ecsact_runtime_cpp.empty()) {
+		fs::path ecsact_runtime_cpp_dir{ecsact_runtime_cpp};
+		fs::create_directory(include_dir / "ecsact");
+		fs::create_directory(src_dir / "ecsact-runtime-cpp");
+
+		for(auto hdr : ecsact_runtime_cpp_hdrs) {
+			fs::copy(ecsact_runtime_cpp_dir / hdr, include_dir / "ecsact");
+		}
+
+		for(auto src : ecsact_runtime_cpp_srcs) {
+			fs::copy(ecsact_runtime_cpp_dir / src, src_dir / "ecsact-runtime-cpp");
+		}
 	}
 
 	if(!entt_source_dir.empty()) {
