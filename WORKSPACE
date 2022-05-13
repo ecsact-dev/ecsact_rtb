@@ -46,8 +46,8 @@ boost_http_archives()
 git_repository(
     name = "ecsact",
     remote = "git@github.com:seaube/ecsact.git",
-    commit = "07c29b81db1dd708e2cdb458f34349d00b9037b3",
-    shallow_since = "1652477290 -0700",
+    commit = "7ddfc28afc17596b4dd46fdcae9e785b8fc45d68",
+    shallow_since = "1652484177 -0700",
 )
 
 http_archive(
