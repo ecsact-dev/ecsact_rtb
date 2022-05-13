@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+#include <filesystem>
 #include "tools/cpp/runfiles/runfiles.h"
 
 namespace ecsact::rtb {
@@ -15,7 +17,15 @@ namespace ecsact::rtb {
 
 	namespace result {
 		struct fetch_sources {
+			/**
+			 * Include directory the compiler should add
+			 */
+			std::filesystem::path include_dir;
 
+			/**
+			 * Source files compiler should compile for the runtime
+			 */
+			std::vector<std::filesystem::path> source_files;
 		};
 	}
 

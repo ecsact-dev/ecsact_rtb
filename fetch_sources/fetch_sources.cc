@@ -98,12 +98,14 @@ result::fetch_sources ecsact::rtb::fetch_sources
 		}
 	}
 
-	std::cout << "Fetched files:\n";
-	for(const auto& entry : fs::recursive_directory_iterator(base_dir)) {
+	result::fetch_sources result;
+
+	result.include_dir = include_dir;
+	for(const auto& entry : fs::recursive_directory_iterator(src_dir)) {
 		if(entry.is_regular_file()) {
-			std::cout << " - " << entry.path().string() << "\n";
+			result.source_files.push_back(entry.path());
 		}
 	}
 
-	return {};
+	return result;
 }
