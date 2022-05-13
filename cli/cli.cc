@@ -63,7 +63,7 @@ int main(int argc, char* argv[]) {
 
 	runtime_compile({
 		.generated_files = generate_files({
-			// TODO: Fill in generate_files options
+			.parse_results = results,
 		}),
 		.fetched_sources = fetch_sources({
 			// TODO: Fill in fetch_sources options
@@ -74,11 +74,6 @@ int main(int argc, char* argv[]) {
 		.output_path = output_path,
 	});
 	
-	// TODO(zaucy): Generate ecsact cpp header
-	// TODO(zaucy): Generate ecsact c systems
-	// TODO(zaucy): Generate ecsact cpp systems
-	// TODO(zaucy): Generate ecsact cpp meta
-	// TODO(zaucy): Generate ecsact static sources
 	// TODO(zaucy): Fetch ecsact EnTT runtime sources
 	// TODO(zaucy): Fetch EnTT sources
 	// TODO(zaucy): Fetch boost.mp11 sources

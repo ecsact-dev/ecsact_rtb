@@ -5,4 +5,10 @@ cc_library(
     visibility = ["//visibility:public"],
     hdrs = ["generate_files.hh"],
     srcs = ["generate_files.cc"],
+    deps = [
+        "@ecsact//generator/cpp/header:lib",
+        "@ecsact//generator/cpp_systems/header:lib",
+        "@ecsact//generator/systems/header:lib",
+        "@ecsact//generator/meta_cc:lib",
+    ],
 )
