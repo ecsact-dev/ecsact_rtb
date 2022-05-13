@@ -46,6 +46,38 @@ boost_http_archives()
 git_repository(
     name = "ecsact",
     remote = "git@github.com:seaube/ecsact.git",
-    commit = "07c29b81db1dd708e2cdb458f34349d00b9037b3",
-    shallow_since = "1652477290 -0700",
+    commit = "7ddfc28afc17596b4dd46fdcae9e785b8fc45d68",
+    shallow_since = "1652484177 -0700",
+)
+
+http_archive(
+    name = "com_github_skypjack_entt",
+    strip_prefix = "entt-3.10.1",
+    url = "https://github.com/skypjack/entt/archive/refs/tags/v3.10.1.tar.gz",
+    sha256 = "f7031545130bfc06f5fe6b2f8c87dcbd4c1254fab86657e2788b70dfeea57965",
+    patch_args = ["-p1"],
+    patches = ["//patches:entt_export_source_files.patch"],
+)
+
+git_repository(
+    name = "ecsact_entt",
+    commit = "cc23d95e2ea5b030434f2ebf7ffd6f78b56b6c8c",
+    remote = "git@github.com:seaube/ecsact-entt.git",
+    shallow_since = "1651764189 -0700",
+)
+
+_export_all_build_file_content = """
+package(default_visibility = ["//visibility:public"])
+filegroup(
+    name = "files",
+    srcs = glob(["**/*"]),
+)
+"""
+
+http_archive(
+    name = "boost_mp11_files",
+    strip_prefix = "mp11-boost-1.79.0",
+    url = "https://github.com/boostorg/mp11/archive/refs/tags/boost-1.79.0.tar.gz",
+    sha256 = "d3f8ef486f2001c24eb0bc766b838fcce65dbb4edd099f136bf1ac4b51469f7c",
+    build_file_content = _export_all_build_file_content,
 )

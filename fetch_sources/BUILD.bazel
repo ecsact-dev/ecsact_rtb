@@ -5,4 +5,7 @@ cc_library(
     visibility = ["//visibility:public"],
     hdrs = ["fetch_sources.hh"],
     srcs = ["fetch_sources.cc"],
+    deps = [
+        "@bazel_tools//tools/cpp/runfiles",
+    ],
 )

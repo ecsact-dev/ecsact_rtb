@@ -1,7 +1,9 @@
 #include <filesystem>
 #include <iostream>
+#include <memory>
 #include "docopt.h"
 #include <ecsact/parser2.hh>
+#include "tools/cpp/runfiles/runfiles.h" // bazel runfiles
 
 #include "fetch_sources/fetch_sources.hh"
 #include "find_cpp_compiler/find_cpp_compiler.hh"
@@ -23,10 +25,17 @@ Options:
 
 
 int main(int argc, char* argv[]) {
+	using bazel::tools::cpp::runfiles::Runfiles;
 	using ecsact::rtb::generate_files;
 	using ecsact::rtb::fetch_sources;
 	using ecsact::rtb::find_cpp_compiler;
 	using ecsact::rtb::runtime_compile;
+
+	std::string runfiles_err;
+	auto runfiles = Runfiles::Create(argv[0], &runfiles_err);
+	if(runfiles == nullptr) {
+		std::cerr << "[Warning] Cannot load runfiles: " << runfiles_err << "\n";
+	}
 
 	auto args = docopt::docopt(USAGE, {argv + 1, argv + argc});
 
@@ -66,19 +75,14 @@ int main(int argc, char* argv[]) {
 			.parse_results = results,
 		}),
 		.fetched_sources = fetch_sources({
-			// TODO: Fill in fetch_sources options
+			.runfiles = runfiles,
 		}),
 		.cpp_compiler = find_cpp_compiler({
 			// TODO: Fill in find_cpp_compiler options
 		}),
 		.output_path = output_path,
 	});
-	
-	// TODO(zaucy): Fetch ecsact EnTT runtime sources
-	// TODO(zaucy): Fetch EnTT sources
-	// TODO(zaucy): Fetch boost.mp11 sources
-	// TODO(zaucy): Fetch ecsact lib C++ sources
-	// TODO(zaucy): Fetch ecsact runtime C++ sources
+
 	// TODO(zaucy): find a valid C++ compiler
 	// TODO(zaucy): compile with a C++ compiler
 
