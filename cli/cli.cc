@@ -82,8 +82,7 @@ int main(int argc, char* argv[]) {
 		}),
 		.output_path = output_path,
 	});
-	
-	// TODO(zaucy): Fetch EnTT sources
+
 	// TODO(zaucy): Fetch boost.mp11 sources
 	// TODO(zaucy): Fetch ecsact lib C++ sources
 	// TODO(zaucy): Fetch ecsact runtime C++ sources
