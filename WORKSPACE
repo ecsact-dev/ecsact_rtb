@@ -33,6 +33,16 @@ http_archive(
     sha256 = "a06e705978b1c09427f130a187cb361916c1e7d66b69e91b865ebcd5390a6774",
 )
 
+http_archive(
+    name = "boost",
+    strip_prefix = "boost-563e8e0de4eac4b48a02d296581dc2454127608e",
+    urls = ["https://github.com/bazelboost/boost/archive/563e8e0de4eac4b48a02d296581dc2454127608e.zip"],
+    sha256 = "c41441a6e9f8038ad626e9f937ddc3675ab896b6c3512eefc6840037b3816d03",
+)
+
+load("@boost//:index.bzl", "boost_http_archives")
+boost_http_archives()
+
 git_repository(
     name = "ecsact",
     remote = "git@github.com:seaube/ecsact.git",

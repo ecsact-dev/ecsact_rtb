@@ -5,6 +5,7 @@ cc_binary(
 	visibility = ["//visibility:public"],
 	srcs = ["cli.cc"],
 	deps = [
+        "@ecsact//parser2",
 		"@bazelregistry_docopt_cpp//:docopt",
 	],
 )

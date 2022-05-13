@@ -1,0 +1,18 @@
+{
+  "configurations": [
+    {
+      "name": "Linux",
+      "includePath": [
+        "${workspaceFolder}/**",
+        "${workspaceFolder}/bazel-ecsact-rtb/external/bazelregistry_docopt_cpp",
+        "${workspaceFolder}/bazel-bin/external/ecsact/parser2/_virtual_includes/parser2"
+      ],
+      "defines": [],
+      "compilerPath": "${workspaceFolder}/bazel-ecsact-rtb/external/llvm_toolchain_llvm/bin/clang",
+      "cStandard": "c11",
+      "cppStandard": "c++20",
+      "intelliSenseMode": "clang-x64"
+    }
+  ],
+  "version": 4
+}
