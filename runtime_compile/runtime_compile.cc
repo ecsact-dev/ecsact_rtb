@@ -71,8 +71,11 @@ void ecsact::rtb::runtime_compile
 	);
 	compile_proc_args.push_back("-DECSACT_CORE_API_EXPORT");
 	compile_proc_args.push_back("-DECSACT_DYNAMIC_API_EXPORT");
+	compile_proc_args.push_back("-DECSACT_ENTT_RUNTIME_DYNAMIC_SYSTEM_IMPLS");
 	compile_proc_args.push_back("-fvisibility=hidden");
 	compile_proc_args.push_back("-fvisibility-inlines-hidden");
+	compile_proc_args.push_back("-ffunction-sections");
+	compile_proc_args.push_back("-fdata-sections");
 
 	compile_proc_args.push_back("-O3");
 	for(auto src : options.fetched_sources.source_files) {
@@ -100,6 +103,8 @@ void ecsact::rtb::runtime_compile
 
 	link_proc_args.push_back("-shared");
 	// link_proc_args.push_back("-Wl,-s");
+	link_proc_args.push_back("-Wl,--gc-sections");
+	link_proc_args.push_back("-Wl,--exclude-libs,ALL");
 	link_proc_args.push_back("-o");
 	link_proc_args.push_back(options.output_path.generic_string());
 
