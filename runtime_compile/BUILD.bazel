@@ -10,5 +10,6 @@ cc_library(
         "//fetch_sources",
         "//find_cpp_compiler",
         "@boost//libs/process",
+        "@ecsact//lang-support/cc",
     ],
 )

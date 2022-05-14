@@ -40,7 +40,9 @@ result::generate_files ecsact::rtb::generate_files
 
 	for(auto& pkg : options.parse_results.packages) {
 		auto header_path = include_dir / pkg.source_file_path.filename();
-		header_path.replace_extension(header_path.extension().string() + ".h");
+		header_path.replace_extension(
+			header_path.extension().string() + ".systems.h"
+		);
 		std::ofstream header_stream(header_path);
 		header_paths.push_back(header_path);
 		ecsact::systems_header_codegen(pkg, {

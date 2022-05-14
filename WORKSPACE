@@ -74,9 +74,9 @@ http_archive(
 
 git_repository(
     name = "ecsact_entt",
-    commit = "cc23d95e2ea5b030434f2ebf7ffd6f78b56b6c8c",
+    commit = "f9abb03013ff30417f00b99985b9599658d804bf",
     remote = "git@github.com:seaube/ecsact-entt.git",
-    shallow_since = "1651764189 -0700",
+    shallow_since = "1652494447 -0700",
 )
 
 _export_all_build_file_content = """

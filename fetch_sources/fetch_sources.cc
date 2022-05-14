@@ -10,6 +10,8 @@ result::fetch_sources ecsact::rtb::fetch_sources
 	( const options::fetch_sources& options
 	)
 {
+	using namespace std::string_literals;
+
 	// Only option for fetching sources right now is through the bazel runfiles
 	if(options.runfiles == nullptr) {
 		return {};
@@ -26,6 +28,7 @@ result::fetch_sources ecsact::rtb::fetch_sources
 	fs::create_directory(include_dir);
 	fs::create_directory(src_dir);
 	fs::create_directory(include_dir / "ecsact");
+	fs::create_directory(include_dir / "ecsact" / "runtime");
 	fs::create_directory(src_dir / "ecsact-runtime-cpp");
 
 	auto entt_runtime_source_dir =
@@ -38,6 +41,8 @@ result::fetch_sources ecsact::rtb::fetch_sources
 		options.runfiles->Rlocation("ecsact/lib/runtime-cpp");
 	auto ecsact_lib_dir =
 		options.runfiles->Rlocation("ecsact/lib");
+	auto ecsact_runtime_headers_dir =
+		options.runfiles->Rlocation("ecsact/lib/runtime");
 
 	auto ecsact_runtime_cpp_hdrs = {
 		"execution_events_collector.hh",
@@ -53,6 +58,24 @@ result::fetch_sources ecsact::rtb::fetch_sources
 	if(!entt_runtime_source_dir.empty()) {
 		fs::create_directory(src_dir / "entt-runtime");
 		fs::copy(entt_runtime_source_dir, src_dir / "entt-runtime");
+	}
+
+	if(!ecsact_runtime_headers_dir.empty()) {
+		fs::path ecsact_rt_hdrs_path(ecsact_runtime_headers_dir);
+
+		auto runtime_modules = {"core", "dynamic", "meta", "static"};
+
+		fs::copy_file(
+			ecsact_rt_hdrs_path / "common.h",
+			include_dir / "ecsact" / "runtime" / "common.h"
+		);
+
+		for(auto rt_m : runtime_modules) {
+			fs::copy_file(
+				ecsact_rt_hdrs_path / rt_m / (rt_m + ".h"s),
+				include_dir / "ecsact" / "runtime" / (rt_m + ".h"s)
+			);
+		}
 	}
 
 	if(!ecsact_runtime_cpp.empty()) {

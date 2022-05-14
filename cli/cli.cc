@@ -18,8 +18,8 @@ Usage:
 	ecsact-rtb <ecsact_file>... --output=<output> [--temp_dir=<temp_dir>]
 
 Options:
-	--output=<output>  [default: ecsactrt.dll]
-		Output path for runtime library. Only windows .dll are supported at this 
+	--output=<output>
+		Output path for runtime library.
 		time
 	--temp_dir=<temp_dir>
 		Optionally supply a temporary directory to write the generated/fetched
@@ -58,13 +58,13 @@ int main(int argc, char* argv[]) {
 		
 	auto output_path = fs::path{args["--output"].asString()};
 
-	if(output_path.extension() != ".dll") {
-		// TODO(Kelwan): Add support for Linux, WASM and macOS
-		std::cerr
-			<< ".dll output is only allowed for now. Other platforms will be "
-			<< "supported in the future.\n";
-		return 1;
-	}
+	// if(output_path.extension() != ".dll") {
+	// 	// TODO(Kelwan): Add support for Linux, WASM and macOS
+	// 	std::cerr
+	// 		<< ".dll output is only allowed for now. Other platforms will be "
+	// 		<< "supported in the future.\n";
+	// 	return 1;
+	// }
 
 	ecsact::parse_results results;
 	ecsact::parse_error err = ecsact::parse(parse_options, results);
@@ -72,6 +72,13 @@ int main(int argc, char* argv[]) {
 	if(err) {
 		std::cerr << "[Parse Error] " << err.message() << "\n";
 		return 2;
+	}
+
+	if(!results.main_package) {
+		std::cerr
+			<< "[Err] Missing main package. One ecsact file must be marked as the "
+			<< "'main' package in order to build a runtime.";
+		return 3;
 	}
 
 	std::variant<fs::path, managed_temp_directory> temp_dir_v;
@@ -98,6 +105,7 @@ int main(int argc, char* argv[]) {
 		}),
 		.output_path = output_path,
 		.working_directory = temp_dir / "work",
+		.main_package = *results.main_package,
 	});
 
 	// TODO(zaucy): find a valid C++ compiler
