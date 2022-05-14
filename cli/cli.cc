@@ -56,15 +56,25 @@ int main(int argc, char* argv[]) {
 		parse_options.source_files.push_back(file_path);
 	}
 		
-	auto output_path = fs::path{args["--output"].asString()};
+	auto output_path = fs::absolute(fs::path{args["--output"].asString()});
 
-	// if(output_path.extension() != ".dll") {
-	// 	// TODO(Kelwan): Add support for Linux, WASM and macOS
-	// 	std::cerr
-	// 		<< ".dll output is only allowed for now. Other platforms will be "
-	// 		<< "supported in the future.\n";
-	// 	return 1;
-	// }
+#if defined(_WIN32)
+	if(output_path.extension() != ".dll") {
+		std::cerr
+			<< "Cross compilation not supported yet. Only allowd to build windows "
+			<< ".dll runtimes";
+		return 1;
+	}
+#elif defined(__linux__)
+	if(output_path.extension() != ".so") {
+		std::cerr
+			<< "Cross compilation not supported yet. Only allowd to build linux "
+			<< ".so runtimes";
+		return 1;
+	}
+#else
+#	error unsupported platform
+#endif
 
 	ecsact::parse_results results;
 	ecsact::parse_error err = ecsact::parse(parse_options, results);
@@ -88,7 +98,8 @@ int main(int argc, char* argv[]) {
 		temp_dir_v.emplace<managed_temp_directory>();
 	}
 
-	const fs::path temp_dir = std::visit([&](const auto& temp_dir) -> fs::path {		return temp_dir;
+	const auto temp_dir = std::visit([&](const auto& temp_dir) -> fs::path {		
+		return temp_dir;
 	}, temp_dir_v);
 
 	runtime_compile({

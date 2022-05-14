@@ -93,4 +93,9 @@ void ecsact::rtb::runtime_compile
 	);
 
 	link_proc.wait();
+
+	std::cout
+		<< "Runtime compile complete "
+		<< fs::relative(options.output_path).generic_string()
+		<< "\n";
 }
