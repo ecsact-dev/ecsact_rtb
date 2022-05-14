@@ -3,11 +3,26 @@
 #include <vector>
 #include <string>
 #include <iostream>
+#include <boost/dll.hpp>
 #include <boost/process.hpp>
 #include <ecsact/lang-support/lang-cc.hh>
+#include <ecsact/runtime/core.h>
+#include <ecsact/runtime/dynamic.h>
+#include <ecsact/runtime/static.h>
+#include <ecsact/runtime/meta.h>
 
 namespace bp = boost::process;
 namespace fs = std::filesystem;
+
+#define RED_TEXT(text)     "\033[31m" text "\033[0m"
+#define GREY_TEXT(text)    "\033[90m" text "\033[0m"
+#define GREEN_TEXT(text)   "\033[32m" text "\033[0m"
+
+#define PRINT_LIB_FN(fn_name, lib)\
+	if(!lib.has(#fn_name))\
+		std::cerr <<   RED_TEXT("    NO  ") << #fn_name << "\n";\
+	else\
+		std::cout << GREEN_TEXT("   YES  ") << #fn_name << "\n";
 
 void ecsact::rtb::runtime_compile
 	( const options::runtime_compile& options
@@ -54,7 +69,12 @@ void ecsact::rtb::runtime_compile
 		"-DECSACT_ENTT_RUNTIME_PACKAGE=::" +
 		to_cpp_identifier(options.main_package.name) + "::package"
 	);
+	compile_proc_args.push_back("-DECSACT_CORE_API_EXPORT");
+	compile_proc_args.push_back("-DECSACT_DYNAMIC_API_EXPORT");
+	compile_proc_args.push_back("-fvisibility=hidden");
+	compile_proc_args.push_back("-fvisibility-inlines-hidden");
 
+	compile_proc_args.push_back("-O3");
 	for(auto src : options.fetched_sources.source_files) {
 		compile_proc_args.push_back(
 			fs::relative(src, options.working_directory).generic_string()
@@ -79,6 +99,7 @@ void ecsact::rtb::runtime_compile
 	std::vector<std::string> link_proc_args;
 
 	link_proc_args.push_back("-shared");
+	// link_proc_args.push_back("-Wl,-s");
 	link_proc_args.push_back("-o");
 	link_proc_args.push_back(options.output_path.generic_string());
 
@@ -96,6 +117,27 @@ void ecsact::rtb::runtime_compile
 
 	std::cout
 		<< "Runtime compile complete "
-		<< fs::relative(options.output_path).generic_string()
+		<< options.output_path.generic_string()
 		<< "\n";
+
+	boost::system::error_code load_ec;
+	boost::dll::shared_library runtime_lib(
+		options.output_path.string(),
+		boost::dll::load_mode::default_mode,
+		load_ec
+	);
+
+	if(load_ec) {
+		std::cerr << "[Err] Unable to load runtime: " << load_ec.message() << "\n";
+		return;
+	}
+
+	std::cout << GREY_TEXT("Core Runtime Functions:\n");
+	FOR_EACH_ECSACT_CORE_API_FN(PRINT_LIB_FN, runtime_lib);
+	std::cout << GREY_TEXT("Dynamic Runtime Functions:\n");
+	FOR_EACH_ECSACT_DYNAMIC_API_FN(PRINT_LIB_FN, runtime_lib);
+	std::cout << GREY_TEXT("Meta Runtime Functions:\n");
+	FOR_EACH_ECSACT_META_API_FN(PRINT_LIB_FN, runtime_lib);
+	std::cout << GREY_TEXT("Static Runtime Functions:\n");
+	FOR_EACH_ECSACT_STATIC_API_FN(PRINT_LIB_FN, runtime_lib);
 }

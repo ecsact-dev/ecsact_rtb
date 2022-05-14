@@ -120,7 +120,6 @@ int main(int argc, char* argv[]) {
 	});
 
 	// TODO(zaucy): find a valid C++ compiler
-	// TODO(zaucy): compile with a C++ compiler
 
 	std::cout << "Exiting...\n";
 	return 0;
