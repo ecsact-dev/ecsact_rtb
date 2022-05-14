@@ -13,6 +13,7 @@ namespace ecsact::rtb {
 			result::fetch_sources fetched_sources;
 			result::find_cpp_compiler cpp_compiler;
 			std::filesystem::path output_path;
+			std::filesystem::path working_directory;
 		};
 	}
 

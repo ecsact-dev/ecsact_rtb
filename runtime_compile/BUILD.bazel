@@ -9,5 +9,6 @@ cc_library(
         "//generate_files",
         "//fetch_sources",
         "//find_cpp_compiler",
+        "@boost//libs/process",
     ],
 )

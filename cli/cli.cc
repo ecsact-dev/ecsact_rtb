@@ -21,7 +21,7 @@ Options:
 	--output=<output>  [default: ecsactrt.dll]
 		Output path for runtime library. Only windows .dll are supported at this 
 		time
-	--temp_dir
+	--temp_dir=<temp_dir>
 		Optionally supply a temporary directory to write the generated/fetched
 		source files. If one is not provided one will be generated.
 )";
@@ -74,21 +74,30 @@ int main(int argc, char* argv[]) {
 		return 2;
 	}
 
-	managed_temp_directory temp_dir;
+	std::variant<fs::path, managed_temp_directory> temp_dir_v;
+	if(args["--temp_dir"].isString()) {
+		temp_dir_v = fs::path{args["--temp_dir"].asString()};
+	} else {
+		temp_dir_v.emplace<managed_temp_directory>();
+	}
+
+	const fs::path temp_dir = std::visit([&](const auto& temp_dir) -> fs::path {		return temp_dir;
+	}, temp_dir_v);
 
 	runtime_compile({
 		.generated_files = generate_files({
-			.temp_dir = temp_dir.path(),
+			.temp_dir = temp_dir,
 			.parse_results = results,
 		}),
 		.fetched_sources = fetch_sources({
-			.temp_dir = temp_dir.path(),
+			.temp_dir = temp_dir,
 			.runfiles = runfiles,
 		}),
 		.cpp_compiler = find_cpp_compiler({
 			// TODO: Fill in find_cpp_compiler options
 		}),
 		.output_path = output_path,
+		.working_directory = temp_dir / "work",
 	});
 
 	// TODO(zaucy): find a valid C++ compiler
