@@ -5,6 +5,7 @@
       "includePath": [
         "${workspaceFolder}/**",
         "${workspaceFolder}/bazel-ecsact-rtb/external/bazelregistry_docopt_cpp",
+        "${workspaceFolder}/bazel-ecsact-rtb/external/com_github_bazelboost_process/include",
         "${workspaceFolder}/bazel-bin/external/ecsact/parser2/_virtual_includes/parser2"
       ],
       "defines": [],

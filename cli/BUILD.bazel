@@ -10,6 +10,7 @@ cc_binary(
 		"//find_cpp_compiler",
 		"//generate_files",
 		"//runtime_compile",
+		"//util:managed_temp_directory",
         "@ecsact//parser2",
 		"@bazelregistry_docopt_cpp//:docopt",
 		"@bazel_tools//tools/cpp/runfiles",

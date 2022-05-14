@@ -6,6 +6,10 @@
 namespace ecsact::rtb {
 	namespace options {
 		struct generate_files {
+			/**
+			 * Temporary directory generate_files may write to.
+			 */
+			std::filesystem::path temp_dir;
 			const ecsact::parse_results& parse_results;
 		};
 	}
