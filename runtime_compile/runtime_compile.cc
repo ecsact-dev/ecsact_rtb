@@ -46,7 +46,9 @@ void ecsact::rtb::runtime_compile
 	std::vector<std::string> compile_proc_args;
 
 	compile_proc_args.push_back("-c");
+#if !defined(_WIN32)
 	compile_proc_args.push_back("-fPIC");
+#endif
 	compile_proc_args.push_back("-std=c++20");
 	
 	compile_proc_args.push_back("-isystem");
@@ -88,12 +90,6 @@ void ecsact::rtb::runtime_compile
 		);
 	}
 
-	std::cout << clang.string();
-	for(auto arg : compile_proc_args) {
-		std::cout << " " << arg;
-	}
-	std::cout << "\n";
-
 	std::cout << "Compiling runtime...\n";
 	bp::child compile_proc(
 		clang.string(),
@@ -106,9 +102,11 @@ void ecsact::rtb::runtime_compile
 	std::vector<std::string> link_proc_args;
 
 	link_proc_args.push_back("-shared");
+#if !defined(_WIN32)
 	// link_proc_args.push_back("-Wl,-s");
 	link_proc_args.push_back("-Wl,--gc-sections");
 	link_proc_args.push_back("-Wl,--exclude-libs,ALL");
+#endif
 	link_proc_args.push_back("-o");
 	link_proc_args.push_back(options.output_path.generic_string());
 

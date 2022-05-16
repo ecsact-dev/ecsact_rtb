@@ -80,3 +80,64 @@ include:
     - com_github_skypjack_entt/src/entt/signal/emitter.hpp
     - com_github_skypjack_entt/src/entt/signal/fwd.hpp
     - com_github_skypjack_entt/src/entt/signal/sigh.hpp
+  ecsact:
+    - ecsact/lib/lib.hh
+    - ecsact/lib/runtime-cpp/execution_events_collector.hh
+    - ecsact/lib/runtime-cpp/execution_options.hh
+    - ecsact/lib/runtime-cpp/runtime-cpp-c-interop.hh
+    - ecsact/lib/runtime-cpp/runtime.hh
+  ecsact/runtime:
+    - ecsact/lib/runtime/common.h
+    - ecsact/lib/runtime/core/core.h
+    - ecsact/lib/runtime/dynamic/dynamic.h
+    - ecsact/lib/runtime/meta/meta.h
+    - ecsact/lib/runtime/static/static.h
+  boost:
+    - boost_mp11_files/include/boost/mp11.hpp
+  boost/mp11:
+    - boost_mp11_files/include/boost/mp11/algorithm.hpp
+    - boost_mp11_files/include/boost/mp11/bind.hpp
+    - boost_mp11_files/include/boost/mp11/function.hpp
+    - boost_mp11_files/include/boost/mp11/integer_sequence.hpp
+    - boost_mp11_files/include/boost/mp11/integral.hpp
+    - boost_mp11_files/include/boost/mp11/list.hpp
+    - boost_mp11_files/include/boost/mp11/map.hpp
+    - boost_mp11_files/include/boost/mp11/mpl.hpp
+    - boost_mp11_files/include/boost/mp11/mpl_list.hpp
+    - boost_mp11_files/include/boost/mp11/mpl_tuple.hpp
+    - boost_mp11_files/include/boost/mp11/set.hpp
+    - boost_mp11_files/include/boost/mp11/tuple.hpp
+    - boost_mp11_files/include/boost/mp11/utility.hpp
+    - boost_mp11_files/include/boost/mp11/version.hpp
+  boost/mp11/detail:
+    - boost_mp11_files/include/boost/mp11/detail/config.hpp
+    - boost_mp11_files/include/boost/mp11/detail/mp_append.hpp
+    - boost_mp11_files/include/boost/mp11/detail/mp_copy_if.hpp
+    - boost_mp11_files/include/boost/mp11/detail/mp_count.hpp
+    - boost_mp11_files/include/boost/mp11/detail/mp_fold.hpp
+    - boost_mp11_files/include/boost/mp11/detail/mp_front.hpp
+    - boost_mp11_files/include/boost/mp11/detail/mp_is_list.hpp
+    - boost_mp11_files/include/boost/mp11/detail/mp_list.hpp
+    - boost_mp11_files/include/boost/mp11/detail/mp_map_find.hpp
+    - boost_mp11_files/include/boost/mp11/detail/mp_min_element.hpp
+    - boost_mp11_files/include/boost/mp11/detail/mp_plus.hpp
+    - boost_mp11_files/include/boost/mp11/detail/mp_remove_if.hpp
+    - boost_mp11_files/include/boost/mp11/detail/mp_rename.hpp
+    - boost_mp11_files/include/boost/mp11/detail/mp_void.hpp
+    - boost_mp11_files/include/boost/mp11/detail/mp_with_index.hpp
+    - boost_mp11_files/include/boost/mp11/detail/mpl_common.hpp
+
+sources:
+  ecsact/runtime-cpp:
+    - ecsact/lib/runtime-cpp/registry.cc
+  ecsact-entt-runtime:
+    - ecsact_entt/runtime/common.template.hh
+    - ecsact_entt/runtime/core.template.cc
+    - ecsact_entt/runtime/dynamic.template.cc
+    - ecsact_entt/runtime/event_markers.hh
+    - ecsact_entt/runtime/execution_events_collector.hh
+    - ecsact_entt/runtime/registry_info.hh
+    - ecsact_entt/runtime/runtime.hh
+    - ecsact_entt/runtime/runtime.template.cc
+    - ecsact_entt/runtime/system_entt_view.hh
+    - ecsact_entt/runtime/system_execution_context.hh

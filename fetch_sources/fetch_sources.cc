@@ -61,8 +61,11 @@ result::fetch_sources ecsact::rtb::fetch_sources
 	fs::create_directory(include_dir);
 	fs::create_directory(src_dir);
 	
+	auto config_file_path = options.runfiles->Rlocation(
+		"ecsact_rtb/config/fetched_sources.yml"
+	);
 	auto config_file_contents = file_get_contents<std::vector<char>>(
-		"C:/projects/seaube/ecsact-rtb/config/fetched_sources.yml"
+		config_file_path.c_str()
 	);
 	auto tree = ryml::parse_in_place(ryml::to_substr(config_file_contents));
 	auto root = tree.rootref();
@@ -77,7 +80,25 @@ result::fetch_sources ecsact::rtb::fetch_sources
 			auto inc_runfile_path = options.runfiles->Rlocation(item_str);
 			if(!inc_runfile_path.empty()) {
 				if(fs::exists(inc_runfile_path)) {
-					// std::cout << "inc_runfile_path=" << inc_runfile_path << "\n";
+					fs::copy_file(
+						inc_runfile_path,
+						dirname / fs::path{inc_runfile_path}.filename()
+					);
+				}
+			}
+		}
+	}
+
+	for(const auto& entry : root.find_child("sources")) {
+		const auto& key = entry.key();
+		auto dirname = src_dir / fs::path{std::string_view{key.str, key.len}};
+		fs::create_directories(dirname);
+
+		for(const auto& item : entry.children()) {
+			std::string item_str{item.val().str, item.val().len};
+			auto inc_runfile_path = options.runfiles->Rlocation(item_str);
+			if(!inc_runfile_path.empty()) {
+				if(fs::exists(inc_runfile_path)) {
 					fs::copy_file(
 						inc_runfile_path,
 						dirname / fs::path{inc_runfile_path}.filename()
@@ -90,11 +111,11 @@ result::fetch_sources ecsact::rtb::fetch_sources
 	result::fetch_sources result;
 
 	result.include_dir = include_dir;
-	// for(const auto& entry : fs::recursive_directory_iterator(src_dir)) {
-	// 	if(entry.is_regular_file()) {
-	// 		result.source_files.push_back(entry.path());
-	// 	}
-	// }
+	for(const auto& entry : fs::recursive_directory_iterator(src_dir)) {
+		if(entry.is_regular_file()) {
+			result.source_files.push_back(entry.path());
+		}
+	}
 
 	return result;
 }
