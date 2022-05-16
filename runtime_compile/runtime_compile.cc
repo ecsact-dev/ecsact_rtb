@@ -36,8 +36,8 @@ void ecsact::rtb::runtime_compile
 	}
 	fs::create_directory(options.working_directory);
 
-	// TODO(zaucy): Get clang from options
 	const fs::path clang = options.cpp_compiler.compiler_path;
+
 	std::vector<std::string> compile_proc_args;
 
 	compile_proc_args.push_back("-c");
