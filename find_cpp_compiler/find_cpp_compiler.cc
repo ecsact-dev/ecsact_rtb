@@ -44,10 +44,10 @@ std::string ecsact::rtb::get_compiler_version
 	std::vector<std::string> data;
 	std::string line;
 
-    while (process.running() && std::getline(is, line) && !line.empty()) {
-   		data.push_back(line);
-		}
-  
-    process.wait();
-    return data[0];
+	while (process.running() && std::getline(is, line) && !line.empty()) {
+		data.push_back(line);
+	}
+
+	process.wait();
+	return data[0];
 }
