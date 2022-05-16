@@ -5,4 +5,7 @@ cc_library(
     visibility = ["//visibility:public"],
     hdrs = ["find_cpp_compiler.hh"],
     srcs = ["find_cpp_compiler.cc"],
+    deps = [
+        "@boost//libs/process",
+    ],
 )
