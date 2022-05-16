@@ -9,18 +9,21 @@
 #include "find_cpp_compiler/find_cpp_compiler.hh"
 #include "generate_files/generate_files.hh"
 #include "runtime_compile/runtime_compile.hh"
+#include "util/managed_temp_directory.hh"
 
 namespace fs = std::filesystem;
 
 constexpr auto USAGE = R"(
 Usage:
-	ecsact-rtb <ecsact_file>... --output=<output>
+	ecsact-rtb <ecsact_file>... --output=<output> [--temp_dir=<temp_dir>]
 
 Options:
 	--output=<output>  [default: ecsactrt.dll]
 		Output path for runtime library. Only windows .dll are supported at this 
 		time
-	
+	--temp_dir
+		Optionally supply a temporary directory to write the generated/fetched
+		source files. If one is not provided one will be generated.
 )";
 
 
@@ -30,6 +33,7 @@ int main(int argc, char* argv[]) {
 	using ecsact::rtb::fetch_sources;
 	using ecsact::rtb::find_cpp_compiler;
 	using ecsact::rtb::runtime_compile;
+	using ecsact::rtb::util::managed_temp_directory;
 
 	std::string runfiles_err;
 	auto runfiles = Runfiles::Create(argv[0], &runfiles_err);
@@ -70,11 +74,15 @@ int main(int argc, char* argv[]) {
 		return 2;
 	}
 
+	managed_temp_directory temp_dir;
+
 	runtime_compile({
 		.generated_files = generate_files({
+			.temp_dir = temp_dir.path(),
 			.parse_results = results,
 		}),
 		.fetched_sources = fetch_sources({
+			.temp_dir = temp_dir.path(),
 			.runfiles = runfiles,
 		}),
 		.cpp_compiler = find_cpp_compiler({

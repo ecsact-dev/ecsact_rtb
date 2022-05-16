@@ -15,8 +15,10 @@ result::fetch_sources ecsact::rtb::fetch_sources
 		return {};
 	}
 
-	auto base_dir = fs::temp_directory_path() / "ecsact-rtb" / "fetched_files";
-	std::cout << "Removing old fetched files...\n";
+	auto base_dir = options.temp_dir / "fetched_files";
+	if(fs::exists(base_dir)) {
+		std::cout << "Removing old fetched files...\n";
+	}
 	fs::remove_all(base_dir);
 	auto include_dir = base_dir / "include";
 	auto src_dir = base_dir / "src";

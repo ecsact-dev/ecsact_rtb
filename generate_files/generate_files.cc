@@ -15,8 +15,10 @@ result::generate_files ecsact::rtb::generate_files
 	( const options::generate_files& options
 	)
 {
-	auto base_dir = fs::temp_directory_path() / "ecsact-rtb" / "generated_files";
-	std::cout << "Removing old generated files...\n";
+	auto base_dir = options.temp_dir / "generated_files";
+	if(fs::exists(base_dir)) {
+		std::cout << "Removing old generated files...\n";
+	}
 	fs::remove_all(base_dir);
 	auto include_dir = base_dir / "include";
 	auto src_dir = base_dir / "src";

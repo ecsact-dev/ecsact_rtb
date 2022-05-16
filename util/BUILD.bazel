@@ -1,0 +1,12 @@
+load("@rules_cc//cc:defs.bzl", "cc_library")
+
+package(default_visibility = ["//visibility:public"])
+
+cc_library(
+    name = "managed_temp_directory",
+    srcs = ["managed_temp_directory.cc"],
+    hdrs = ["managed_temp_directory.hh"],
+    deps = [
+        "@boost//libs/process",
+    ],
+)
