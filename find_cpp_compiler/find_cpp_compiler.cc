@@ -6,21 +6,29 @@ result::find_cpp_compiler ecsact::rtb::find_cpp_compiler
 	( const options::find_cpp_compiler& options
 	)
 {
-	auto clang = boost::process::search_path("clang");
+	std::string version;
+	std::string path;
 
-	if(clang == "") {
-		std::cout << "No clang found" << std::endl;
+	if(options.path.has_value()) {
+		version = get_compiler_version(*options.path);
+		path = options.path->string();
 	} else {
-		std::cout << "Getting clang version" << std::endl;
-		auto compiler_out = get_compiler_version(clang);
-		for(auto& line : compiler_out) {
-			std::cout << line << std::endl;
+		auto clang_path = boost::process::search_path("clang");
+		if(clang_path == "") {
+			std::cerr << "clang not found in the PATH" << std::endl;
+		} else {
+			version = get_compiler_version(clang_path);
+			path = clang_path.string();
 		}
 	}
-	return {};
+
+	return {
+		.compiler_version = version,
+		.compiler_path = path
+	};
 }
 
-std::vector<std::string> ecsact::rtb::get_compiler_version
+std::string ecsact::rtb::get_compiler_version
 	( boost::filesystem::path compiler_path
 	)
 {
@@ -36,6 +44,6 @@ std::vector<std::string> ecsact::rtb::get_compiler_version
 
     c.wait();
 
-    return data;
+    return data[0];
 
 }

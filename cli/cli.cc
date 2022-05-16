@@ -15,7 +15,8 @@ namespace fs = std::filesystem;
 
 constexpr auto USAGE = R"(
 Usage:
-	ecsact-rtb <ecsact_file>... --output=<output> [--temp_dir=<temp_dir>]
+	ecsact-rtb <ecsact_file>... --output=<output> [--temp_dir=<temp_dir>] 
+		[--compiler_path=<compiler_path>]
 
 Options:
 	--output=<output>
@@ -24,6 +25,8 @@ Options:
 	--temp_dir=<temp_dir>
 		Optionally supply a temporary directory to write the generated/fetched
 		source files. If one is not provided one will be generated.
+	--compiler_path=<compiler_path>
+		If a compiler is not specified by this option then clang in your PATH environment variable will be used
 )";
 
 
@@ -102,6 +105,13 @@ int main(int argc, char* argv[]) {
 		return temp_dir;
 	}, temp_dir_v);
 
+	std::optional<boost::filesystem::path> compiler_path;
+	if(args["--compiler_path"].isString()) {
+		compiler_path = args["--compiler_path"].asString();
+	} else {
+		compiler_path = std::nullopt;
+	}
+
 	runtime_compile({
 		.generated_files = generate_files({
 			.temp_dir = temp_dir,
@@ -112,7 +122,7 @@ int main(int argc, char* argv[]) {
 			.runfiles = runfiles,
 		}),
 		.cpp_compiler = find_cpp_compiler({
-			// TODO: Fill in find_cpp_compiler options
+			.path = compiler_path,
 		}),
 		.output_path = output_path,
 		.working_directory = temp_dir / "work",
