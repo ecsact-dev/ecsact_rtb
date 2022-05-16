@@ -36,12 +36,7 @@ void ecsact::rtb::runtime_compile
 	}
 	fs::create_directory(options.working_directory);
 
-	// TODO(zaucy): Get clang from options
-#ifdef _WIN32
-	const fs::path clang = "C:/Program Files/LLVM/bin/clang.exe";
-#else
-	const fs::path clang = "/home/ezekiel/projects/seaube/ecsact-rtb/bazel-ecsact-rtb/external/llvm_toolchain_llvm/bin/clang";
-#endif
+	const fs::path clang = options.cpp_compiler.compiler_path;
 
 	std::vector<std::string> compile_proc_args;
 
