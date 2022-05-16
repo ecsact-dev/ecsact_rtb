@@ -116,7 +116,7 @@ int main(int argc, char* argv[]) {
 		}),
 		.output_path = output_path,
 		.working_directory = temp_dir / "work",
-		.main_package = *results.main_package,
+		.main_package = (*results.main_package).get(),
 	});
 
 	// TODO(zaucy): find a valid C++ compiler

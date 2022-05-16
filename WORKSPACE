@@ -3,6 +3,21 @@ workspace(name = "ecsact_rtb")
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
 
+git_repository(
+    name = "com_github_biojppm_c4core",
+    init_submodules = True,
+    remote = "https://github.com/zaucy/c4core.git",
+    commit = "c54693bb85f3fd6ff4a8fdf7f074a5310336d7f5",
+    shallow_since = "1652645071 -0700"
+)
+
+git_repository(
+    name = "com_github_biojppm_rapidyaml",
+    remote = "https://github.com/zaucy/rapidyaml.git",
+    commit = "ec6fea4ed700b73f856d1d858df8a31a2a50994e",
+    shallow_since = "1652645354 -0700",
+)
+
 http_archive(
     name = "bazel_skylib",
     urls = [
