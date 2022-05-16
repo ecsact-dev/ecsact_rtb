@@ -105,7 +105,7 @@ int main(int argc, char* argv[]) {
 		return temp_dir;
 	}, temp_dir_v);
 
-	std::optional<boost::filesystem::path> compiler_path;
+	std::optional<std::filesystem::path> compiler_path;
 	if(args["--compiler_path"].isString()) {
 		compiler_path = args["--compiler_path"].asString();
 	} else {

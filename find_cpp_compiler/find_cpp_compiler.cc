@@ -1,3 +1,6 @@
+#include <boost/process/search_path.hpp>
+#include <boost/process.hpp>
+
 #include "find_cpp_compiler.hh"
 
 using namespace ecsact::rtb;
@@ -17,7 +20,8 @@ result::find_cpp_compiler ecsact::rtb::find_cpp_compiler
 		if(clang_path == "") {
 			std::cerr << "clang not found in the PATH" << std::endl;
 		} else {
-			version = get_compiler_version(clang_path);
+			std::filesystem::path path_thing = clang_path.string();
+			version = get_compiler_version(path_thing);
 			path = clang_path.string();
 		}
 	}
@@ -29,21 +33,21 @@ result::find_cpp_compiler ecsact::rtb::find_cpp_compiler
 }
 
 std::string ecsact::rtb::get_compiler_version
-	( boost::filesystem::path compiler_path
+	( std::filesystem::path compiler_path
 	)
 {
 	namespace bp = boost::process;
+	boost::filesystem::path boost_path = compiler_path.string();
 	bp::ipstream is;
-	bp::child c(compiler_path, "--version", bp::std_out > is);
+	bp::child process(boost_path, "--version", bp::std_out > is);
 
 	std::vector<std::string> data;
 	std::string line;
 
-    while (c.running() && std::getline(is, line) && !line.empty())
-        data.push_back(line);
-
-    c.wait();
-
+    while (process.running() && std::getline(is, line) && !line.empty()) {
+   		data.push_back(line);
+		}
+  
+    process.wait();
     return data[0];
-
 }

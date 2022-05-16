@@ -2,14 +2,13 @@
 
 #include <optional>
 #include <iostream>
-
-#include "boost/process/search_path.hpp"
-#include "boost/process.hpp"
+#include <string>
+#include <filesystem>
 
 namespace ecsact::rtb {
 	namespace options {
 		struct find_cpp_compiler {
-			std::optional<boost::filesystem::path> path;
+			std::optional<std::filesystem::path> path;
 		};
 	}
 
@@ -25,6 +24,6 @@ namespace ecsact::rtb {
 		);
 	
 	std::string get_compiler_version
-		( boost::filesystem::path compiler_path
+		( std::filesystem::path compiler_path
 		);
 }
