@@ -3,6 +3,21 @@ workspace(name = "ecsact_rtb")
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
 
+git_repository(
+    name = "com_github_biojppm_c4core",
+    init_submodules = True,
+    remote = "https://github.com/zaucy/c4core.git",
+    commit = "c54693bb85f3fd6ff4a8fdf7f074a5310336d7f5",
+    shallow_since = "1652645071 -0700"
+)
+
+git_repository(
+    name = "com_github_biojppm_rapidyaml",
+    remote = "https://github.com/zaucy/rapidyaml.git",
+    commit = "ec6fea4ed700b73f856d1d858df8a31a2a50994e",
+    shallow_since = "1652645354 -0700",
+)
+
 http_archive(
     name = "bazel_skylib",
     urls = [
@@ -59,8 +74,8 @@ boost_http_archives()
 git_repository(
     name = "ecsact",
     remote = "git@github.com:seaube/ecsact.git",
-    commit = "7ddfc28afc17596b4dd46fdcae9e785b8fc45d68",
-    shallow_since = "1652484177 -0700",
+    commit = "97e1d44b305c924f617e56982380fffaa456db16",
+    shallow_since = "1652559375 -0700",
 )
 
 http_archive(
@@ -74,9 +89,9 @@ http_archive(
 
 git_repository(
     name = "ecsact_entt",
-    commit = "cc23d95e2ea5b030434f2ebf7ffd6f78b56b6c8c",
+    commit = "f9abb03013ff30417f00b99985b9599658d804bf",
     remote = "git@github.com:seaube/ecsact-entt.git",
-    shallow_since = "1651764189 -0700",
+    shallow_since = "1652494447 -0700",
 )
 
 _export_all_build_file_content = """

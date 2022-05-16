@@ -9,5 +9,12 @@ cc_library(
         "//generate_files",
         "//fetch_sources",
         "//find_cpp_compiler",
+        "@boost//libs/dll",
+        "@boost//libs/process",
+        "@ecsact//lang-support/cc",
+        "@ecsact//lib/runtime/core",
+        "@ecsact//lib/runtime/dynamic",
+        "@ecsact//lib/runtime/static",
+        "@ecsact//lib/runtime/meta",
     ],
 )

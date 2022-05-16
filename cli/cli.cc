@@ -18,10 +18,10 @@ Usage:
 	ecsact-rtb <ecsact_file>... --output=<output> [--temp_dir=<temp_dir>]
 
 Options:
-	--output=<output>  [default: ecsactrt.dll]
-		Output path for runtime library. Only windows .dll are supported at this 
+	--output=<output>
+		Output path for runtime library.
 		time
-	--temp_dir
+	--temp_dir=<temp_dir>
 		Optionally supply a temporary directory to write the generated/fetched
 		source files. If one is not provided one will be generated.
 )";
@@ -56,15 +56,25 @@ int main(int argc, char* argv[]) {
 		parse_options.source_files.push_back(file_path);
 	}
 		
-	auto output_path = fs::path{args["--output"].asString()};
+	auto output_path = fs::absolute(fs::path{args["--output"].asString()});
 
+#if defined(_WIN32)
 	if(output_path.extension() != ".dll") {
-		// TODO(Kelwan): Add support for Linux, WASM and macOS
 		std::cerr
-			<< ".dll output is only allowed for now. Other platforms will be "
-			<< "supported in the future.\n";
+			<< "Cross compilation not supported yet. Only allowd to build windows "
+			<< ".dll runtimes";
 		return 1;
 	}
+#elif defined(__linux__)
+	if(output_path.extension() != ".so") {
+		std::cerr
+			<< "Cross compilation not supported yet. Only allowd to build linux "
+			<< ".so runtimes";
+		return 1;
+	}
+#else
+#	error unsupported platform
+#endif
 
 	ecsact::parse_results results;
 	ecsact::parse_error err = ecsact::parse(parse_options, results);
@@ -74,25 +84,42 @@ int main(int argc, char* argv[]) {
 		return 2;
 	}
 
-	managed_temp_directory temp_dir;
+	if(!results.main_package) {
+		std::cerr
+			<< "[Err] Missing main package. One ecsact file must be marked as the "
+			<< "'main' package in order to build a runtime.";
+		return 3;
+	}
+
+	std::variant<fs::path, managed_temp_directory> temp_dir_v;
+	if(args["--temp_dir"].isString()) {
+		temp_dir_v = fs::path{args["--temp_dir"].asString()};
+	} else {
+		temp_dir_v.emplace<managed_temp_directory>();
+	}
+
+	const auto temp_dir = std::visit([&](const auto& temp_dir) -> fs::path {		
+		return temp_dir;
+	}, temp_dir_v);
 
 	runtime_compile({
 		.generated_files = generate_files({
-			.temp_dir = temp_dir.path(),
+			.temp_dir = temp_dir,
 			.parse_results = results,
 		}),
 		.fetched_sources = fetch_sources({
-			.temp_dir = temp_dir.path(),
+			.temp_dir = temp_dir,
 			.runfiles = runfiles,
 		}),
 		.cpp_compiler = find_cpp_compiler({
 			// TODO: Fill in find_cpp_compiler options
 		}),
 		.output_path = output_path,
+		.working_directory = temp_dir / "work",
+		.main_package = (*results.main_package).get(),
 	});
 
 	// TODO(zaucy): find a valid C++ compiler
-	// TODO(zaucy): compile with a C++ compiler
 
 	std::cout << "Exiting...\n";
 	return 0;

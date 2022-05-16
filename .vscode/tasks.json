@@ -1,0 +1,16 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Build",
+			"command": "bazel",
+			"type": "shell",
+			"args": ["build", "//cli:ecsact-rtb"],
+			"problemMatcher": [],
+			"presentation": {
+				"reveal": "always"
+			},
+			"group": "build"
+		}
+	]
+}

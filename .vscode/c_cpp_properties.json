@@ -6,7 +6,9 @@
         "${workspaceFolder}/**",
         "${workspaceFolder}/bazel-ecsact-rtb/external/bazelregistry_docopt_cpp",
         "${workspaceFolder}/bazel-ecsact-rtb/external/com_github_bazelboost_process/include",
-        "${workspaceFolder}/bazel-bin/external/ecsact/parser2/_virtual_includes/parser2"
+        "${workspaceFolder}/bazel-bin/external/ecsact/parser2/_virtual_includes/parser2",
+				"${workspaceFolder}/bazel-ecsact-rtb/external/com_github_biojppm_rapidyaml/src",
+				"${workspaceFolder}/bazel-ecsact-rtb/external/com_github_biojppm_c4core/src"
       ],
       "defines": [],
       "compilerPath": "${workspaceFolder}/bazel-ecsact-rtb/external/llvm_toolchain_llvm/bin/clang",

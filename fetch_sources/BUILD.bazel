@@ -7,5 +7,7 @@ cc_library(
     srcs = ["fetch_sources.cc"],
     deps = [
         "@bazel_tools//tools/cpp/runfiles",
+        "@com_github_biojppm_rapidyaml//:ryml",
+        "@com_github_biojppm_c4core//:c4core",
     ],
 )
