@@ -13,6 +13,19 @@
 				"--temp_dir=${workspaceFolder}\\tmp"
 			],
 			"preLaunchTask": "Build"
+		},
+		{
+			"type": "lldb",
+			"request": "launch",
+			"name": "Linux",
+			"cwd": "${workspaceFolder}/bazel-bin/cli",
+			"program": "${workspaceFolder}/bazel-bin/cli/ecsact-rtb",
+			"args": [
+				"${workspaceFolder}/dummy.ecsact",
+				"--output=${workspaceFolder}/tmp/test_runtime.so",
+				"--temp_dir=${workspaceFolder}/tmp"
+			],
+			"preLaunchTask": "Build"
 		}
 	]
 }

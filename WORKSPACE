@@ -33,9 +33,9 @@ bazel_skylib_workspace()
 
 http_archive(
     name = "com_grail_bazel_toolchain",
-    strip_prefix = "bazel-toolchain-c78a67db025e967707febf04a60d57c2286d21ac",
-    url = "https://github.com/yaxum62/bazel-toolchain/archive/c78a67db025e967707febf04a60d57c2286d21ac.tar.gz",
-    sha256 = "7fd9b2efd8d9d62a8f5263e917d8b601f4e1fd44affe0c894420b2ee636f8454",
+    sha256 = "644b7c35adbfbf312d86176660a196e67e7a2c3f20114941a60d0379f2b4771f",
+    strip_prefix = "bazel-toolchain-9e71d562023dc7994e747110ee1ca345ad6b4413",
+    url = "https://github.com/grailbio/bazel-toolchain/archive/9e71d562023dc7994e747110ee1ca345ad6b4413.zip",
 )
 
 load("@com_grail_bazel_toolchain//toolchain:deps.bzl", "bazel_toolchain_dependencies")
@@ -46,8 +46,8 @@ load("@com_grail_bazel_toolchain//toolchain:rules.bzl", "llvm_toolchain")
 
 llvm_toolchain(
     name = "llvm_toolchain",
-    llvm_version = "13.0.0",
-    cxx_standard = "c++20",
+    cxx_standard = {"linux": "c++20"},
+    llvm_version = "14.0.0",
 )
 
 load("@llvm_toolchain//:toolchains.bzl", "llvm_register_toolchains")
