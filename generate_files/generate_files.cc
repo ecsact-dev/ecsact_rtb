@@ -22,7 +22,7 @@ result::generate_files ecsact::rtb::generate_files
 	fs::remove_all(base_dir);
 	auto include_dir = base_dir / "include";
 	auto src_dir = base_dir / "src";
-	fs::create_directory(base_dir);
+	fs::create_directories(base_dir);
 	fs::create_directory(include_dir);
 	fs::create_directory(src_dir);
 
