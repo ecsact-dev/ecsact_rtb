@@ -92,6 +92,7 @@ include:
     - ecsact/lib/runtime/dynamic/dynamic.h
     - ecsact/lib/runtime/meta/meta.h
     - ecsact/lib/runtime/static/static.h
+    - ecsact/lib/runtime/serialize/serialize.h
   boost:
     - boost_mp11_files/include/boost/mp11.hpp
   boost/mp11:

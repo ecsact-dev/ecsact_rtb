@@ -10,6 +10,7 @@
 #include <ecsact/runtime/dynamic.h>
 #include <ecsact/runtime/static.h>
 #include <ecsact/runtime/meta.h>
+#include <ecsact/runtime/serialize.h>
 
 namespace bp = boost::process;
 namespace fs = std::filesystem;
@@ -72,6 +73,8 @@ void ecsact::rtb::runtime_compile
 	);
 	compile_proc_args.push_back("-DECSACT_CORE_API_EXPORT");
 	compile_proc_args.push_back("-DECSACT_DYNAMIC_API_EXPORT");
+	compile_proc_args.push_back("-DECSACT_STATIC_API_EXPORT");
+	compile_proc_args.push_back("-DECSACT_SERIALIZE_API_EXPORT");
 	compile_proc_args.push_back("-DECSACT_ENTT_RUNTIME_DYNAMIC_SYSTEM_IMPLS");
 	compile_proc_args.push_back("-fvisibility=hidden");
 	compile_proc_args.push_back("-fvisibility-inlines-hidden");
@@ -85,6 +88,12 @@ void ecsact::rtb::runtime_compile
 		);
 	}
 
+	for(auto src : options.generated_files.source_file_paths) {
+		compile_proc_args.push_back(
+			fs::relative(src, options.working_directory).generic_string()
+		);
+	}
+
 	std::cout << "Compiling runtime...\n";
 	bp::child compile_proc(
 		clang.string(),
@@ -93,6 +102,13 @@ void ecsact::rtb::runtime_compile
 	);
 
 	compile_proc.wait();
+
+	if(auto exit_code = compile_proc.exit_code(); exit_code != 0) {
+		std::cerr
+			<< "Runtime compile " RED_TEXT("failed") ". Exited with code "
+			<< exit_code << "\n";
+		return;
+	}
 
 	std::vector<std::string> link_proc_args;
 
@@ -109,6 +125,7 @@ void ecsact::rtb::runtime_compile
 		link_proc_args.push_back(p.path().string());
 	}
 
+	std::cout << "Linking runtime...\n";
 	bp::child link_proc(
 		clang.string(),
 		bp::start_dir(options.working_directory.string()),
@@ -118,7 +135,7 @@ void ecsact::rtb::runtime_compile
 	link_proc.wait();
 
 	std::cout
-		<< "Runtime compile complete "
+		<< "Runtime build complete "
 		<< options.output_path.generic_string()
 		<< "\n";
 
@@ -142,4 +159,8 @@ void ecsact::rtb::runtime_compile
 	FOR_EACH_ECSACT_META_API_FN(PRINT_LIB_FN, runtime_lib);
 	std::cout << GREY_TEXT("Static Runtime Functions:\n");
 	FOR_EACH_ECSACT_STATIC_API_FN(PRINT_LIB_FN, runtime_lib);
+	std::cout << GREY_TEXT("Serialize Runtime Functions:\n");
+	FOR_EACH_ECSACT_SERIALIZE_API_FN(PRINT_LIB_FN, runtime_lib);
+
+	
 }

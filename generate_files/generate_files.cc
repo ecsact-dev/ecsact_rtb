@@ -7,6 +7,8 @@
 #include "generator/cpp_systems/header/cpp_systems_header_codegen.hh"
 #include "generator/systems/header/systems_header_codegen.hh"
 #include "generator/meta_cc/meta_cc_codegen.hh"
+#include "generator/static_runtime/static_runtime_codegen.hh"
+#include "generator/packed_serialize_runtime/packed_serialize_runtime_codegen.hh"
 
 namespace fs = std::filesystem;
 using namespace ecsact::rtb;
@@ -27,6 +29,7 @@ result::generate_files ecsact::rtb::generate_files
 	fs::create_directory(src_dir);
 
 	std::vector<fs::path> header_paths;
+	std::vector<fs::path> source_file_paths;
 
 	for(auto& pkg : options.parse_results.packages) {
 		auto header_path = include_dir / pkg.source_file_path.filename();
@@ -74,7 +77,30 @@ result::generate_files ecsact::rtb::generate_files
 		});
 	}
 
+	if(options.parse_results.main_package) {
+		const ecsact::package& pkg = *options.parse_results.main_package;
+		auto source_path = src_dir / pkg.source_file_path.filename();
+		source_path.replace_extension(
+			source_path.extension().string() + ".static.runtime.cc"
+		);
+		source_file_paths.push_back(source_path);
+		ecsact::static_runtime_codegen(pkg, {
+			.output_source_path = source_path,
+		});
+
+		source_path = src_dir / pkg.source_file_path.filename();
+		source_path.replace_extension(
+			source_path.extension().string() + ".packed_serialize_runtime.cc"
+		);
+		source_file_paths.push_back(source_path);
+		std::ofstream out_stream(source_path);
+		ecsact::packed_serialize_runtime_codegen(pkg, {
+			.out_stream = out_stream,
+		});
+	}
+
 	return {
 		.include_dir = include_dir,
+		.source_file_paths = source_file_paths,
 	};
 }

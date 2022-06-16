@@ -11,6 +11,7 @@
   "C_Cpp.intelliSenseEngineFallback": "Disabled",
   "files.insertFinalNewline": true,
   "files.eol": "\n",
+  "editor.insertSpaces": false,
   "C_Cpp.autoAddFileAssociations": false,
   "lldb.launch.sourceMap": {
     "/proc/self/cwd": "${workspaceFolder}"
