@@ -16,5 +16,6 @@ cc_library(
         "@ecsact//lib/runtime/dynamic",
         "@ecsact//lib/runtime/static",
         "@ecsact//lib/runtime/meta",
+        "@ecsact//lib/runtime/serialize",
     ],
 )

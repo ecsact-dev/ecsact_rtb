@@ -20,6 +20,11 @@ namespace ecsact::rtb {
 			 * Directory compiler should use as an include directory
 			 */
 			std::filesystem::path include_dir;
+
+			/**
+			 * Generated source file paths
+			 */
+			std::vector<std::filesystem::path> source_file_paths;
 		};
 	}
 

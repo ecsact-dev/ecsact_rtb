@@ -11,8 +11,13 @@
   "C_Cpp.intelliSenseEngineFallback": "Disabled",
   "files.insertFinalNewline": true,
   "files.eol": "\n",
+  "editor.insertSpaces": false,
   "C_Cpp.autoAddFileAssociations": false,
   "lldb.launch.sourceMap": {
     "/proc/self/cwd": "${workspaceFolder}"
+  },
+  "[starlark]": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "BazelBuild.vscode-bazel"
   }
 }
