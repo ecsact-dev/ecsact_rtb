@@ -15,5 +15,9 @@
   "C_Cpp.autoAddFileAssociations": false,
   "lldb.launch.sourceMap": {
     "/proc/self/cwd": "${workspaceFolder}"
-  }
+  },
+	"[starlark]": {
+		"editor.formatOnSave": true,
+		"editor.defaultFormatter": "BazelBuild.vscode-bazel"
+	}
 }
