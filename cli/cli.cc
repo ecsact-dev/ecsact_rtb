@@ -21,7 +21,6 @@ Usage:
 Options:
 	--output=<output>
 		Output path for runtime library.
-		time
 	--temp_dir=<temp_dir>
 		Optionally supply a temporary directory to write the generated/fetched
 		source files. If one is not provided one will be generated.
