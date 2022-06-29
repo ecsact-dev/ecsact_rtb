@@ -17,7 +17,7 @@ result::find_cpp_compiler ecsact::rtb::find_cpp_compiler
 		path = options.path->string();
 	} else {
 		auto clang_path = boost::process::search_path("clang");
-		if(clang_path == "") {
+		if(clang_path.empty()) {
 			std::cerr << "clang not found in the PATH" << std::endl;
 		} else {
 			std::filesystem::path path_thing = clang_path.string();

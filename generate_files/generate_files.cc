@@ -81,15 +81,6 @@ result::generate_files ecsact::rtb::generate_files
 		const ecsact::package& pkg = *options.parse_results.main_package;
 		auto source_path = src_dir / pkg.source_file_path.filename();
 		source_path.replace_extension(
-			source_path.extension().string() + ".static.runtime.cc"
-		);
-		source_file_paths.push_back(source_path);
-		ecsact::static_runtime_codegen(pkg, {
-			.output_source_path = source_path,
-		});
-
-		source_path = src_dir / pkg.source_file_path.filename();
-		source_path.replace_extension(
 			source_path.extension().string() + ".packed_serialize_runtime.cc"
 		);
 		source_file_paths.push_back(source_path);

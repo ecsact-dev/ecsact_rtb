@@ -134,6 +134,13 @@ void ecsact::rtb::runtime_compile
 
 	link_proc.wait();
 
+	if(auto exit_code = link_proc.exit_code(); exit_code != 0) {
+		std::cerr
+			<< "Linking " RED_TEXT("failed") ". Exited with code "
+			<< exit_code << "\n";
+		return;
+	}
+
 	std::cout
 		<< "Runtime build complete "
 		<< options.output_path.generic_string()
