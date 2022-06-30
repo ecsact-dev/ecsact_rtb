@@ -21,7 +21,7 @@ namespace fs = std::filesystem;
 
 #define PRINT_LIB_FN(fn_name, lib)\
 	if(!lib.has(#fn_name))\
-		std::cerr <<   RED_TEXT("    NO  ") << #fn_name << "\n";\
+		std::cout <<   RED_TEXT("    NO  ") << #fn_name << "\n";\
 	else\
 		std::cout << GREEN_TEXT("   YES  ") << #fn_name << "\n";
 
