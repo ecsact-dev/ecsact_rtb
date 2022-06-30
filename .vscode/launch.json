@@ -8,8 +8,8 @@
 			"cwd": "${workspaceFolder}/bazel-bin/cli",
 			"program": "${workspaceFolder}/bazel-bin/cli/ecsact-rtb.exe",
 			"args": [
-				"C:/projects/seaube/ecsact-net-unity-example/Assets/example.ecsact",
-				"--output=C:/projects/seaube/ecsact-net-unity-example/Assets/Plugins/ecsact.dll",
+				"${workspaceFolder}\\dummy.ecsact",
+				"--output=${workspaceFolder}\\tmp\\test_runtime.dll",
 				"--temp_dir=${workspaceFolder}\\tmp"
 			],
 			"preLaunchTask": "Build"
