@@ -34,6 +34,7 @@ int main(int argc, char* argv[]) {
 	using ecsact::rtb::generate_files;
 	using ecsact::rtb::fetch_sources;
 	using ecsact::rtb::find_cpp_compiler;
+	using ecsact::rtb::find_wasmer;
 	using ecsact::rtb::runtime_compile;
 	using ecsact::rtb::util::managed_temp_directory;
 
@@ -123,6 +124,7 @@ int main(int argc, char* argv[]) {
 		.cpp_compiler = find_cpp_compiler({
 			.path = compiler_path,
 		}),
+		.wasmer = find_wasmer({}),
 		.output_path = output_path,
 		.working_directory = temp_dir / "work",
 		.main_package = (*results.main_package).get(),

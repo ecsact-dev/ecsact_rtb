@@ -19,6 +19,7 @@ result::find_cpp_compiler ecsact::rtb::find_cpp_compiler
 		auto clang_path = boost::process::search_path("clang");
 		if(clang_path.empty()) {
 			std::cerr << "clang not found in the PATH" << std::endl;
+			std::exit(1);
 		} else {
 			std::filesystem::path path_thing = clang_path.string();
 			version = get_compiler_version(path_thing);

@@ -38,6 +38,7 @@ void ecsact::rtb::runtime_compile
 	fs::create_directory(options.working_directory);
 
 	const fs::path clang = options.cpp_compiler.compiler_path;
+	const fs::path wasmer = options.wasmer.wasmer_path;
 
 	std::vector<std::string> compile_proc_args;
 
@@ -83,15 +84,40 @@ void ecsact::rtb::runtime_compile
 
 	compile_proc_args.push_back("-O3");
 	for(auto src : options.fetched_sources.source_files) {
+		// Do pass headers to compiler
+		if(src.extension().string().starts_with(".h")) continue;
+
 		compile_proc_args.push_back(
 			fs::relative(src, options.working_directory).generic_string()
 		);
 	}
 
 	for(auto src : options.generated_files.source_file_paths) {
+		// Do pass headers to compiler
+		if(src.extension().string().starts_with(".h")) continue;
+
 		compile_proc_args.push_back(
 			fs::relative(src, options.working_directory).generic_string()
 		);
+	}
+
+	std::cout << "Collecting wasmer compiler flags...\n";
+	bp::ipstream wasmer_proc_flags_stdout;
+	bp::child wasmer_proc_cflags(
+		wasmer.string(),
+		bp::start_dir(options.working_directory.string()),
+		bp::args({"config", "--cflags"}),
+		bp::std_out > wasmer_proc_flags_stdout
+	);
+
+	std::getline(wasmer_proc_flags_stdout, compile_proc_args.emplace_back());
+
+	wasmer_proc_cflags.detach();
+
+	if(compile_proc_args.back().empty()) {
+		std::cerr
+			<< "Wasmer config --cflags " RED_TEXT("failed") "." << "\n";
+		return;
 	}
 
 	std::cout << "Compiling runtime...\n";
@@ -123,6 +149,25 @@ void ecsact::rtb::runtime_compile
 
 	for(auto p : fs::recursive_directory_iterator(options.working_directory)) {
 		link_proc_args.push_back(p.path().string());
+	}
+
+	std::cout << "Collecting wasmer linker flags...\n";
+	bp::ipstream wasmer_proc_libs_stdout;
+	bp::child wasmer_proc_libs(
+		wasmer.string(),
+		bp::start_dir(options.working_directory.string()),
+		bp::args({"config", "--libs"}),
+		bp::std_out > wasmer_proc_libs_stdout
+	);
+
+	std::getline(wasmer_proc_libs_stdout, link_proc_args.emplace_back());
+
+	wasmer_proc_libs.detach();
+
+	if(link_proc_args.back().empty()) {
+		std::cerr
+			<< "wasmer config --libs " RED_TEXT("failed") "." << "\n";
+		return;
 	}
 
 	std::cout << "Linking runtime...\n";

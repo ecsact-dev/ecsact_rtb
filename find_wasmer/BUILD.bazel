@@ -1,9 +1,9 @@
 load("@rules_cc//cc:defs.bzl", "cc_library")
 
 cc_library(
-    name = "find_cpp_compiler",
-    srcs = ["find_cpp_compiler.cc"],
-    hdrs = ["find_cpp_compiler.hh"],
+    name = "find_wasmer",
+    srcs = ["find_wasmer.cc"],
+    hdrs = ["find_wasmer.hh"],
     visibility = ["//visibility:public"],
     deps = [
         "@boost//libs/process",

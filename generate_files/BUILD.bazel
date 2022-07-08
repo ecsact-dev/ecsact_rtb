@@ -2,15 +2,15 @@ load("@rules_cc//cc:defs.bzl", "cc_library")
 
 cc_library(
     name = "generate_files",
-    visibility = ["//visibility:public"],
-    hdrs = ["generate_files.hh"],
     srcs = ["generate_files.cc"],
+    hdrs = ["generate_files.hh"],
+    visibility = ["//visibility:public"],
     deps = [
         "@ecsact//generator/cpp/header:lib",
         "@ecsact//generator/cpp_systems/header:lib",
-        "@ecsact//generator/systems/header:lib",
         "@ecsact//generator/meta_cc:lib",
-        "@ecsact//generator/static_runtime:lib",
         "@ecsact//generator/packed_serialize_runtime:lib",
+        "@ecsact//generator/static_runtime:lib",
+        "@ecsact//generator/systems/header:lib",
     ],
 )
