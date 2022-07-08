@@ -128,8 +128,6 @@ int main(int argc, char* argv[]) {
 		.main_package = (*results.main_package).get(),
 	});
 
-	// TODO(zaucy): find a valid C++ compiler
-
 	std::cout << "Exiting...\n";
 	return 0;
 }
