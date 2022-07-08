@@ -25,9 +25,9 @@ Options:
 		Optionally supply a temporary directory to write the generated/fetched
 		source files. If one is not provided one will be generated.
 	--compiler_path=<compiler_path>
-		If a compiler is not specified by this option then clang in your PATH environment variable will be used
+		If a compiler is not specified by this option then clang in your PATH
+		environment variable will be used.
 )";
-
 
 int main(int argc, char* argv[]) {
 	using bazel::tools::cpp::runfiles::Runfiles;
@@ -63,14 +63,14 @@ int main(int argc, char* argv[]) {
 #if defined(_WIN32)
 	if(output_path.extension() != ".dll") {
 		std::cerr
-			<< "Cross compilation not supported yet. Only allowd to build windows "
+			<< "Cross compilation not supported yet. Only allowed to build windows "
 			<< ".dll runtimes";
 		return 1;
 	}
 #elif defined(__linux__)
 	if(output_path.extension() != ".so") {
 		std::cerr
-			<< "Cross compilation not supported yet. Only allowd to build linux "
+			<< "Cross compilation not supported yet. Only allowed to build linux "
 			<< ".so runtimes";
 		return 1;
 	}

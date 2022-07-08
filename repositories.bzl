@@ -88,3 +88,11 @@ def ecsact_rtb_repositories():
         remote = "git@github.com:seaube/ecsact.git",
         shallow_since = "1656433721 -0400",
     )
+
+    maybe(
+        git_repository,
+        name = "ecsactsi_wasm",
+        remote = "git@github.com:seaube/ecsactsi-wasm.git",
+        commit = "a26a7a6196da18b2f0aef58098acb0d0d9671ce9",
+        shallow_since = "1657307906 -0700",
+    )

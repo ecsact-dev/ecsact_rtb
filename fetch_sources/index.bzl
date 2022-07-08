@@ -7,4 +7,5 @@ ecsact_rtb_runfiles = [
     "@ecsact//lib/runtime-cpp:srcs",
     "@ecsact//lib:lib.hh",
     "@ecsact//lib/runtime:headers",
+    "@ecsactsi_wasm//:sources",
 ]
