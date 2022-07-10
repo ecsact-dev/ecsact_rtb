@@ -9,6 +9,7 @@
 namespace ecsact::rtb {
 	namespace options {
 		struct find_cpp_compiler {
+			std::filesystem::path working_directory;
 			std::optional<std::filesystem::path> path;
 			bazel::tools::cpp::runfiles::Runfiles* runfiles;
 		};
@@ -24,6 +25,15 @@ namespace ecsact::rtb {
 			compiler_type compiler_type;
 			std::string compiler_version;
 			std::string compiler_path;
+			/**
+			 * List of standard include paths needed to be passed to the compiler for
+			 * standard library headers.
+			 */
+			std::vector<std::string> standard_include_paths;
+			/**
+			 * List of directories containing standard libraries.
+			 */
+			std::vector<std::string> standard_lib_paths;
 		};
 	}
 

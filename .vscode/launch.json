@@ -2,7 +2,7 @@
   "version": "0.2.0",
   "configurations": [
 		{
-			"type": "cppvsdbg",
+			"type": "lldb",
 			"request": "launch",
 			"name": "Windows",
 			"cwd": "${workspaceFolder}/bazel-bin/cli",

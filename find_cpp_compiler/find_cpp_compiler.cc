@@ -2,18 +2,47 @@
 
 #include <boost/process/search_path.hpp>
 #include <boost/process.hpp>
+#include <boost/algorithm/string.hpp>
 #include <iostream>
 #include <fstream>
 #include "nlohmann/json.hpp"
 
 namespace bp = boost::process;
+namespace fs = std::filesystem;
 using namespace ecsact::rtb;
+
+static std::vector<std::string> vsdevcmd_env_var
+	( const fs::path&     vsdevcmd_path
+	, const std::string&  env_var_name
+	)
+{
+	std::vector<std::string> result;
+	bp::ipstream is;
+	bp::child extract_script_proc(
+		vsdevcmd_path.string(),
+		bp::args({env_var_name}),
+		bp::std_out > is
+	);
+
+	for(;;) {
+		std::string var;
+		std::getline(is, var, ';');
+		boost::trim_right(var);
+		if(var.empty()) break;
+		result.emplace_back(std::move(var));
+	}
+
+	extract_script_proc.detach();
+
+	return result;
+}
 
 #ifndef _WIN32
 [[maybe_unused]]
 #endif
 static result::find_cpp_compiler find_msvc
-	( std::string vswhere_path
+	( const options::find_cpp_compiler&  options
+	, std::string                        vswhere_path
 	)
 {
 	std::cout << "vswhere_path=" << vswhere_path << "\n";
@@ -24,6 +53,7 @@ static result::find_cpp_compiler find_msvc
 		bp::args({
 			"-format", "json",
 			"-requires", "Microsoft.VisualStudio.Component.VC.Tools.x86.x64",
+			"-requires", "Microsoft.VisualStudio.Component.Windows10SDK"
 		}),
 		bp::std_out > vswhere_output_stream
 	);
@@ -39,6 +69,7 @@ static result::find_cpp_compiler find_msvc
 				<< "Could not find Visual Studio installation with vswhere. Make sure "
 				<< "you have the following components installed:\n"
 				<< " - Microsoft.VisualStudio.Component.VC.Tools.x86.x64\n"
+				<< " - Microsoft.VisualStudio.Component.Windows10SDK\n"
 				<< "\n";
 
 			std::exit(3);
@@ -47,6 +78,30 @@ static result::find_cpp_compiler find_msvc
 		auto vs_config = *vs_config_itr;
 		const std::string vs_installation_path = vs_config.at("installationPath");
 		std::cout << "Found installation path: " << vs_installation_path << "\n";
+
+		const std::string vsdevcmd_path = vs_installation_path +
+			"\\Common7\\Tools\\vsdevcmd.bat";
+		const auto vs_extract_env_path =
+			options.working_directory / "vs_extract_env.bat";
+
+		{
+			std::ofstream env_extract_script_stream(vs_extract_env_path);
+			env_extract_script_stream
+				<< "@echo off\n"
+				<< "setlocal EnableDelayedExpansion\n"
+				<< "call \"" << vsdevcmd_path << "\" -arch=x64 > NUL\n"
+				<< "echo !%*!\n";
+			env_extract_script_stream.flush();
+			env_extract_script_stream.close();
+		}
+
+		// Quick labmda for convenience
+		auto vsdevcmd_env_varl = [&](const std::string& env_var) {
+			return vsdevcmd_env_var(vs_extract_env_path, env_var);
+		};
+
+		auto standard_include_paths = vsdevcmd_env_varl("INCLUDE");
+		auto standard_lib_paths = vsdevcmd_env_varl("LIB");
 
 		// https://github.com/microsoft/vswhere/wiki/Find-VC
 		const std::string version_text_path = vs_installation_path +
@@ -71,6 +126,8 @@ static result::find_cpp_compiler find_msvc
 			.compiler_type = result::compiler_type::msvc,
 			.compiler_version = tools_version,
 			.compiler_path = cl_path,
+			.standard_include_paths = standard_include_paths,
+			.standard_lib_paths = standard_lib_paths,
 		};
 	}
 }
@@ -119,7 +176,7 @@ result::find_cpp_compiler ecsact::rtb::find_cpp_compiler
 		std::exit(3);
 	}
 
-	return find_msvc(vswhere_path);
+	return find_msvc(options, vswhere_path);
 #endif
 	
 
@@ -139,7 +196,9 @@ result::find_cpp_compiler ecsact::rtb::find_cpp_compiler
 	}
 
 	return {
+		.compiler_type = result::compiler_type::clang,
 		.compiler_version = version,
-		.compiler_path = path
+		.compiler_path = path,
+		.standard_include_paths = {},
 	};
 }

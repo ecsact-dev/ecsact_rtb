@@ -30,38 +30,128 @@ static void msvc_runtime_compile
 	( const ecsact::rtb::options::runtime_compile& options
 	)
 {
+	using ecsact::lang_cc::to_cpp_identifier;
+
 	std::cout << "TODO(zaucy): MSVC compiler\n";
 
 	const fs::path cl = options.cpp_compiler.compiler_path;
+	const fs::path wasmer = options.wasmer.wasmer_path;
+
+	// Relative path to absolute path from working directory
+	auto abs_from_wd = [&options](fs::path rel_path) {
+		assert(!rel_path.empty());
+		if(rel_path.is_absolute()) return rel_path;
+		return fs::canonical(options.working_directory / fs::relative(
+			rel_path,
+			options.working_directory
+		));
+	};
 
 	std::vector<std::string> compile_proc_args;
 
 	compile_proc_args.push_back("/std:c++20");
 	compile_proc_args.push_back("/O2");
+	compile_proc_args.push_back("/EHsc");
+	compile_proc_args.push_back("/MD");
+	compile_proc_args.push_back("/MP");
 
 	for(auto src : options.fetched_sources.source_files) {
 		// Don't pass headers to compiler
 		if(src.extension().string().starts_with(".h")) continue;
 
-		compile_proc_args.push_back(
-			fs::relative(src, options.working_directory).string()
+		compile_proc_args.push_back(abs_from_wd(src).string());
+	}
+
+	for(auto src : options.generated_files.source_file_paths) {
+		// Don't pass headers to compiler
+		if(src.extension().string().starts_with(".h")) continue;
+
+		compile_proc_args.push_back(abs_from_wd(src).string());
+	}
+
+	compile_proc_args.push_back("wasmer.lib");
+
+	for(auto& inc_path : options.cpp_compiler.standard_include_paths) {
+		compile_proc_args.push_back("/I");
+		compile_proc_args.push_back(inc_path);
+	}
+
+	compile_proc_args.push_back("/I");
+	compile_proc_args.push_back(
+		abs_from_wd(options.fetched_sources.include_dir).string()
+	);
+
+	compile_proc_args.push_back("/I");
+	compile_proc_args.push_back(
+		abs_from_wd(options.generated_files.include_dir).string()
+	);
+
+	{
+		bp::ipstream wasmer_proc_flags_stdout;
+		bp::child wasmer_proc_cflags(
+			wasmer.string(),
+			bp::start_dir(options.working_directory.string()),
+			bp::args({"config", "--includedir"}),
+			bp::std_out > wasmer_proc_flags_stdout
 		);
+
+		compile_proc_args.push_back("/I");
+		std::getline(wasmer_proc_flags_stdout, compile_proc_args.emplace_back());
 	}
 
-	compile_proc_args.push_back("/I" + fs::relative(
-		options.fetched_sources.include_dir,
-		options.working_directory
-	).string());
-	compile_proc_args.push_back("/I" + fs::relative(
-		options.generated_files.include_dir,
-		options.working_directory
-	).string());
+	auto meta_header = options.main_package.source_file_path.filename();
+	meta_header.replace_extension(
+		meta_header.extension().string() + ".meta.hh"
+	);
 
-	std::cout << "\n\n" << cl.string() << "\n";
-	for(auto& arg : compile_proc_args) {
-		std::cout << "  " << arg << "\n";
+	compile_proc_args.push_back(
+		"/DECSACT_ENTT_RUNTIME_USER_HEADER=\"" + meta_header.string() + "\""
+	);
+
+	compile_proc_args.push_back(
+		"/DECSACT_ENTT_RUNTIME_PACKAGE=::" +
+		to_cpp_identifier(options.main_package.name) + "::package"
+	);
+	compile_proc_args.push_back("/DECSACT_CORE_API_EXPORT");
+	compile_proc_args.push_back("/DECSACT_DYNAMIC_API_EXPORT");
+	compile_proc_args.push_back("/DECSACT_STATIC_API_EXPORT");
+	compile_proc_args.push_back("/DECSACT_SERIALIZE_API_EXPORT");
+	compile_proc_args.push_back("/DECSACTSI_WASM_API_EXPORT");
+	compile_proc_args.push_back("/DECSACT_ENTT_RUNTIME_DYNAMIC_SYSTEM_IMPLS");
+
+	compile_proc_args.push_back("/link");
+	compile_proc_args.push_back("/nologo");
+	for(auto& lib_dir : options.cpp_compiler.standard_lib_paths) {
+		compile_proc_args.push_back("/LIBPATH:" + lib_dir);
 	}
-	std::cout << "\n\n";
+
+	{
+		bp::ipstream wasmer_proc_flags_stdout;
+		bp::child wasmer_proc_cflags(
+			wasmer.string(),
+			bp::start_dir(options.working_directory.string()),
+			bp::args({"config", "--libdir"}),
+			bp::std_out > wasmer_proc_flags_stdout
+		);
+
+		std::getline(wasmer_proc_flags_stdout, compile_proc_args.emplace_back());
+		compile_proc_args.back() = "/LIBPATH:" + compile_proc_args.back();
+	}
+
+	compile_proc_args.push_back("/DLL");
+	compile_proc_args.push_back(
+		"/OUT:" + abs_from_wd(options.output_path).string()
+	);
+
+	// std::cout << "\n\n" << cl.string() << "\n";
+	// for(auto& arg : compile_proc_args) {
+	// 	if(arg == "/I") {
+	// 		std::cout << "  " << arg;
+	// 	} else {
+	// 		std::cout << "  " << arg << "\n";
+	// 	}
+	// }
+	// std::cout << "\n\n";
 
 	std::cout << "Compiling runtime...\n";
 	bp::child compile_proc(
