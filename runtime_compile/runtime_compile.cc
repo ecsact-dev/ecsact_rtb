@@ -32,8 +32,6 @@ static void msvc_runtime_compile
 {
 	using ecsact::lang_cc::to_cpp_identifier;
 
-	std::cout << "TODO(zaucy): MSVC compiler\n";
-
 	const fs::path cl = options.cpp_compiler.compiler_path;
 	const fs::path wasmer = options.wasmer.wasmer_path;
 

@@ -105,8 +105,8 @@ def ecsact_rtb_repositories():
         git_repository,
         name = "ecsactsi_wasm",
         remote = "git@github.com:seaube/ecsactsi-wasm.git",
-        commit = "21504b637b8ebf4ac3f6de0d8fa1f3bd76e589b6",
-        shallow_since = "1657319091 -0700",
+        commit = "73775c0665d6df44d3bcc78164cb2250d24677c4",
+        shallow_since = "1657495933 -0700",
     )
 
     maybe(

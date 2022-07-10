@@ -11,6 +11,9 @@ namespace bp = boost::process;
 namespace fs = std::filesystem;
 using namespace ecsact::rtb;
 
+#ifndef _WIN32
+[[maybe_unused]]
+#endif
 static std::vector<std::string> vsdevcmd_env_var
 	( const fs::path&     vsdevcmd_path
 	, const std::string&  env_var_name
@@ -45,8 +48,6 @@ static result::find_cpp_compiler find_msvc
 	, std::string                        vswhere_path
 	)
 {
-	std::cout << "vswhere_path=" << vswhere_path << "\n";
-
 	bp::ipstream vswhere_output_stream;
 	bp::child vswhere_proc(
 		vswhere_path,
@@ -77,7 +78,6 @@ static result::find_cpp_compiler find_msvc
 
 		auto vs_config = *vs_config_itr;
 		const std::string vs_installation_path = vs_config.at("installationPath");
-		std::cout << "Found installation path: " << vs_installation_path << "\n";
 
 		const std::string vsdevcmd_path = vs_installation_path +
 			"\\Common7\\Tools\\vsdevcmd.bat";
@@ -119,8 +119,6 @@ static result::find_cpp_compiler find_msvc
 
 		const std::string cl_path = vs_installation_path +
 			"\\VC\\Tools\\MSVC\\" + tools_version + "\\bin\\HostX64\\x64\\cl.exe";
-
-		std::cout << "Found cl path: " << cl_path << "\n";
 
 		return {
 			.compiler_type = result::compiler_type::msvc,
