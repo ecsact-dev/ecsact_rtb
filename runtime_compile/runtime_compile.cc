@@ -11,6 +11,7 @@
 #include <ecsact/runtime/static.h>
 #include <ecsact/runtime/meta.h>
 #include <ecsact/runtime/serialize.h>
+#include "magic_enum.hpp"
 
 namespace bp = boost::process;
 namespace fs = std::filesystem;
@@ -25,8 +26,62 @@ namespace fs = std::filesystem;
 	else\
 		std::cout << GREEN_TEXT("   YES  ") << #fn_name << "\n";
 
-void ecsact::rtb::runtime_compile
-	( const options::runtime_compile& options
+static void msvc_runtime_compile
+	( const ecsact::rtb::options::runtime_compile& options
+	)
+{
+	std::cout << "TODO(zaucy): MSVC compiler\n";
+
+	const fs::path cl = options.cpp_compiler.compiler_path;
+
+	std::vector<std::string> compile_proc_args;
+
+	compile_proc_args.push_back("/std:c++20");
+	compile_proc_args.push_back("/O2");
+
+	for(auto src : options.fetched_sources.source_files) {
+		// Don't pass headers to compiler
+		if(src.extension().string().starts_with(".h")) continue;
+
+		compile_proc_args.push_back(
+			fs::relative(src, options.working_directory).string()
+		);
+	}
+
+	compile_proc_args.push_back("/I" + fs::relative(
+		options.fetched_sources.include_dir,
+		options.working_directory
+	).string());
+	compile_proc_args.push_back("/I" + fs::relative(
+		options.generated_files.include_dir,
+		options.working_directory
+	).string());
+
+	std::cout << "\n\n" << cl.string() << "\n";
+	for(auto& arg : compile_proc_args) {
+		std::cout << "  " << arg << "\n";
+	}
+	std::cout << "\n\n";
+
+	std::cout << "Compiling runtime...\n";
+	bp::child compile_proc(
+		cl.string(),
+		bp::start_dir(options.working_directory.string()),
+		bp::args(compile_proc_args)
+	);
+
+	compile_proc.wait();
+
+	if(auto exit_code = compile_proc.exit_code(); exit_code != 0) {
+		std::cerr
+			<< "Runtime compile " RED_TEXT("failed") ". Exited with code "
+			<< exit_code << "\n";
+		std::exit(exit_code);
+	}
+}
+
+static void clang_runtime_compile
+	( const ecsact::rtb::options::runtime_compile& options
 	)
 {
 	using ecsact::lang_cc::to_cpp_identifier;
@@ -76,7 +131,12 @@ void ecsact::rtb::runtime_compile
 	compile_proc_args.push_back("-DECSACT_DYNAMIC_API_EXPORT");
 	compile_proc_args.push_back("-DECSACT_STATIC_API_EXPORT");
 	compile_proc_args.push_back("-DECSACT_SERIALIZE_API_EXPORT");
+	compile_proc_args.push_back("-DECSACT_SERIALIZE_API_EXPORT");
+	compile_proc_args.push_back("-DECSACTSI_WASM_API_EXPORT");
 	compile_proc_args.push_back("-DECSACT_ENTT_RUNTIME_DYNAMIC_SYSTEM_IMPLS");
+#ifdef _WIN32
+	compile_proc_args.push_back("-D_CRT_SECURE_NO_WARNINGS");
+#endif
 	compile_proc_args.push_back("-fvisibility=hidden");
 	compile_proc_args.push_back("-fvisibility-inlines-hidden");
 	compile_proc_args.push_back("-ffunction-sections");
@@ -138,19 +198,6 @@ void ecsact::rtb::runtime_compile
 
 	std::vector<std::string> link_proc_args;
 
-	link_proc_args.push_back("-shared");
-#if !defined(_WIN32)
-	// link_proc_args.push_back("-Wl,-s");
-	link_proc_args.push_back("-Wl,--gc-sections");
-	link_proc_args.push_back("-Wl,--exclude-libs,ALL");
-#endif
-	link_proc_args.push_back("-o");
-	link_proc_args.push_back(options.output_path.generic_string());
-
-	for(auto p : fs::recursive_directory_iterator(options.working_directory)) {
-		link_proc_args.push_back(p.path().string());
-	}
-
 	std::cout << "Collecting wasmer linker flags...\n";
 	bp::ipstream wasmer_proc_libs_stdout;
 	bp::child wasmer_proc_libs(
@@ -170,6 +217,25 @@ void ecsact::rtb::runtime_compile
 		return;
 	}
 
+	link_proc_args.push_back("-shared");
+#if !defined(_WIN32)
+	// link_proc_args.push_back("-Wl,-s");
+	link_proc_args.push_back("-Wl,--gc-sections");
+	link_proc_args.push_back("-Wl,--exclude-libs,ALL");
+#endif
+	link_proc_args.push_back("-o");
+	link_proc_args.push_back(options.output_path.generic_string());
+
+	for(auto p : fs::recursive_directory_iterator(options.working_directory)) {
+		link_proc_args.push_back(p.path().string());
+	}
+
+	std::cout << "\n\n" << clang.string() << " ";
+	for(auto arg : link_proc_args) {
+		std::cout << arg << " ";
+	}
+	std::cout << "\n\n";
+
 	std::cout << "Linking runtime...\n";
 	bp::child link_proc(
 		clang.string(),
@@ -183,7 +249,27 @@ void ecsact::rtb::runtime_compile
 		std::cerr
 			<< "Linking " RED_TEXT("failed") ". Exited with code "
 			<< exit_code << "\n";
-		return;
+		std::exit(exit_code);
+	}
+}
+
+void ecsact::rtb::runtime_compile
+	( const options::runtime_compile& options
+	)
+{
+
+	switch(options.cpp_compiler.compiler_type) {
+		case result::compiler_type::clang:
+			clang_runtime_compile(options);
+			break;
+		case result::compiler_type::msvc:
+			msvc_runtime_compile(options);
+			break;
+		default:
+			std::cerr
+				<< "Unhandled compiler type: "
+				<< magic_enum::enum_name(options.cpp_compiler.compiler_type) << "\n";
+			std::exit(10);
 	}
 
 	std::cout

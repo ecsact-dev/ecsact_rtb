@@ -18,5 +18,6 @@ cc_library(
         "@ecsact//lib/runtime/meta",
         "@ecsact//lib/runtime/serialize",
         "@ecsact//lib/runtime/static",
+        "@magic_enum",
     ],
 )

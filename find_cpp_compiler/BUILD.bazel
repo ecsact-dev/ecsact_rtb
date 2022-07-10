@@ -6,6 +6,8 @@ cc_library(
     hdrs = ["find_cpp_compiler.hh"],
     visibility = ["//visibility:public"],
     deps = [
+        "@bazel_tools//tools/cpp/runfiles",
         "@boost//libs/process",
+        "@nlohmann_json//:json",
     ],
 )

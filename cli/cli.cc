@@ -123,6 +123,7 @@ int main(int argc, char* argv[]) {
 		}),
 		.cpp_compiler = find_cpp_compiler({
 			.path = compiler_path,
+			.runfiles = runfiles,
 		}),
 		.wasmer = find_wasmer({}),
 		.output_path = output_path,

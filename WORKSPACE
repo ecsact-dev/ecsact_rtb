@@ -1,6 +1,14 @@
 workspace(name = "ecsact_rtb")
 
-load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive", "http_file")
+
+http_file(
+    name = "vswhere",
+    downloaded_file_path = "vswhere.exe",
+    executable = True,
+    sha256 = "261d281ce9c95c3e46900e67ace8c3518dd7b2596774f63c92e2bb1fbce71d4c",
+    urls = ["https://github.com/microsoft/vswhere/releases/download/3.0.3/vswhere.exe"],
+)
 
 http_archive(
     name = "com_grail_bazel_toolchain",
