@@ -63,71 +63,77 @@ static result::find_cpp_compiler find_msvc
 
 	vswhere_proc.detach();
 
-	if(vswhere_output.is_array()) {
-		auto vs_config_itr = vswhere_output.begin();
-		if(vs_config_itr == vswhere_output.end()) {
-			std::cerr
-				<< "Could not find Visual Studio installation with vswhere. Make sure "
-				<< "you have the following components installed:\n"
-				<< " - Microsoft.VisualStudio.Component.VC.Tools.x86.x64\n"
-				<< " - Microsoft.VisualStudio.Component.Windows10SDK\n"
-				<< "\n";
-
-			std::exit(3);
-		}
-
-		auto vs_config = *vs_config_itr;
-		const std::string vs_installation_path = vs_config.at("installationPath");
-
-		const std::string vsdevcmd_path = vs_installation_path +
-			"\\Common7\\Tools\\vsdevcmd.bat";
-		const auto vs_extract_env_path =
-			options.working_directory / "vs_extract_env.bat";
-
-		{
-			std::ofstream env_extract_script_stream(vs_extract_env_path);
-			env_extract_script_stream
-				<< "@echo off\n"
-				<< "setlocal EnableDelayedExpansion\n"
-				<< "call \"" << vsdevcmd_path << "\" -arch=x64 > NUL\n"
-				<< "echo !%*!\n";
-			env_extract_script_stream.flush();
-			env_extract_script_stream.close();
-		}
-
-		// Quick labmda for convenience
-		auto vsdevcmd_env_varl = [&](const std::string& env_var) {
-			return vsdevcmd_env_var(vs_extract_env_path, env_var);
-		};
-
-		auto standard_include_paths = vsdevcmd_env_varl("INCLUDE");
-		auto standard_lib_paths = vsdevcmd_env_varl("LIB");
-
-		// https://github.com/microsoft/vswhere/wiki/Find-VC
-		const std::string version_text_path = vs_installation_path +
-			"\\VC\\Auxiliary\\Build\\Microsoft.VCToolsVersion.default.txt";
-		std::string tools_version;
-		{
-			std::ifstream version_text_stream(version_text_path);
-			std::getline(version_text_stream, tools_version);
-		}
-
-		if(tools_version.empty()) {
-			std::cerr << "[ERROR] Unable to read " << version_text_path << "\n";
-			std::exit(3);
-		}
-
-		const std::string cl_path = vs_installation_path +
-			"\\VC\\Tools\\MSVC\\" + tools_version + "\\bin\\HostX64\\x64\\cl.exe";
-
-		return {
-			.compiler_type = result::compiler_type::msvc,
-			.compiler_version = tools_version,
-			.compiler_path = cl_path,
-			.standard_include_paths = standard_include_paths,
-			.standard_lib_paths = standard_lib_paths,
-		};
+	if(!vswhere_output.is_array()) {
+		std::cerr
+			<< "[ERROR] Expected array in vswhere output. "
+			<< "Instead got the following:\n"
+			<< vswhere_output.dump(2, ' ') << "\n";
+		std::exit(10);
 	}
+
+	auto vs_config_itr = vswhere_output.begin();
+	if(vs_config_itr == vswhere_output.end()) {
+		std::cerr
+			<< "Could not find Visual Studio installation with vswhere. Make sure "
+			<< "you have the following components installed:\n"
+			<< " - Microsoft.VisualStudio.Component.VC.Tools.x86.x64\n"
+			<< " - Microsoft.VisualStudio.Component.Windows10SDK\n"
+			<< "\n";
+
+		std::exit(3);
+	}
+
+	auto vs_config = *vs_config_itr;
+	const std::string vs_installation_path = vs_config.at("installationPath");
+
+	const std::string vsdevcmd_path = vs_installation_path +
+		"\\Common7\\Tools\\vsdevcmd.bat";
+	const auto vs_extract_env_path =
+		options.working_directory / "vs_extract_env.bat";
+
+	{
+		std::ofstream env_extract_script_stream(vs_extract_env_path);
+		env_extract_script_stream
+			<< "@echo off\n"
+			<< "setlocal EnableDelayedExpansion\n"
+			<< "call \"" << vsdevcmd_path << "\" -arch=x64 > NUL\n"
+			<< "echo !%*!\n";
+		env_extract_script_stream.flush();
+		env_extract_script_stream.close();
+	}
+
+	// Quick labmda for convenience
+	auto vsdevcmd_env_varl = [&](const std::string& env_var) {
+		return vsdevcmd_env_var(vs_extract_env_path, env_var);
+	};
+
+	auto standard_include_paths = vsdevcmd_env_varl("INCLUDE");
+	auto standard_lib_paths = vsdevcmd_env_varl("LIB");
+
+	// https://github.com/microsoft/vswhere/wiki/Find-VC
+	const std::string version_text_path = vs_installation_path +
+		"\\VC\\Auxiliary\\Build\\Microsoft.VCToolsVersion.default.txt";
+	std::string tools_version;
+	{
+		std::ifstream version_text_stream(version_text_path);
+		std::getline(version_text_stream, tools_version);
+	}
+
+	if(tools_version.empty()) {
+		std::cerr << "[ERROR] Unable to read " << version_text_path << "\n";
+		std::exit(3);
+	}
+
+	const std::string cl_path = vs_installation_path +
+		"\\VC\\Tools\\MSVC\\" + tools_version + "\\bin\\HostX64\\x64\\cl.exe";
+
+	return {
+		.compiler_type = result::compiler_type::msvc,
+		.compiler_version = tools_version,
+		.compiler_path = cl_path,
+		.standard_include_paths = standard_include_paths,
+		.standard_lib_paths = standard_lib_paths,
+	};
 }
 
 static std::string get_compiler_version
