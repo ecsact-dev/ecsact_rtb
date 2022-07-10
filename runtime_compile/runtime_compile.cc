@@ -118,12 +118,17 @@ static void msvc_runtime_compile
 	compile_proc_args.push_back("/DECSACT_SERIALIZE_API_EXPORT");
 	compile_proc_args.push_back("/DECSACTSI_WASM_API_EXPORT");
 	compile_proc_args.push_back("/DECSACT_ENTT_RUNTIME_DYNAMIC_SYSTEM_IMPLS");
+	compile_proc_args.push_back("/DWASM_API_EXTERN=extern");
 
 	compile_proc_args.push_back("/link");
 	compile_proc_args.push_back("/nologo");
 	for(auto& lib_dir : options.cpp_compiler.standard_lib_paths) {
 		compile_proc_args.push_back("/LIBPATH:" + lib_dir);
 	}
+	compile_proc_args.push_back("/DEFAULTLIB:ws2_32");
+	compile_proc_args.push_back("/DEFAULTLIB:Bcrypt");
+	compile_proc_args.push_back("/DEFAULTLIB:Advapi32");
+	compile_proc_args.push_back("/DEFAULTLIB:Userenv");
 
 	{
 		bp::ipstream wasmer_proc_flags_stdout;
