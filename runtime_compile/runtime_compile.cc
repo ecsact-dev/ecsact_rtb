@@ -148,16 +148,6 @@ static void msvc_runtime_compile
 		"/OUT:" + abs_from_wd(options.output_path).string()
 	);
 
-	// std::cout << "\n\n" << cl.string() << "\n";
-	// for(auto& arg : compile_proc_args) {
-	// 	if(arg == "/I") {
-	// 		std::cout << "  " << arg;
-	// 	} else {
-	// 		std::cout << "  " << arg << "\n";
-	// 	}
-	// }
-	// std::cout << "\n\n";
-
 	std::cout << "Compiling runtime...\n";
 	bp::child compile_proc(
 		cl.string(),
