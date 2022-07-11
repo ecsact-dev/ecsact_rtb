@@ -141,10 +141,10 @@ static void msvc_runtime_compile
 		compile_proc_args.back() = "/LIBPATH:" + compile_proc_args.back();
 	}
 
+	auto temp_out = options.working_directory / options.output_path.filename();
+
 	compile_proc_args.push_back("/DLL");
-	compile_proc_args.push_back(
-		"/OUT:" + abs_from_wd(options.output_path).string()
-	);
+	compile_proc_args.push_back("/OUT:" + temp_out.string());
 
 	std::cout << "Compiling runtime...\n";
 	bp::child compile_proc(
@@ -160,6 +160,16 @@ static void msvc_runtime_compile
 			<< "Runtime compile " RED_TEXT("failed") ". Exited with code "
 			<< exit_code << "\n";
 		std::exit(exit_code);
+	}
+
+	std::error_code ec;
+	fs::rename(temp_out, options.output_path, ec);
+	if(ec) {
+		std::cerr
+			<< "Moving " << temp_out.string()
+			<< " to " << options.output_path.string()
+			<< " " RED_TEXT("failed") << ". " << ec.message() << "\n";
+		std::exit(1);
 	}
 }
 
