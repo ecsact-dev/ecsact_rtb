@@ -1,8 +1,11 @@
-#include <boost/process/search_path.hpp>
-#include <boost/process.hpp>
-
 #include "find_wasmer.hh"
 
+#include <boost/process/search_path.hpp>
+#include <boost/process.hpp>
+#include <filesystem>
+
+namespace fs = std::filesystem;
+namespace bp = boost::process;
 using namespace ecsact::rtb;
 
 result::find_wasmer ecsact::rtb::find_wasmer
@@ -16,16 +19,30 @@ result::find_wasmer ecsact::rtb::find_wasmer
 		version = get_wasmer_version(*options.path);
 		path = options.path->string();
 	} else {
-		auto wasmer_path = boost::process::search_path("wasmer");
+		auto wasmer_path = bp::search_path("wasmer");
 		if(wasmer_path.empty()) {
-			std::cerr << "wasmer not found in the PATH" << std::endl;
-			std::exit(1);
-		} else {
-			std::filesystem::path path_thing = wasmer_path.string();
-			version = get_wasmer_version(path_thing);
-			path = wasmer_path.string();
+			auto wasmer_dir = std::getenv("WASMER_DIR");
+			if(wasmer_dir != nullptr) {
+				wasmer_path = bp::search_path(
+					"wasmer",
+					{(fs::path{wasmer_dir} / "bin").string()}
+				);
+			}
 		}
+
+		if(wasmer_path.empty()) {
+			std::cerr
+				<< "Failed to find wasmer in PATH or with WASMER_DIR environment "
+				<< "variables.\n";
+			std::exit(1);
+		}
+		
+		std::filesystem::path path_thing = wasmer_path.string();
+		version = get_wasmer_version(path_thing);
+		path = wasmer_path.string();
 	}
+
+	std::cout << "Using wasmer at " << path << " (" << version << ")\n";
 
 	return {
 		.wasmer_version = version,
