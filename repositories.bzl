@@ -24,6 +24,15 @@ cc_library(
 
 def ecsact_rtb_repositories():
     maybe(
+        http_file,
+        name = "vswhere",
+        downloaded_file_path = "vswhere.exe",
+        executable = True,
+        sha256 = "261d281ce9c95c3e46900e67ace8c3518dd7b2596774f63c92e2bb1fbce71d4c",
+        urls = ["https://github.com/microsoft/vswhere/releases/download/3.0.3/vswhere.exe"],
+    )
+
+    maybe(
         git_repository,
         name = "com_github_biojppm_c4core",
         commit = "c54693bb85f3fd6ff4a8fdf7f074a5310336d7f5",
