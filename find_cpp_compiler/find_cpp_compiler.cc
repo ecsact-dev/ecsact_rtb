@@ -138,32 +138,52 @@ static result::find_cpp_compiler find_msvc
 
 static std::string get_compiler_version
 	( std::filesystem::path compiler_path
+	, result::compiler_type compiler_type
 	)
 {
 	boost::filesystem::path boost_path = compiler_path.string();
 	bp::ipstream is;
-	bp::child process(boost_path, "--version", bp::std_out > is);
-
-	std::vector<std::string> data;
-	std::string line;
-
-	while(process.running() && std::getline(is, line) && !line.empty()) {
-		data.push_back(line);
+	std::vector<std::string> args;
+	args.reserve(1);
+	switch(compiler_type) {
+		case decltype(compiler_type)::msvc:
+			args.push_back("/?");
+			break;
+		default:
+			args.push_back("--version");
+			break;
 	}
+	bp::child process(boost_path, args, bp::std_out > is);
+
+	std::string line;
+	std::getline(is, line);
 
 	process.wait();
-	return data[0];
+	return line;
 }
 
+static result::compiler_type get_compiler_type_from_path
+	( const fs::path& path
+	)
+{
+	const auto exe = path.filename().string();
+	if(exe.starts_with("clang")) {
+		return result::compiler_type::clang;
+	} else if(exe == "cl.exe") {
+		return result::compiler_type::msvc;
+	} else {
+		std::cerr << "Unknown compiler: " << path.string() << "\n";
+		std::exit(1);
+	}
+}
 
-result::find_cpp_compiler ecsact::rtb::find_cpp_compiler
+#ifndef _WIN32
+[[maybe_unused]]
+#endif
+static result::find_cpp_compiler find_msvc_vswhere
 	( const options::find_cpp_compiler& options
 	)
 {
-	std::string version;
-	std::string path;
-
-#ifdef _WIN32
 	std::string vswhere_path;
 	if(options.runfiles) {
 		vswhere_path = options.runfiles->Rlocation(
@@ -181,28 +201,91 @@ result::find_cpp_compiler ecsact::rtb::find_cpp_compiler
 	}
 
 	return find_msvc(options, vswhere_path);
-#endif
-	
+}
 
-	if(options.path.has_value()) {
-		version = get_compiler_version(*options.path);
-		path = options.path->string();
-	} else {
-		auto clang_path = bp::search_path("clang");
-		if(clang_path.empty()) {
-			std::cerr << "clang not found in the PATH" << std::endl;
+#if _WIN32
+#endif
+// Find compiler from environment variables
+static result::find_cpp_compiler find_env_compiler
+	( const options::find_cpp_compiler& options
+	)
+{
+	auto cc = std::getenv("CC");
+	fs::path compiler_path;
+	if(cc != nullptr) {
+		compiler_path = fs::path{cc};
+		if(!compiler_path.is_absolute()) {
+			compiler_path = bp::search_path(cc).string();
+		} else if(!fs::exists(compiler_path)) {
+			std::cerr
+				<< "Compiler from CC environment variable "
+				<< "(" << compiler_path << ") cannot be found.\n";
 			std::exit(1);
-		} else {
-			std::filesystem::path path_thing = clang_path.string();
-			version = get_compiler_version(path_thing);
-			path = clang_path.string();
+		}
+	} else {
+		compiler_path = bp::search_path("clang").string();
+		if(compiler_path.empty()) {
+			std::cerr
+				<< "Could not find compiler with CC environment variable or by looking "
+				<< "for 'clang' in your PATH.\n";
+			std::exit(1);
 		}
 	}
 
+	const auto compiler_type = get_compiler_type_from_path(compiler_path);
+
+	if(compiler_type == decltype(compiler_type)::msvc) {
+		std::cerr
+			<< "Using msvc compiler from environment variables is not supported at "
+			<< "this time.\n";
+		std::exit(1);
+	}
+
 	return {
-		.compiler_type = result::compiler_type::clang,
-		.compiler_version = version,
-		.compiler_path = path,
+		.compiler_type = compiler_type,
+		.compiler_path = compiler_path.string(),
 		.standard_include_paths = {},
+		.standard_lib_paths = {},
 	};
+}
+
+result::find_cpp_compiler ecsact::rtb::find_cpp_compiler
+	( const options::find_cpp_compiler& options
+	)
+{
+	std::string version;
+	std::string path;
+	result::compiler_type compiler_type;
+
+	if(options.path) {
+		if(!fs::exists(*options.path)) {
+			std::cerr << "Specified compiler path does not exist.\n";
+			std::exit(1);
+		}
+		compiler_type = get_compiler_type_from_path(*options.path);
+		version = get_compiler_version(*options.path, compiler_type);
+		path = options.path->string();
+
+		if(compiler_type == decltype(compiler_type)::msvc) {
+			std::cerr
+				<< "Specifying compiler path for msvc compiler is not supported. "
+				<< "Please use built in vswhere by not specifying the path or specify "
+				<< "the path to clang instead.\n";
+			std::exit(1);
+		}
+
+		return {
+			.compiler_type = compiler_type,
+			.compiler_version = version,
+			.compiler_path = path,
+			.standard_include_paths = {},
+			.standard_lib_paths = {},
+		};
+	} else {
+#if _WIN32
+		return find_msvc_vswhere(options);
+#else
+		return find_env_compiler(options);
+#endif
+	}
 }

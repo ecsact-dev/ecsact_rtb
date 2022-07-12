@@ -52,6 +52,7 @@ static void msvc_runtime_compile
 	compile_proc_args.push_back("/EHsc");
 	compile_proc_args.push_back("/MD");
 	compile_proc_args.push_back("/MP");
+	compile_proc_args.push_back("/GL");
 
 	for(auto src : options.fetched_sources.source_files) {
 		// Don't pass headers to compiler
@@ -69,19 +70,22 @@ static void msvc_runtime_compile
 
 	compile_proc_args.push_back("wasmer.lib");
 
+	std::string std_inc_paths;
+	for(auto& p : options.cpp_compiler.standard_include_paths) {
+		std_inc_paths += "  " + p + "\n";
+	}
+	std::cout << "std inc paths:\n" << std_inc_paths;
+
 	for(auto& inc_path : options.cpp_compiler.standard_include_paths) {
-		compile_proc_args.push_back("/I");
-		compile_proc_args.push_back(inc_path);
+		compile_proc_args.push_back("/I" + inc_path);
 	}
 
-	compile_proc_args.push_back("/I");
 	compile_proc_args.push_back(
-		abs_from_wd(options.fetched_sources.include_dir).string()
+		"/I" + abs_from_wd(options.fetched_sources.include_dir).string()
 	);
 
-	compile_proc_args.push_back("/I");
 	compile_proc_args.push_back(
-		abs_from_wd(options.generated_files.include_dir).string()
+		"/I" + abs_from_wd(options.generated_files.include_dir).string()
 	);
 
 	{
@@ -93,8 +97,8 @@ static void msvc_runtime_compile
 			bp::std_out > wasmer_proc_flags_stdout
 		);
 
-		compile_proc_args.push_back("/I");
 		std::getline(wasmer_proc_flags_stdout, compile_proc_args.emplace_back());
+		compile_proc_args.back() = "/I" + compile_proc_args.back();
 	}
 
 	auto meta_header = options.main_package.source_file_path.filename();
@@ -145,6 +149,10 @@ static void msvc_runtime_compile
 
 	compile_proc_args.push_back("/DLL");
 	compile_proc_args.push_back("/OUT:" + temp_out.string());
+
+	for(auto& arg : compile_proc_args) {
+		std::cout << "  " << arg << "\n";
+	}
 
 	std::cout << "Compiling runtime...\n";
 	bp::child compile_proc(
