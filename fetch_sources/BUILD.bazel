@@ -2,12 +2,13 @@ load("@rules_cc//cc:defs.bzl", "cc_library")
 
 cc_library(
     name = "fetch_sources",
-    visibility = ["//visibility:public"],
-    hdrs = ["fetch_sources.hh"],
     srcs = ["fetch_sources.cc"],
+    hdrs = ["fetch_sources.hh"],
+    visibility = ["//visibility:public"],
     deps = [
         "@bazel_tools//tools/cpp/runfiles",
-        "@com_github_biojppm_rapidyaml//:ryml",
+        "@boost//libs/process",
         "@com_github_biojppm_c4core//:c4core",
+        "@com_github_biojppm_rapidyaml//:ryml",
     ],
 )

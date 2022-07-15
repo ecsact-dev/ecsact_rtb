@@ -2,10 +2,13 @@ load("@rules_cc//cc:defs.bzl", "cc_library")
 
 cc_library(
     name = "find_cpp_compiler",
-    visibility = ["//visibility:public"],
-    hdrs = ["find_cpp_compiler.hh"],
     srcs = ["find_cpp_compiler.cc"],
+    hdrs = ["find_cpp_compiler.hh"],
+    visibility = ["//visibility:public"],
     deps = [
+        "@bazel_tools//tools/cpp/runfiles",
+        "@boost//libs/algorithm",
         "@boost//libs/process",
+        "@nlohmann_json//:json",
     ],
 )

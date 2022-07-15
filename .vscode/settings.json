@@ -1,23 +1,36 @@
 {
-  "files.associations": {
-    "**/*.bazel": "starlark",
-    "**/*.bzl": "starlark",
-    "WORKSPACE": "starlark",
-    "*.inc": "cpp"
-  },
-  "editor.defaultFormatter": "xaver.clang-format",
-  "clang-format.executable": "${workspaceRoot}/bazel-ecsact-net/external/llvm_toolchain_llvm/bin/clang-format",
-  "C_Cpp.intelliSenseEngine": "Default",
-  "C_Cpp.intelliSenseEngineFallback": "Disabled",
-  "files.insertFinalNewline": true,
-  "files.eol": "\n",
-  "editor.insertSpaces": false,
-  "C_Cpp.autoAddFileAssociations": false,
-  "lldb.launch.sourceMap": {
-    "/proc/self/cwd": "${workspaceFolder}"
-  },
-  "[starlark]": {
-    "editor.formatOnSave": true,
-    "editor.defaultFormatter": "BazelBuild.vscode-bazel"
-  }
+	"files.associations": {
+		"**/*.bazel": "starlark",
+		"**/*.bzl": "starlark",
+		"WORKSPACE": "starlark",
+		"*.inc": "cpp"
+	},
+	"editor.defaultFormatter": "xaver.clang-format",
+	"clang-format.executable": "${workspaceRoot}/bazel-ecsact-net/external/llvm_toolchain_llvm/bin/clang-format",
+	"C_Cpp.intelliSenseEngine": "Default",
+	"C_Cpp.intelliSenseEngineFallback": "Disabled",
+	"files.insertFinalNewline": true,
+	"files.eol": "\n",
+	"editor.insertSpaces": false,
+	"C_Cpp.autoAddFileAssociations": false,
+	"lldb.launch.sourceMap": {
+		"/proc/self/cwd": "${workspaceFolder}"
+	},
+	"[starlark]": {
+		"editor.formatOnSave": true,
+		"editor.defaultFormatter": "BazelBuild.vscode-bazel"
+	},
+	"[json]": {
+		"editor.formatOnSave": true,
+		"editor.defaultFormatter": "vscode.json-language-features"
+	},
+	"clangd.arguments": [
+		"--header-insertion=never",
+		"--compile-commands-dir=${workspaceFolder}/",
+		"--query-driver=/**/*"
+	],
+	"clangd.path": "${workspaceFolder}/external/llvm_toolchain_llvm/bin/clangd",
+	"clangd.onConfigChanged": "restart",
+	"clangd.checkUpdates": false,
+	"clangd.detectExtensionConflicts": true,
 }

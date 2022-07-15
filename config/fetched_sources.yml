@@ -1,4 +1,6 @@
 include:
+  ../include:
+    - ecsactsi_wasm/ecsactsi_wasm.h
   entt/config:
     - com_github_skypjack_entt/src/entt/config/config.h
     - com_github_skypjack_entt/src/entt/config/macro.h
@@ -129,6 +131,12 @@ include:
     - boost_mp11_files/include/boost/mp11/detail/mpl_common.hpp
 
 sources:
+  ../src:
+    - ecsactsi_wasm/ecsactsi_wasm.cc
+    - ecsactsi_wasm/wasm_ecsact_pointer_map.cc
+    - ecsactsi_wasm/wasm_ecsact_pointer_map.hh
+    - ecsactsi_wasm/wasm_ecsact_system_execution.cc
+    - ecsactsi_wasm/wasm_ecsact_system_execution.h
   ecsact/runtime-cpp:
     - ecsact/lib/runtime-cpp/registry.cc
   ecsact-entt-runtime:

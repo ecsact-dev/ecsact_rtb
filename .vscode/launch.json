@@ -2,24 +2,19 @@
   "version": "0.2.0",
   "configurations": [
 		{
-			"type": "cppvsdbg",
-			"request": "launch",
-			"name": "Windows",
-			"cwd": "${workspaceFolder}/bazel-bin/cli",
-			"program": "${workspaceFolder}/bazel-bin/cli/ecsact-rtb.exe",
-			"args": [
-				"${workspaceFolder}\\dummy.ecsact",
-				"--output=${workspaceFolder}\\tmp\\test_runtime.dll",
-				"--temp_dir=${workspaceFolder}\\tmp"
-			],
-			"preLaunchTask": "Build"
-		},
-		{
 			"type": "lldb",
 			"request": "launch",
-			"name": "Linux",
+			"name": "run //cli:ecsact-rtb",
 			"cwd": "${workspaceFolder}/bazel-bin/cli",
 			"program": "${workspaceFolder}/bazel-bin/cli/ecsact-rtb",
+			"windows": {
+				"program": "${workspaceFolder}/bazel-bin/cli/ecsact-rtb.exe",
+				"args": [
+					"${workspaceFolder}/dummy.ecsact",
+					"--output=${workspaceFolder}/tmp/test_runtime.dll",
+					"--temp_dir=${workspaceFolder}/tmp"
+				]
+			},
 			"args": [
 				"${workspaceFolder}/dummy.ecsact",
 				"--output=${workspaceFolder}/tmp/test_runtime.so",

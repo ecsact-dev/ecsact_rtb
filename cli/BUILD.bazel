@@ -2,20 +2,21 @@ load("@rules_cc//cc:defs.bzl", "cc_binary")
 load("//fetch_sources:index.bzl", "ecsact_rtb_runfiles")
 
 cc_binary(
-	name = "ecsact-rtb",
-	visibility = ["//visibility:public"],
-	srcs = ["cli.cc"],
-	deps = [
-		"//fetch_sources",
-		"//find_cpp_compiler",
-		"//generate_files",
-		"//runtime_compile",
-		"//util:managed_temp_directory",
+    name = "ecsact-rtb",
+    srcs = ["cli.cc"],
+    data = ecsact_rtb_runfiles,
+    visibility = ["//visibility:public"],
+    deps = [
+        "//fetch_sources",
+        "//find_cpp_compiler",
+        "//find_wasmer",
+        "//generate_files",
+        "//runtime_compile",
+        "//util:managed_temp_directory",
+        "@bazel_tools//tools/cpp/runfiles",
+        "@bazelregistry_docopt_cpp//:docopt",
         "@ecsact//parser2",
-		"@bazelregistry_docopt_cpp//:docopt",
-		"@bazel_tools//tools/cpp/runfiles",
-	],
-	data = ecsact_rtb_runfiles,
+    ],
 )
 
 filegroup(

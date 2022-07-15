@@ -25,15 +25,16 @@ Options:
 		Optionally supply a temporary directory to write the generated/fetched
 		source files. If one is not provided one will be generated.
 	--compiler_path=<compiler_path>
-		If a compiler is not specified by this option then clang in your PATH environment variable will be used
+		If a compiler is not specified by this option then clang in your PATH
+		environment variable will be used.
 )";
-
 
 int main(int argc, char* argv[]) {
 	using bazel::tools::cpp::runfiles::Runfiles;
 	using ecsact::rtb::generate_files;
 	using ecsact::rtb::fetch_sources;
 	using ecsact::rtb::find_cpp_compiler;
+	using ecsact::rtb::find_wasmer;
 	using ecsact::rtb::runtime_compile;
 	using ecsact::rtb::util::managed_temp_directory;
 
@@ -63,14 +64,14 @@ int main(int argc, char* argv[]) {
 #if defined(_WIN32)
 	if(output_path.extension() != ".dll") {
 		std::cerr
-			<< "Cross compilation not supported yet. Only allowd to build windows "
+			<< "Cross compilation not supported yet. Only allowed to build windows "
 			<< ".dll runtimes";
 		return 1;
 	}
 #elif defined(__linux__)
 	if(output_path.extension() != ".so") {
 		std::cerr
-			<< "Cross compilation not supported yet. Only allowd to build linux "
+			<< "Cross compilation not supported yet. Only allowed to build linux "
 			<< ".so runtimes";
 		return 1;
 	}
@@ -111,6 +112,9 @@ int main(int argc, char* argv[]) {
 		compiler_path = std::nullopt;
 	}
 
+	auto working_directory = temp_dir / "work";
+	fs::create_directories(working_directory);
+
 	runtime_compile({
 		.generated_files = generate_files({
 			.temp_dir = temp_dir,
@@ -121,10 +125,13 @@ int main(int argc, char* argv[]) {
 			.runfiles = runfiles,
 		}),
 		.cpp_compiler = find_cpp_compiler({
+			.working_directory = working_directory,
 			.path = compiler_path,
+			.runfiles = runfiles,
 		}),
+		.wasmer = find_wasmer({}),
 		.output_path = output_path,
-		.working_directory = temp_dir / "work",
+		.working_directory = working_directory,
 		.main_package = (*results.main_package).get(),
 	});
 

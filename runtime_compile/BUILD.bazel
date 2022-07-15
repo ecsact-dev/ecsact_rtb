@@ -2,20 +2,22 @@ load("@rules_cc//cc:defs.bzl", "cc_library")
 
 cc_library(
     name = "runtime_compile",
-    visibility = ["//visibility:public"],
-    hdrs = ["runtime_compile.hh"],
     srcs = ["runtime_compile.cc"],
+    hdrs = ["runtime_compile.hh"],
+    visibility = ["//visibility:public"],
     deps = [
-        "//generate_files",
         "//fetch_sources",
         "//find_cpp_compiler",
+        "//find_wasmer",
+        "//generate_files",
         "@boost//libs/dll",
         "@boost//libs/process",
         "@ecsact//lang-support/cc",
         "@ecsact//lib/runtime/core",
         "@ecsact//lib/runtime/dynamic",
-        "@ecsact//lib/runtime/static",
         "@ecsact//lib/runtime/meta",
         "@ecsact//lib/runtime/serialize",
+        "@ecsact//lib/runtime/static",
+        "@magic_enum",
     ],
 )

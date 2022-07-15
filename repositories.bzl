@@ -1,8 +1,8 @@
-load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive", "http_file")
 load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
 load("@bazel_tools//tools/build_defs/repo:utils.bzl", "maybe")
 
-_export_all_build_file_content = """
+_EXPORT_ALL_BUILD_FILE_CONTENT = """
 package(default_visibility = ["//visibility:public"])
 filegroup(
     name = "files",
@@ -10,7 +10,28 @@ filegroup(
 )
 """
 
+_NLOHMANN_JSON_BUILD_FILE = """
+load("@rules_cc//cc:defs.bzl", "cc_library")
+
+cc_library(
+    name = "json",
+    visibility = ["//visibility:public"],
+    includes = ["include"],
+    hdrs = glob(["include/**/*.hpp"]),
+    strip_include_prefix = "include",
+)
+"""
+
 def ecsact_rtb_repositories():
+    maybe(
+        http_file,
+        name = "vswhere",
+        downloaded_file_path = "vswhere.exe",
+        executable = True,
+        sha256 = "261d281ce9c95c3e46900e67ace8c3518dd7b2596774f63c92e2bb1fbce71d4c",
+        urls = ["https://github.com/microsoft/vswhere/releases/download/3.0.3/vswhere.exe"],
+    )
+
     maybe(
         git_repository,
         name = "com_github_biojppm_c4core",
@@ -75,7 +96,7 @@ def ecsact_rtb_repositories():
     maybe(
         http_archive,
         name = "boost_mp11_files",
-        build_file_content = _export_all_build_file_content,
+        build_file_content = _EXPORT_ALL_BUILD_FILE_CONTENT,
         sha256 = "d3f8ef486f2001c24eb0bc766b838fcce65dbb4edd099f136bf1ac4b51469f7c",
         strip_prefix = "mp11-boost-1.79.0",
         url = "https://github.com/boostorg/mp11/archive/refs/tags/boost-1.79.0.tar.gz",
@@ -87,4 +108,28 @@ def ecsact_rtb_repositories():
         commit = "9cb97ce962718b3c92dac91a7ac9dfc61b4bd420",
         remote = "git@github.com:seaube/ecsact.git",
         shallow_since = "1656433721 -0400",
+    )
+
+    maybe(
+        git_repository,
+        name = "ecsactsi_wasm",
+        remote = "git@github.com:seaube/ecsactsi-wasm.git",
+        commit = "5eaca7e00ea7858309aaf32a9bc24e0e8c8d0a41",
+        shallow_since = "1657870050 -0700",
+    )
+
+    maybe(
+        http_archive,
+        name = "nlohmann_json",
+        url = "https://github.com/nlohmann/json/releases/download/v3.10.5/include.zip",
+        sha256 = "b94997df68856753b72f0d7a3703b7d484d4745c567f3584ef97c96c25a5798e",
+        build_file_content = _NLOHMANN_JSON_BUILD_FILE,
+    )
+
+    maybe(
+        http_archive,
+        name = "magic_enum",
+        sha256 = "5e7680e877dd4cf68d9d0c0e3c2a683b432a9ba84fc1993c4da3de70db894c3c",
+        strip_prefix = "magic_enum-0.8.0",
+        urls = ["https://github.com/Neargye/magic_enum/archive/refs/tags/v0.8.0.tar.gz"],
     )

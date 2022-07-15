@@ -1,3 +1,6 @@
 /tmp
 /bazel-*
 /user.bazelrc
+/external
+/compile_commands.json
+/.cache/
