@@ -105,9 +105,9 @@ def ecsact_rtb_repositories():
     maybe(
         git_repository,
         name = "ecsact",
-        commit = "9cb97ce962718b3c92dac91a7ac9dfc61b4bd420",
+        commit = "1b45848951ae70a902f556c2df5f5fb1d7fd45e2",
         remote = "git@github.com:seaube/ecsact.git",
-        shallow_since = "1656433721 -0400",
+        shallow_since = "1657919236 -0700",
     )
 
     maybe(
