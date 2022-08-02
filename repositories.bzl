@@ -86,11 +86,11 @@ def ecsact_rtb_repositories():
     )
 
     maybe(
-        git_repository,
+        http_archive,
         name = "ecsact_entt",
-        commit = "47fdb9612d2f1273592aeb3434c2b3110662c9b7",
-        remote = "git@github.com:seaube/ecsact-entt.git",
-        shallow_since = "1656435051 -0700",
+        sha256 = "4c92744ed38b4e4adf22fef5fef87b37fa1c400e8528f92d212ffa302d529b78",
+        strip_prefix = "ecsact-entt-47fdb9612d2f1273592aeb3434c2b3110662c9b7",
+        urls = ["https://github.com/seaube/ecsact-entt/archive/47fdb9612d2f1273592aeb3434c2b3110662c9b7.zip"],
     )
 
     maybe(
@@ -103,19 +103,19 @@ def ecsact_rtb_repositories():
     )
 
     maybe(
-        git_repository,
+        http_archive,
         name = "ecsact",
-        commit = "1b45848951ae70a902f556c2df5f5fb1d7fd45e2",
-        remote = "git@github.com:seaube/ecsact.git",
-        shallow_since = "1657919236 -0700",
+        sha256 = "54158e7e750b9f905696a0d0f170fb58fc656e4aa98456e6f9cea5add75ddf53",
+        strip_prefix = "ecsact-f7423be0c1e729ca54a2f8cfd88977da47cde8b5",
+        urls = ["https://github.com/seaube/ecsact/archive/f7423be0c1e729ca54a2f8cfd88977da47cde8b5.zip"],
     )
 
     maybe(
-        git_repository,
+        http_archive,
         name = "ecsactsi_wasm",
-        remote = "git@github.com:seaube/ecsactsi-wasm.git",
-        commit = "5eaca7e00ea7858309aaf32a9bc24e0e8c8d0a41",
-        shallow_since = "1657870050 -0700",
+        sha256 = "51f9c51c26732f16147b6f762ca1461d8305bf798c9a7df4ba282fbf6c7d12fb",
+        strip_prefix = "ecsactsi-wasm-5eaca7e00ea7858309aaf32a9bc24e0e8c8d0a41",
+        urls = ["https://github.com/seaube/ecsactsi-wasm/archive/5eaca7e00ea7858309aaf32a9bc24e0e8c8d0a41.zip"],
     )
 
     maybe(
