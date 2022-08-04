@@ -10,6 +10,7 @@
 #include "generate_files/generate_files.hh"
 #include "runtime_compile/runtime_compile.hh"
 #include "util/managed_temp_directory.hh"
+#include "executable_path/executable_path.hh"
 
 namespace fs = std::filesystem;
 
@@ -31,6 +32,7 @@ Options:
 
 int main(int argc, char* argv[]) {
 	using bazel::tools::cpp::runfiles::Runfiles;
+	using executable_path::executable_path;
 	using ecsact::rtb::generate_files;
 	using ecsact::rtb::fetch_sources;
 	using ecsact::rtb::find_cpp_compiler;
@@ -39,7 +41,12 @@ int main(int argc, char* argv[]) {
 	using ecsact::rtb::util::managed_temp_directory;
 
 	std::string runfiles_err;
-	auto runfiles = Runfiles::Create(argv[0], &runfiles_err);
+	auto argv0 = executable_path().string();
+	if(argv0.empty()) {
+		argv0 = std::string(argv[0]);
+	}
+
+	auto runfiles = Runfiles::Create(argv0, &runfiles_err);
 	if(runfiles == nullptr) {
 		std::cerr << "[Warning] Cannot load runfiles: " << runfiles_err << "\n";
 	}
