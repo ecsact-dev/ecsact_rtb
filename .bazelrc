@@ -16,4 +16,7 @@ build:linux --host_linkopt=-lstdc++
 build:linux --cxxopt=-std=c++20
 build:linux --host_cxxopt=-std=c++20
 
+common:ci --announce_rc
+common:ci --disk_cache=~/.cache/bazel-disk-cache
+
 try-import %workspace%/user.bazelrc

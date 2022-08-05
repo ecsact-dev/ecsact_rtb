@@ -10,14 +10,25 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build-linux:
-    runs-on: [self-hosted, linux]
-    steps:
-      - uses: actions/checkout@v3
-      - run: bazel build //...
-
   build-windows:
-    runs-on: [self-hosted, windows]
+    runs-on: windows-latest
     steps:
+      - uses: actions/cache@v3
+        with:
+          path: |
+            /Users/runneradmin/AppData/Local/bazelisk
+            /Users/runneradmin/.cache/bazel-disk-cache
+          key: ${{runner.os}}-bazel-cache
       - uses: actions/checkout@v2
-      - run: bazel build //...
+      - run: bazel build --config=ci //...
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cache/bazelisk
+            ~/.cache/bazel-disk-cache
+          key: ${{runner.os}}-bazel-cache
+      - uses: actions/checkout@v3
+      - run: bazel build --config=ci //...
