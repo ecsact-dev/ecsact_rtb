@@ -1,7 +1,6 @@
 #pragma once
 
 #include <filesystem>
-#include <ecsact/parser2.hh>
 
 #include "fetch_sources/fetch_sources.hh"
 #include "find_cpp_compiler/find_cpp_compiler.hh"
@@ -17,10 +16,8 @@ namespace ecsact::rtb {
 			result::find_wasmer wasmer;
 			std::filesystem::path output_path;
 			std::filesystem::path working_directory;
-			const ecsact::package& main_package;
 		};
 	}
-
 
 	void runtime_compile
 		( const options::runtime_compile& options

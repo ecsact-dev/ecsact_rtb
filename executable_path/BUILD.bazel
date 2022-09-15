@@ -1,4 +1,5 @@
 load("@rules_cc//cc:defs.bzl", "cc_library")
+load("//bazel:copts.bzl", "copts")
 
 cc_library(
     name = "executable_path",
@@ -7,6 +8,7 @@ cc_library(
         "//conditions:default": ["unix_executable_path.cc"],
     }),
     hdrs = ["executable_path.hh"],
+    copts = copts,
     linkopts = select({
         "@platforms//os:windows": ["-DEFAULTLIB:Kernel32"],
         "//conditions:default": [],

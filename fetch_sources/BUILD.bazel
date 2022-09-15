@@ -1,9 +1,11 @@
 load("@rules_cc//cc:defs.bzl", "cc_library")
+load("//bazel:copts.bzl", "copts")
 
 cc_library(
     name = "fetch_sources",
     srcs = ["fetch_sources.cc"],
     hdrs = ["fetch_sources.hh"],
+    copts = copts,
     visibility = ["//visibility:public"],
     deps = [
         "@bazel_tools//tools/cpp/runfiles",

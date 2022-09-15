@@ -5,12 +5,12 @@
 #include <iostream>
 #include <boost/dll.hpp>
 #include <boost/process.hpp>
-#include <ecsact/lang-support/lang-cc.hh>
-#include <ecsact/runtime/core.h>
-#include <ecsact/runtime/dynamic.h>
-#include <ecsact/runtime/static.h>
-#include <ecsact/runtime/meta.h>
-#include <ecsact/runtime/serialize.h>
+#include "ecsact/lang-support/lang-cc.hh"
+#include "ecsact/runtime/core.h"
+#include "ecsact/runtime/dynamic.h"
+#include "ecsact/runtime/static.h"
+#include "ecsact/runtime/meta.h"
+#include "ecsact/runtime/serialize.h"
 #include "magic_enum.hpp"
 
 namespace bp = boost::process;
@@ -30,7 +30,7 @@ static void msvc_runtime_compile
 	( const ecsact::rtb::options::runtime_compile& options
 	)
 {
-	using ecsact::lang_cc::to_cpp_identifier;
+	using ecsact::cc_lang_support::cpp_identifier;
 
 	const fs::path cl = options.cpp_compiler.compiler_path;
 	const fs::path wasmer = options.wasmer.wasmer_path;
@@ -101,19 +101,19 @@ static void msvc_runtime_compile
 		compile_proc_args.back() = "/I" + compile_proc_args.back();
 	}
 
-	auto meta_header = options.main_package.source_file_path.filename();
-	meta_header.replace_extension(
-		meta_header.extension().string() + ".meta.hh"
-	);
+	// auto meta_header = options.main_package.source_file_path.filename();
+	// meta_header.replace_extension(
+	// 	meta_header.extension().string() + ".meta.hh"
+	// );
 
-	compile_proc_args.push_back(
-		"/DECSACT_ENTT_RUNTIME_USER_HEADER=\"" + meta_header.string() + "\""
-	);
+	// compile_proc_args.push_back(
+	// 	"/DECSACT_ENTT_RUNTIME_USER_HEADER=\"" + meta_header.string() + "\""
+	// );
 
-	compile_proc_args.push_back(
-		"/DECSACT_ENTT_RUNTIME_PACKAGE=::" +
-		to_cpp_identifier(options.main_package.name) + "::package"
-	);
+	// compile_proc_args.push_back(
+	// 	"/DECSACT_ENTT_RUNTIME_PACKAGE=::" +
+	// 	to_cpp_identifier(options.main_package.name) + "::package"
+	// );
 	compile_proc_args.push_back("/DECSACT_CORE_API_EXPORT");
 	compile_proc_args.push_back("/DECSACT_DYNAMIC_API_EXPORT");
 	compile_proc_args.push_back("/DECSACT_STATIC_API_EXPORT");
@@ -185,7 +185,7 @@ static void clang_runtime_compile
 	( const ecsact::rtb::options::runtime_compile& options
 	)
 {
-	using ecsact::lang_cc::to_cpp_identifier;
+	using ecsact::cc_lang_support::cpp_identifier;
 
 	if(fs::exists(options.working_directory)) {
 		std::cout << "Removing old working directory ...\n";
@@ -215,19 +215,19 @@ static void clang_runtime_compile
 		options.working_directory
 	).generic_string());
 
-	auto meta_header = options.main_package.source_file_path.filename();
-	meta_header.replace_extension(
-		meta_header.extension().string() + ".meta.hh"
-	);
+	// auto meta_header = options.main_package.source_file_path.filename();
+	// meta_header.replace_extension(
+	// 	meta_header.extension().string() + ".meta.hh"
+	// );
 
-	compile_proc_args.push_back(
-		"-DECSACT_ENTT_RUNTIME_USER_HEADER=\"" + meta_header.string() + "\""
-	);
+	// compile_proc_args.push_back(
+	// 	"-DECSACT_ENTT_RUNTIME_USER_HEADER=\"" + meta_header.string() + "\""
+	// );
 
-	compile_proc_args.push_back(
-		"-DECSACT_ENTT_RUNTIME_PACKAGE=::" +
-		to_cpp_identifier(options.main_package.name) + "::package"
-	);
+	// compile_proc_args.push_back(
+	// 	"-DECSACT_ENTT_RUNTIME_PACKAGE=::" +
+	// 	to_cpp_identifier(options.main_package.name) + "::package"
+	// );
 	compile_proc_args.push_back("-DECSACT_CORE_API_EXPORT");
 	compile_proc_args.push_back("-DECSACT_DYNAMIC_API_EXPORT");
 	compile_proc_args.push_back("-DECSACT_STATIC_API_EXPORT");

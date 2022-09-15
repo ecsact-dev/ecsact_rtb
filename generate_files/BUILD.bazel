@@ -1,16 +1,12 @@
 load("@rules_cc//cc:defs.bzl", "cc_library")
+load("//bazel:copts.bzl", "copts")
 
 cc_library(
     name = "generate_files",
     srcs = ["generate_files.cc"],
     hdrs = ["generate_files.hh"],
+    copts = copts,
     visibility = ["//visibility:public"],
     deps = [
-        "@ecsact//generator/cpp/header:lib",
-        "@ecsact//generator/cpp_systems/header:lib",
-        "@ecsact//generator/meta_cc:lib",
-        "@ecsact//generator/packed_serialize_runtime:lib",
-        "@ecsact//generator/static_runtime:lib",
-        "@ecsact//generator/systems/header:lib",
     ],
 )

@@ -24,13 +24,5 @@
 		"editor.formatOnSave": true,
 		"editor.defaultFormatter": "vscode.json-language-features"
 	},
-	"clangd.arguments": [
-		"--header-insertion=never",
-		"--compile-commands-dir=${workspaceFolder}/",
-		"--query-driver=/**/*"
-	],
-	"clangd.path": "${workspaceFolder}/external/llvm_toolchain_llvm/bin/clangd",
-	"clangd.onConfigChanged": "restart",
-	"clangd.checkUpdates": false,
-	"clangd.detectExtensionConflicts": true,
+	"C_Cpp.default.compileCommands": "${workspaceFolder}/compile_commands.json",
 }

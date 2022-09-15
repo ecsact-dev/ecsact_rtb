@@ -1,7 +1,6 @@
 #pragma once
 
 #include <filesystem>
-#include <ecsact/parser2.hh>
 
 namespace ecsact::rtb {
 	namespace options {
@@ -10,7 +9,11 @@ namespace ecsact::rtb {
 			 * Temporary directory generate_files may write to.
 			 */
 			std::filesystem::path temp_dir;
-			const ecsact::parse_results& parse_results;
+
+			/**
+			 * Ecsact file paths used to generate files
+			 */
+			std::vector<std::filesystem::path> ecsact_file_paths;
 		};
 	}
 
