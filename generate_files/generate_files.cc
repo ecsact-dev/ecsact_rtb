@@ -3,14 +3,18 @@
 #include <filesystem>
 #include <iostream>
 #include <fstream>
+#include <boost/process.hpp>
 
 namespace fs = std::filesystem;
+namespace bp = boost::process;
 using namespace ecsact::rtb;
 
 result::generate_files ecsact::rtb::generate_files
 	( const options::generate_files& options
 	)
 {
+	using namespace std::string_literals;
+
 	auto base_dir = options.temp_dir / "generated_files";
 	if(fs::exists(base_dir)) {
 		std::cout << "Removing old generated files...\n";
@@ -25,7 +29,27 @@ result::generate_files ecsact::rtb::generate_files
 	std::vector<fs::path> header_paths;
 	std::vector<fs::path> source_file_paths;
 
-	// TODO(zaucy): Invoke esact codegen cli
+	std::vector<std::string> codegen_proc_args{
+		"--plugin=cpp_header"s,
+		"--plugin=cpp_meta_header"s,
+		"--plugin=cpp_systems_header"s,
+		"--plugin=systems_header"s,
+		"-outdir="s + include_dir.string(),
+	};
+	codegen_proc_args.reserve(
+		codegen_proc_args.size() + options.ecsact_file_paths.size()
+	);
+
+	for(auto& p : options.ecsact_file_paths) {
+		codegen_proc_args.push_back(p.string());
+	}
+
+	bp::child codegen_proc(
+		bp::exe(options.ecsact_cli_path.string()),
+		bp::args(codegen_proc_args)
+	);
+
+	codegen_proc.wait();
 
 	return {
 		.include_dir = include_dir,

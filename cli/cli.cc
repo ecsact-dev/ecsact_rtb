@@ -6,11 +6,12 @@
 #include "tools/cpp/runfiles/runfiles.h" // bazel runfiles
 
 #include "fetch_sources/fetch_sources.hh"
-#include "find_cpp_compiler/find_cpp_compiler.hh"
+#include "util/managed_temp_directory.hh"
 #include "generate_files/generate_files.hh"
 #include "runtime_compile/runtime_compile.hh"
-#include "util/managed_temp_directory.hh"
+#include "find_ecsact_cli/find_ecsact_cli.hh"
 #include "executable_path/executable_path.hh"
+#include "find_cpp_compiler/find_cpp_compiler.hh"
 
 namespace fs = std::filesystem;
 
@@ -31,13 +32,14 @@ Options:
 )";
 
 int main(int argc, char* argv[]) {
-	using bazel::tools::cpp::runfiles::Runfiles;
-	using executable_path::executable_path;
-	using ecsact::rtb::generate_files;
-	using ecsact::rtb::fetch_sources;
-	using ecsact::rtb::find_cpp_compiler;
 	using ecsact::rtb::find_wasmer;
+	using ecsact::rtb::fetch_sources;
+	using ecsact::rtb::generate_files;
+	using ecsact::rtb::find_ecsact_cli;
 	using ecsact::rtb::runtime_compile;
+	using ecsact::rtb::find_cpp_compiler;
+	using executable_path::executable_path;
+	using bazel::tools::cpp::runfiles::Runfiles;
 	using ecsact::rtb::util::managed_temp_directory;
 
 	std::string runfiles_err;
@@ -105,12 +107,20 @@ int main(int argc, char* argv[]) {
 		compiler_path = std::nullopt;
 	}
 
+	auto ecsact_cli_path = find_ecsact_cli({});
+
+	if(ecsact_cli_path.ecsact_cli_path.empty()) {
+		std::cerr << "Could not find ecsact CLI\n";
+		return 1;
+	}
+
 	auto working_directory = temp_dir / "work";
 	fs::create_directories(working_directory);
 
 	runtime_compile({
 		.generated_files = generate_files({
 			.temp_dir = temp_dir,
+			.ecsact_cli_path = ecsact_cli_path.ecsact_cli_path,
 			.ecsact_file_paths = ecsact_file_paths,
 		}),
 		.fetched_sources = fetch_sources({

@@ -2,12 +2,13 @@
   "version": "0.2.0",
   "configurations": [
 		{
-			"type": "lldb",
+			"type": "cppdbg",
 			"request": "launch",
 			"name": "run //cli:ecsact-rtb",
 			"cwd": "${workspaceFolder}/bazel-bin/cli",
 			"program": "${workspaceFolder}/bazel-bin/cli/ecsact-rtb",
 			"windows": {
+				"type": "cppvsdbg",
 				"program": "${workspaceFolder}/bazel-bin/cli/ecsact-rtb.exe",
 				"args": [
 					"${workspaceFolder}/dummy.ecsact",
@@ -20,7 +21,10 @@
 				"--output=${workspaceFolder}/tmp/test_runtime.so",
 				"--temp_dir=${workspaceFolder}/tmp"
 			],
-			"preLaunchTask": "Build"
+			"preLaunchTask": "Build",
+			"sourceFileMap": {
+				"E:/.cache/bazel/output_base/execroot/ecsact_rtb": "${workspaceFolder}"
+			}
 		}
 	]
 }

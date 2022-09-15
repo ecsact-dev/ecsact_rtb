@@ -11,6 +11,12 @@ namespace ecsact::rtb {
 			std::filesystem::path temp_dir;
 
 			/**
+			 * Path to Ecsact CLI from the Ecsact SDK. This is used to generate the 
+			 * files.
+			 */
+			std::filesystem::path ecsact_cli_path;
+
+			/**
 			 * Ecsact file paths used to generate files
 			 */
 			std::vector<std::filesystem::path> ecsact_file_paths;

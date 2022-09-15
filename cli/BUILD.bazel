@@ -12,6 +12,7 @@ cc_binary(
         "//executable_path",
         "//fetch_sources",
         "//find_cpp_compiler",
+        "//find_ecsact_cli",
         "//find_wasmer",
         "//generate_files",
         "//runtime_compile",
