@@ -110,7 +110,7 @@ int main(int argc, char* argv[]) {
 	auto ecsact_cli_path = find_ecsact_cli({});
 
 	if(ecsact_cli_path.ecsact_cli_path.empty()) {
-		std::cerr << "Could not find ecsact CLI\n";
+		std::cerr << "[ERROR] Could not find ecsact CLI\n";
 		return 1;
 	}
 

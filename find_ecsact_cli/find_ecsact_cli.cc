@@ -34,7 +34,7 @@ result::find_ecsact_cli ecsact::rtb::find_ecsact_cli
 	}
 
 	if(!path.empty()) {
-		std::cout << "[ERROR] Using Ecsact CLI: " << path << "\n";
+		std::cout << "Using Ecsact CLI: " << path << "\n";
 	}
 
 	return {
