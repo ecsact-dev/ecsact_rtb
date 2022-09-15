@@ -1,6 +1,5 @@
-# ecsact-rtb
-Ecsact runtime builder
+# Ecasct Runtime Builder
+
+Command line utility for creating Ecsact runtimes based on your ecsact files.
 
 :warning: **In heavy development** :warning:
-
-NOTE: This repository is being moved to https://github.com/ecsact-dev soon. Once that happens an open source license will be added to the repository.
