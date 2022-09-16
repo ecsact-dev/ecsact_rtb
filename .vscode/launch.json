@@ -21,10 +21,7 @@
 				"--output=${workspaceFolder}/tmp/test_runtime.so",
 				"--temp_dir=${workspaceFolder}/tmp"
 			],
-			"preLaunchTask": "Build",
-			"sourceFileMap": {
-				"E:/.cache/bazel/output_base/execroot/ecsact_rtb": "${workspaceFolder}"
-			}
+			"preLaunchTask": "Build"
 		}
 	]
 }
