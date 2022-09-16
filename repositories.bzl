@@ -115,10 +115,11 @@ def ecsact_rtb_repositories():
     )
 
     http_archive(
-        name = "ecsact_lang_cpp",
-        sha256 = "7a9998065ab78fcbf4355d82ee13c137c475639592d649cbe607386244c89cf7",
-        strip_prefix = "ecsact_lang_cpp-b62b41856d04990adef0f839a754a86e398af121",
-        url = "https://github.com/ecsact-dev/ecsact_lang_cpp/archive/b62b41856d04990adef0f839a754a86e398af121.zip",
+        name = "boost_mp11_files",
+        build_file_content = _EXPORT_ALL_BUILD_FILE_CONTENT,
+        sha256 = "d3f8ef486f2001c24eb0bc766b838fcce65dbb4edd099f136bf1ac4b51469f7c",
+        strip_prefix = "mp11-boost-1.79.0",
+        url = "https://github.com/boostorg/mp11/archive/refs/tags/boost-1.79.0.tar.gz",
     )
 
     http_archive(
