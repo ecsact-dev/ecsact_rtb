@@ -23,13 +23,22 @@ result::find_ecsact_cli ecsact::rtb::find_ecsact_cli
 	search_exe += ".exe";
 #endif
 
-	auto relative_cli = executable_path().parent_path() / search_exe;
-	if(fs::exists(relative_cli)) {
-		path = relative_cli.string();
+	fs::path ecsact_sdk_path;
+
+	if(options.esact_sdk_path) {
+		ecsact_sdk_path = *options.esact_sdk_path;
+		ecsact_sdk_path = fs::weakly_canonical(ecsact_sdk_path);
 	} else {
-		auto ecsact_rtb_from_path = bp::search_path(search_exe);
-		if(!ecsact_rtb_from_path.empty()) {
-			path = ecsact_rtb_from_path.string();
+		ecsact_sdk_path = executable_path().parent_path().parent_path();
+	}
+
+	auto sdk_ecsact_exe = ecsact_sdk_path / "bin" / search_exe;
+	if(fs::exists(sdk_ecsact_exe)) {
+		path = sdk_ecsact_exe.string();
+	} else {
+		auto ecsact_cli_from_path = bp::search_path(search_exe);
+		if(!ecsact_cli_from_path.empty()) {
+			path = ecsact_cli_from_path.string();
 		}
 	}
 

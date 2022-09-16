@@ -13,7 +13,8 @@
 				"args": [
 					"${workspaceFolder}/dummy.ecsact",
 					"--output=${workspaceFolder}/tmp/test_runtime.dll",
-					"--temp_dir=${workspaceFolder}/tmp"
+					"--temp_dir=${workspaceFolder}/tmp",
+					"--ecsact_sdk=${workspaceFolder}/../ecsact_sdk/dist"
 				]
 			},
 			"args": [

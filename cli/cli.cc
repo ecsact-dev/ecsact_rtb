@@ -18,7 +18,7 @@ namespace fs = std::filesystem;
 constexpr auto USAGE = R"(
 Usage:
 	ecsact_rtb <ecsact_file>... --output=<output> [--temp_dir=<temp_dir>] 
-		[--compiler_path=<compiler_path>]
+		[--compiler_path=<compiler_path>] [--ecsact_sdk=<path>]
 
 Options:
 	--output=<output>
@@ -29,6 +29,9 @@ Options:
 	--compiler_path=<compiler_path>
 		If a compiler is not specified by this option then clang in your PATH
 		environment variable will be used.
+	--ecsact_sdk=<path>
+		Path to Ecsact SDK installation. Defaults to searching your PATH environment
+		variable for the Ecsact CLI and using it's install directory.
 )";
 
 int main(int argc, char* argv[]) {
@@ -91,7 +94,9 @@ int main(int argc, char* argv[]) {
 
 	std::variant<fs::path, managed_temp_directory> temp_dir_v;
 	if(args["--temp_dir"].isString()) {
-		temp_dir_v = fs::path{args["--temp_dir"].asString()};
+		auto temp_dir_from_args = fs::path{args["--temp_dir"].asString()};
+		temp_dir_from_args = fs::weakly_canonical(temp_dir_from_args);
+		temp_dir_v = temp_dir_from_args;
 	} else {
 		temp_dir_v.emplace<managed_temp_directory>();
 	}
@@ -107,7 +112,14 @@ int main(int argc, char* argv[]) {
 		compiler_path = std::nullopt;
 	}
 
-	auto ecsact_cli_path = find_ecsact_cli({});
+	std::optional<std::filesystem::path> esact_sdk_path;
+	if(args["--ecsact_sdk"].isString()) {
+		esact_sdk_path = args["--ecsact_sdk"].asString();
+	}
+
+	auto ecsact_cli_path = find_ecsact_cli({
+		.esact_sdk_path = esact_sdk_path,
+	});
 
 	if(ecsact_cli_path.ecsact_cli_path.empty()) {
 		std::cerr << "[ERROR] Could not find ecsact CLI\n";

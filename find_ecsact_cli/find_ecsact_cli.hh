@@ -8,6 +8,7 @@
 namespace ecsact::rtb {
 	namespace options {
 		struct find_ecsact_cli {
+			std::optional<std::filesystem::path> esact_sdk_path;
 		};
 	}
 
