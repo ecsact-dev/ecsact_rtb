@@ -93,10 +93,10 @@ def ecsact_rtb_repositories():
     )
 
     http_archive(
-        name = "ecsact_entt",
-        sha256 = "4c92744ed38b4e4adf22fef5fef87b37fa1c400e8528f92d212ffa302d529b78",
-        strip_prefix = "ecsact-entt-47fdb9612d2f1273592aeb3434c2b3110662c9b7",
-        urls = ["https://github.com/seaube/ecsact-entt/archive/47fdb9612d2f1273592aeb3434c2b3110662c9b7.zip"],
+        name = "boost",
+        sha256 = "4a79c389add7e3d54d0e12c83098d471d24536ba2d6b8593d3a95f151f25eebb",
+        strip_prefix = "boost-da62319c330d81ef032517cbe13b6f35d97387cb",
+        urls = ["https://github.com/bazelboost/boost/archive/da62319c330d81ef032517cbe13b6f35d97387cb.zip"],
     )
 
     http_archive(
