@@ -1,5 +1,5 @@
 main package dummy;
 
 component DummyComponent {
-  int32 n;
+  i32 n;
 }

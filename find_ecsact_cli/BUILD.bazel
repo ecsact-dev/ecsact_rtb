@@ -2,12 +2,13 @@ load("@rules_cc//cc:defs.bzl", "cc_library")
 load("//bazel:copts.bzl", "copts")
 
 cc_library(
-    name = "generate_files",
-    srcs = ["generate_files.cc"],
-    hdrs = ["generate_files.hh"],
+    name = "find_ecsact_cli",
+    srcs = ["find_ecsact_cli.cc"],
+    hdrs = ["find_ecsact_cli.hh"],
     copts = copts,
     visibility = ["//visibility:public"],
     deps = [
+        "//executable_path",
         "@boost//libs/process",
     ],
 )

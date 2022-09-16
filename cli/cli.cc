@@ -1,22 +1,23 @@
 #include <filesystem>
 #include <iostream>
+#include <variant>
 #include <memory>
 #include "docopt.h"
-#include <ecsact/parser2.hh>
 #include "tools/cpp/runfiles/runfiles.h" // bazel runfiles
 
 #include "fetch_sources/fetch_sources.hh"
-#include "find_cpp_compiler/find_cpp_compiler.hh"
+#include "util/managed_temp_directory.hh"
 #include "generate_files/generate_files.hh"
 #include "runtime_compile/runtime_compile.hh"
-#include "util/managed_temp_directory.hh"
+#include "find_ecsact_cli/find_ecsact_cli.hh"
 #include "executable_path/executable_path.hh"
+#include "find_cpp_compiler/find_cpp_compiler.hh"
 
 namespace fs = std::filesystem;
 
 constexpr auto USAGE = R"(
 Usage:
-	ecsact-rtb <ecsact_file>... --output=<output> [--temp_dir=<temp_dir>] 
+	ecsact_rtb <ecsact_file>... --output=<output> [--temp_dir=<temp_dir>] 
 		[--compiler_path=<compiler_path>]
 
 Options:
@@ -31,13 +32,14 @@ Options:
 )";
 
 int main(int argc, char* argv[]) {
-	using bazel::tools::cpp::runfiles::Runfiles;
-	using executable_path::executable_path;
-	using ecsact::rtb::generate_files;
-	using ecsact::rtb::fetch_sources;
-	using ecsact::rtb::find_cpp_compiler;
 	using ecsact::rtb::find_wasmer;
+	using ecsact::rtb::fetch_sources;
+	using ecsact::rtb::generate_files;
+	using ecsact::rtb::find_ecsact_cli;
 	using ecsact::rtb::runtime_compile;
+	using ecsact::rtb::find_cpp_compiler;
+	using executable_path::executable_path;
+	using bazel::tools::cpp::runfiles::Runfiles;
 	using ecsact::rtb::util::managed_temp_directory;
 
 	std::string runfiles_err;
@@ -53,19 +55,20 @@ int main(int argc, char* argv[]) {
 
 	auto args = docopt::docopt(USAGE, {argv + 1, argv + argc});
 
-	ecsact::parse_options parse_options;
+	std::vector<fs::path> ecsact_file_paths;
+	{
+		auto files = args["<ecsact_file>"].asStringList();
+		for(auto file : files) {
+			fs::path file_path(file);
+			if(!fs::exists(file_path)) {
+				std::cerr << "[ERR] File doesn't exist: " << file_path.string() << "\n";
+				return 1;
+			}
 
-	auto files = args["<ecsact_file>"].asStringList();
-	for(auto file : files) {
-		fs::path file_path(file);
-		if(!fs::exists(file_path)) {
-			std::cerr << "[ERR] File doesn't exist: " << file_path.string() << "\n";
-			return 1;
+			ecsact_file_paths.push_back(file_path);
 		}
-
-		parse_options.source_files.push_back(file_path);
 	}
-		
+
 	auto output_path = fs::absolute(fs::path{args["--output"].asString()});
 
 #if defined(_WIN32)
@@ -86,21 +89,6 @@ int main(int argc, char* argv[]) {
 #	error unsupported platform
 #endif
 
-	ecsact::parse_results results;
-	ecsact::parse_error err = ecsact::parse(parse_options, results);
-
-	if(err) {
-		std::cerr << "[Parse Error] " << err.message() << "\n";
-		return 2;
-	}
-
-	if(!results.main_package) {
-		std::cerr
-			<< "[Err] Missing main package. One ecsact file must be marked as the "
-			<< "'main' package in order to build a runtime.";
-		return 3;
-	}
-
 	std::variant<fs::path, managed_temp_directory> temp_dir_v;
 	if(args["--temp_dir"].isString()) {
 		temp_dir_v = fs::path{args["--temp_dir"].asString()};
@@ -119,13 +107,21 @@ int main(int argc, char* argv[]) {
 		compiler_path = std::nullopt;
 	}
 
+	auto ecsact_cli_path = find_ecsact_cli({});
+
+	if(ecsact_cli_path.ecsact_cli_path.empty()) {
+		std::cerr << "[ERROR] Could not find ecsact CLI\n";
+		return 1;
+	}
+
 	auto working_directory = temp_dir / "work";
 	fs::create_directories(working_directory);
 
 	runtime_compile({
 		.generated_files = generate_files({
 			.temp_dir = temp_dir,
-			.parse_results = results,
+			.ecsact_cli_path = ecsact_cli_path.ecsact_cli_path,
+			.ecsact_file_paths = ecsact_file_paths,
 		}),
 		.fetched_sources = fetch_sources({
 			.temp_dir = temp_dir,
@@ -139,7 +135,6 @@ int main(int argc, char* argv[]) {
 		.wasmer = find_wasmer({}),
 		.output_path = output_path,
 		.working_directory = working_directory,
-		.main_package = (*results.main_package).get(),
 	});
 
 	std::cout << "Exiting...\n";

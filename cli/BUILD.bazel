@@ -1,26 +1,28 @@
 load("@rules_cc//cc:defs.bzl", "cc_binary")
 load("//fetch_sources:index.bzl", "ecsact_rtb_runfiles")
+load("//bazel:copts.bzl", "copts")
 
 cc_binary(
-    name = "ecsact-rtb",
+    name = "ecsact_rtb",
     srcs = ["cli.cc"],
+    copts = copts,
     data = ecsact_rtb_runfiles,
     visibility = ["//visibility:public"],
     deps = [
         "//executable_path",
         "//fetch_sources",
         "//find_cpp_compiler",
+        "//find_ecsact_cli",
         "//find_wasmer",
         "//generate_files",
         "//runtime_compile",
         "//util:managed_temp_directory",
         "@bazel_tools//tools/cpp/runfiles",
         "@bazelregistry_docopt_cpp//:docopt",
-        "@ecsact//parser2",
     ],
 )
 
 filegroup(
     name = "cli",
-    srcs = [":ecsact-rtb"],
+    srcs = [":ecsact_rtb"],
 )

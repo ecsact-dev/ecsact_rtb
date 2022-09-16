@@ -1,9 +1,11 @@
 load("@rules_cc//cc:defs.bzl", "cc_library")
+load("//bazel:copts.bzl", "copts")
 
 cc_library(
     name = "runtime_compile",
     srcs = ["runtime_compile.cc"],
     hdrs = ["runtime_compile.hh"],
+    copts = copts,
     visibility = ["//visibility:public"],
     deps = [
         "//fetch_sources",
@@ -12,12 +14,12 @@ cc_library(
         "//generate_files",
         "@boost//libs/dll",
         "@boost//libs/process",
-        "@ecsact//lang-support/cc",
-        "@ecsact//lib/runtime/core",
-        "@ecsact//lib/runtime/dynamic",
-        "@ecsact//lib/runtime/meta",
-        "@ecsact//lib/runtime/serialize",
-        "@ecsact//lib/runtime/static",
+        "@ecsact_lang_cpp//:support",
+        "@ecsact_runtime//:core",
+        "@ecsact_runtime//:dynamic",
+        "@ecsact_runtime//:meta",
+        "@ecsact_runtime//:serialize",
+        "@ecsact_runtime//:static",
         "@magic_enum",
     ],
 )
