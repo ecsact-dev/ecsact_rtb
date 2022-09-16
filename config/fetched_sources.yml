@@ -83,18 +83,34 @@ include:
     - com_github_skypjack_entt/src/entt/signal/fwd.hpp
     - com_github_skypjack_entt/src/entt/signal/sigh.hpp
   ecsact:
-    - ecsact/lib/lib.hh
-    - ecsact/lib/runtime-cpp/execution_events_collector.hh
-    - ecsact/lib/runtime-cpp/execution_options.hh
-    - ecsact/lib/runtime-cpp/runtime-cpp-c-interop.hh
-    - ecsact/lib/runtime-cpp/runtime.hh
+    - ecsact_runtime/ecsact/codegen_plugin.h
+    - ecsact_runtime/ecsact/codegen_plugin.hh
+    - ecsact_runtime/ecsact/lib.hh
+    - ecsact_runtime/ecsact/runtime.h
   ecsact/runtime:
-    - ecsact/lib/runtime/common.h
-    - ecsact/lib/runtime/core/core.h
-    - ecsact/lib/runtime/dynamic/dynamic.h
-    - ecsact/lib/runtime/meta/meta.h
-    - ecsact/lib/runtime/static/static.h
-    - ecsact/lib/runtime/serialize/serialize.h
+    - ecsact_runtime/ecsact/runtime/common.h
+    - ecsact_runtime/ecsact/runtime/core.h
+    - ecsact_runtime/ecsact/runtime/core.hh
+    - ecsact_runtime/ecsact/runtime/definitions.h
+    - ecsact_runtime/ecsact/runtime/dylib.h
+    - ecsact_runtime/ecsact/runtime/dynamic.h
+    - ecsact_runtime/ecsact/runtime/meta.h
+    - ecsact_runtime/ecsact/runtime/meta.hh
+    - ecsact_runtime/ecsact/runtime/serialize.h
+    - ecsact_runtime/ecsact/runtime/static.h
+  ecsact/codegen:
+    - ecsact_runtime/ecsact/codegen/plugin_validate.hh
+  ecsact/entt:
+    - ecsact_rt_entt/ecsact/entt/runtime.hh
+    - ecsact_rt_entt/ecsact/entt/system_view.hh
+    - ecsact_rt_entt/ecsact/entt/trivial_system_impl.hh
+    - ecsact_rt_entt/ecsact/entt/event_markers.hh
+  ecsact/entt/detail:
+    - ecsact_rt_entt/ecsact/entt/detail/entt_util.hh
+    - ecsact_rt_entt/ecsact/entt/detail/execution_events_collector.hh
+    - ecsact_rt_entt/ecsact/entt/detail/mp11_util.hh
+    - ecsact_rt_entt/ecsact/entt/detail/registry_info.hh
+    - ecsact_rt_entt/ecsact/entt/detail/system_execution_context.hh
   boost:
     - boost_mp11_files/include/boost/mp11.hpp
   boost/mp11:
@@ -139,14 +155,14 @@ sources:
     - ecsactsi_wasm/wasm_ecsact_system_execution.h
   ecsact/runtime-cpp:
     - ecsact/lib/runtime-cpp/registry.cc
-  ecsact-entt-runtime:
-    - ecsact_entt/runtime/common.template.hh
-    - ecsact_entt/runtime/core.template.cc
-    - ecsact_entt/runtime/dynamic.template.cc
-    - ecsact_entt/runtime/event_markers.hh
-    - ecsact_entt/runtime/execution_events_collector.hh
-    - ecsact_entt/runtime/registry_info.hh
-    - ecsact_entt/runtime/runtime.hh
-    - ecsact_entt/runtime/runtime.template.cc
-    - ecsact_entt/runtime/system_entt_view.hh
-    - ecsact_entt/runtime/system_execution_context.hh
+  ecsact_rt_entt:
+    - ecsact_rt_entt/runtime/common.template.hh
+    - ecsact_rt_entt/runtime/core.template.cc
+    - ecsact_rt_entt/runtime/dynamic.template.cc
+    - ecsact_rt_entt/runtime/event_markers.hh
+    - ecsact_rt_entt/runtime/execution_events_collector.hh
+    - ecsact_rt_entt/runtime/registry_info.hh
+    - ecsact_rt_entt/runtime/runtime.hh
+    - ecsact_rt_entt/runtime/runtime.template.cc
+    - ecsact_rt_entt/runtime/system_entt_view.hh
+    - ecsact_rt_entt/runtime/system_execution_context.hh

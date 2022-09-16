@@ -35,7 +35,7 @@ result::generate_files ecsact::rtb::generate_files
 		"--plugin=cpp_meta_header"s,
 		"--plugin=cpp_systems_header"s,
 		"--plugin=systems_header"s,
-		"-outdir="s + include_dir.string(),
+		"--outdir="s + include_dir.string(),
 	};
 	codegen_proc_args.reserve(
 		codegen_proc_args.size() + options.ecsact_file_paths.size()
@@ -45,10 +45,23 @@ result::generate_files ecsact::rtb::generate_files
 		codegen_proc_args.push_back(p.string());
 	}
 
-	bp::system(
+	bp::child codegen_proc(
 		bp::exe(options.ecsact_cli_path.string()),
 		bp::args(codegen_proc_args)
 	);
+
+	codegen_proc.wait();
+
+	auto exit_code = codegen_proc.exit_code();
+	if(exit_code != 0) {
+		std::cerr
+			<< "[INFO] Codegen Command: " << options.ecsact_cli_path.string() << " ";
+		for(auto arg : codegen_proc_args) {
+			std::cerr << arg << " ";
+		}
+		std::cerr << "Ecsact codegen failed wth exit code " << exit_code << "\n";
+		std::exit(exit_code);
+	}
 
 	return {
 		.include_dir = include_dir,

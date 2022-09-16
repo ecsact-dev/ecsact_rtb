@@ -54,18 +54,29 @@ static void msvc_runtime_compile
 	compile_proc_args.push_back("/MP");
 	compile_proc_args.push_back("/GL");
 
+	std::vector<std::filesystem::path> source_files;
+
 	for(auto src : options.fetched_sources.source_files) {
 		// Don't pass headers to compiler
 		if(src.extension().string().starts_with(".h")) continue;
 
-		compile_proc_args.push_back(abs_from_wd(src).string());
+		source_files.push_back(abs_from_wd(src));
 	}
 
 	for(auto src : options.generated_files.source_file_paths) {
 		// Don't pass headers to compiler
 		if(src.extension().string().starts_with(".h")) continue;
 
-		compile_proc_args.push_back(abs_from_wd(src).string());
+		source_files.push_back(abs_from_wd(src));
+	}
+
+	if(source_files.empty()) {
+		std::cerr << "[ERROR] No source files\n";
+		std::exit(1);
+	}
+
+	for(auto src : source_files) {
+		compile_proc_args.push_back(src.string());
 	}
 
 	compile_proc_args.push_back("wasmer.lib");
@@ -123,6 +134,7 @@ static void msvc_runtime_compile
 	compile_proc_args.push_back("/DWASM_API_EXTERN=extern");
 
 	compile_proc_args.push_back("/link");
+	compile_proc_args.push_back("/MACHINE:X64");
 	compile_proc_args.push_back("/nologo");
 	for(auto& lib_dir : options.cpp_compiler.standard_lib_paths) {
 		compile_proc_args.push_back("/LIBPATH:" + lib_dir);
@@ -150,9 +162,11 @@ static void msvc_runtime_compile
 	compile_proc_args.push_back("/DLL");
 	compile_proc_args.push_back("/OUT:" + temp_out.string());
 
+	std::cout << "=== Compile Arguments ===\n";
 	for(auto& arg : compile_proc_args) {
 		std::cout << "  " << arg << "\n";
 	}
+	std::cout << "=========================\n";
 
 	std::cout << "Compiling runtime...\n";
 	bp::child compile_proc(
