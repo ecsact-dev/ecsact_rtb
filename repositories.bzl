@@ -129,10 +129,10 @@ def ecsact_rtb_repositories():
     )
 
     http_archive(
-        name = "ecsact_parse_runtime_interop",
-        sha256 = "5d27dd4c5ee40003d4804c30b13bf0ca7e504ad19365466032ee53a87ca0b946",
-        strip_prefix = "ecsact_parse_runtime_interop-b22afbbb38ee3a8de49d2408b9b0b39a2a95fc3b",
-        url = "https://github.com/ecsact-dev/ecsact_parse_runtime_interop/archive/b22afbbb38ee3a8de49d2408b9b0b39a2a95fc3b.zip",
+        name = "ecsact_lang_cpp",
+        sha256 = "7a9998065ab78fcbf4355d82ee13c137c475639592d649cbe607386244c89cf7",
+        strip_prefix = "ecsact_lang_cpp-b62b41856d04990adef0f839a754a86e398af121",
+        url = "https://github.com/ecsact-dev/ecsact_lang_cpp/archive/b62b41856d04990adef0f839a754a86e398af121.zip",
     )
 
     http_archive(
