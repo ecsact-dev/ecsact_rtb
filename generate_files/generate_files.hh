@@ -1,5 +1,6 @@
 #pragma once
 
+#include <vector>
 #include <filesystem>
 
 namespace ecsact::rtb {
