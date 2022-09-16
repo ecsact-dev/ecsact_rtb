@@ -30,6 +30,7 @@ result::generate_files ecsact::rtb::generate_files
 	std::vector<fs::path> source_file_paths;
 
 	std::vector<std::string> codegen_proc_args{
+		"codegen",
 		"--plugin=cpp_header"s,
 		"--plugin=cpp_meta_header"s,
 		"--plugin=cpp_systems_header"s,
@@ -44,12 +45,10 @@ result::generate_files ecsact::rtb::generate_files
 		codegen_proc_args.push_back(p.string());
 	}
 
-	bp::child codegen_proc(
+	bp::system(
 		bp::exe(options.ecsact_cli_path.string()),
 		bp::args(codegen_proc_args)
 	);
-
-	codegen_proc.wait();
 
 	return {
 		.include_dir = include_dir,

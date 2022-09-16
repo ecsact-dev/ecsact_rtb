@@ -16,7 +16,7 @@ result::find_ecsact_cli ecsact::rtb::find_ecsact_cli
 	)
 {
 	using executable_path::executable_path;
-
+	
 	std::string path;
 	std::string search_exe = "ecsact";
 #if _WIN32
