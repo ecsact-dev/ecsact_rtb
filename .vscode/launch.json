@@ -4,12 +4,12 @@
 		{
 			"type": "cppdbg",
 			"request": "launch",
-			"name": "run //cli:ecsact-rtb",
+			"name": "run //cli:ecsact_rtb",
 			"cwd": "${workspaceFolder}/bazel-bin/cli",
-			"program": "${workspaceFolder}/bazel-bin/cli/ecsact-rtb",
+			"program": "${workspaceFolder}/bazel-bin/cli/ecsact_rtb",
 			"windows": {
 				"type": "cppvsdbg",
-				"program": "${workspaceFolder}/bazel-bin/cli/ecsact-rtb.exe",
+				"program": "${workspaceFolder}/bazel-bin/cli/ecsact_rtb.exe",
 				"args": [
 					"${workspaceFolder}/dummy.ecsact",
 					"--output=${workspaceFolder}/tmp/test_runtime.dll",

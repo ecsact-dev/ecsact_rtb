@@ -15,7 +15,7 @@
 			"label": "Build",
 			"command": "bazel",
 			"type": "shell",
-			"args": ["build", "//cli:ecsact-rtb"],
+			"args": ["build", "//cli:ecsact_rtb"],
 			"problemMatcher": [],
 			"presentation": {
 				"reveal": "always"

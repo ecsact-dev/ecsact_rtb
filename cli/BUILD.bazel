@@ -3,7 +3,7 @@ load("//fetch_sources:index.bzl", "ecsact_rtb_runfiles")
 load("//bazel:copts.bzl", "copts")
 
 cc_binary(
-    name = "ecsact-rtb",
+    name = "ecsact_rtb",
     srcs = ["cli.cc"],
     copts = copts,
     data = ecsact_rtb_runfiles,
@@ -24,5 +24,5 @@ cc_binary(
 
 filegroup(
     name = "cli",
-    srcs = [":ecsact-rtb"],
+    srcs = [":ecsact_rtb"],
 )
