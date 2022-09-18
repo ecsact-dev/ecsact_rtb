@@ -8,6 +8,7 @@ cc_library(
     copts = copts,
     visibility = ["//visibility:public"],
     deps = [
+        "//progress_report",
         "@bazel_tools//tools/cpp/runfiles",
         "@boost//libs/algorithm",
         "@boost//libs/process",

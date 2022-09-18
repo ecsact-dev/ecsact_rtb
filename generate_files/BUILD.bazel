@@ -8,6 +8,7 @@ cc_library(
     copts = copts,
     visibility = ["//visibility:public"],
     deps = [
+        "//progress_report",
         "@boost//libs/process",
     ],
 )

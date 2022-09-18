@@ -12,6 +12,7 @@ cc_library(
         "//find_cpp_compiler",
         "//find_wasmer",
         "//generate_files",
+        "//progress_report",
         "@boost//libs/dll",
         "@boost//libs/process",
         "@ecsact_lang_cpp//:support",

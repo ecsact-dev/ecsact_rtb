@@ -24,7 +24,8 @@ static std::vector<std::string> vsdevcmd_env_var
 	bp::child extract_script_proc(
 		vsdevcmd_path.string(),
 		bp::args({env_var_name}),
-		bp::std_out > is
+		bp::std_out > is,
+		bp::std_err > bp::null
 	);
 
 	for(;;) {
@@ -48,6 +49,8 @@ static result::find_cpp_compiler find_msvc
 	, std::string                        vswhere_path
 	)
 {
+	using namespace std::string_literals;
+
 	bp::ipstream vswhere_output_stream;
 	bp::child vswhere_proc(
 		vswhere_path,
@@ -56,7 +59,8 @@ static result::find_cpp_compiler find_msvc
 			"-requires", "Microsoft.VisualStudio.Component.VC.Tools.x86.x64",
 			"-requires", "Microsoft.VisualStudio.Component.Windows10SDK"
 		}),
-		bp::std_out > vswhere_output_stream
+		bp::std_out > vswhere_output_stream,
+		bp::std_err > bp::null
 	);
 
 	auto vswhere_output = nlohmann::json::parse(vswhere_output_stream);
@@ -64,22 +68,23 @@ static result::find_cpp_compiler find_msvc
 	vswhere_proc.detach();
 
 	if(!vswhere_output.is_array()) {
-		std::cerr
-			<< "[ERROR] Expected array in vswhere output. "
-			<< "Instead got the following:\n"
-			<< vswhere_output.dump(2, ' ') << "\n";
+		options.reporter.report(ecsact_rtb::error_message{
+			.content =
+				"Expected array in vswhere output. Instead got the following: "s +
+				vswhere_output.dump(2, ' ')
+		});
 		std::exit(10);
 	}
 
 	auto vs_config_itr = vswhere_output.begin();
 	if(vs_config_itr == vswhere_output.end()) {
-		std::cerr
-			<< "Could not find Visual Studio installation with vswhere. Make sure "
-			<< "you have the following components installed:\n"
-			<< " - Microsoft.VisualStudio.Component.VC.Tools.x86.x64\n"
-			<< " - Microsoft.VisualStudio.Component.Windows10SDK\n"
-			<< "\n";
-
+		options.reporter.report(ecsact_rtb::error_message{
+			.content =
+				"Could not find Visual Studio installation with vswhere. Make sure "s +
+				"you have the following components installed:\n"s +
+				" - Microsoft.VisualStudio.Component.VC.Tools.x86.x64\n"s +
+				" - Microsoft.VisualStudio.Component.Windows10SDK\n"s
+		});
 		std::exit(3);
 	}
 
@@ -120,7 +125,9 @@ static result::find_cpp_compiler find_msvc
 	}
 
 	if(tools_version.empty()) {
-		std::cerr << "[ERROR] Unable to read " << version_text_path << "\n";
+		options.reporter.report(ecsact_rtb::error_message{
+			.content = "Unable to read " + version_text_path,
+		});
 		std::exit(3);
 	}
 
@@ -153,7 +160,12 @@ static std::string get_compiler_version
 			args.push_back("--version");
 			break;
 	}
-	bp::child process(boost_path, args, bp::std_out > is);
+	bp::child process(
+		boost_path,
+		args,
+		bp::std_out > is,
+		bp::std_err > bp::null
+	);
 
 	std::string line;
 	std::getline(is, line);
@@ -163,7 +175,8 @@ static std::string get_compiler_version
 }
 
 static result::compiler_type get_compiler_type_from_path
-	( const fs::path& path
+	( const options::find_cpp_compiler&  options
+	, const fs::path&                    path
 	)
 {
 	const auto exe = path.filename().string();
@@ -172,7 +185,9 @@ static result::compiler_type get_compiler_type_from_path
 	} else if(exe == "cl.exe") {
 		return result::compiler_type::msvc;
 	} else {
-		std::cerr << "Unknown compiler: " << path.string() << "\n";
+		options.reporter.report(ecsact_rtb::error_message{
+			.content = "Unknown compiler: " + path.string(),
+		});
 		std::exit(1);
 	}
 }
@@ -196,7 +211,9 @@ static result::find_cpp_compiler find_msvc_vswhere
 	}
 
 	if(vswhere_path.empty()) {
-		std::cerr << "Unable to find vswhere.exe\n";
+		options.reporter.report(ecsact_rtb::error_message{
+			.content = "Unable to find vswhere.exe",
+		});
 		std::exit(3);
 	}
 
@@ -210,6 +227,8 @@ static result::find_cpp_compiler find_env_compiler
 	( const options::find_cpp_compiler& options
 	)
 {
+	using namespace std::string_literals;
+
 	auto cc = std::getenv("CC");
 	fs::path compiler_path;
 	if(cc != nullptr) {
@@ -217,27 +236,36 @@ static result::find_cpp_compiler find_env_compiler
 		if(!compiler_path.is_absolute()) {
 			compiler_path = bp::search_path(cc).string();
 		} else if(!fs::exists(compiler_path)) {
-			std::cerr
-				<< "Compiler from CC environment variable "
-				<< "(" << compiler_path << ") cannot be found.\n";
+			options.reporter.report(ecsact_rtb::error_message{
+				.content =
+					"Compiler from CC environment variable "s +
+					"("s + compiler_path.string() + ") cannot be found."s,
+			});
 			std::exit(1);
 		}
 	} else {
 		compiler_path = bp::search_path("clang").string();
 		if(compiler_path.empty()) {
-			std::cerr
-				<< "Could not find compiler with CC environment variable or by looking "
-				<< "for 'clang' in your PATH.\n";
+			options.reporter.report(ecsact_rtb::error_message{
+				.content =
+					"Could not find compiler with CC environment variable or by "s +
+					"looking for 'clang' in your PATH."s,
+			});
 			std::exit(1);
 		}
 	}
 
-	const auto compiler_type = get_compiler_type_from_path(compiler_path);
+	const auto compiler_type = get_compiler_type_from_path(
+		options,
+		compiler_path
+	);
 
 	if(compiler_type == decltype(compiler_type)::msvc) {
-		std::cerr
-			<< "Using msvc compiler from environment variables is not supported at "
-			<< "this time.\n";
+		options.reporter.report(ecsact_rtb::error_message{
+			.content =
+				"Using msvc compiler from environment variables is not supported at "s +
+				"this time.",
+		});
 		std::exit(1);
 	}
 
@@ -253,24 +281,33 @@ result::find_cpp_compiler ecsact::rtb::find_cpp_compiler
 	( const options::find_cpp_compiler& options
 	)
 {
+	using namespace std::string_literals;
+
 	std::string version;
 	std::string path;
 	result::compiler_type compiler_type;
 
 	if(options.path) {
 		if(!fs::exists(*options.path)) {
-			std::cerr << "Specified compiler path does not exist.\n";
+			options.reporter.report(ecsact_rtb::error_message{
+				.content = "Specified compiler path does not exist.",
+			});
 			std::exit(1);
 		}
-		compiler_type = get_compiler_type_from_path(*options.path);
+		compiler_type = get_compiler_type_from_path(
+			options,
+			*options.path
+		);
 		version = get_compiler_version(*options.path, compiler_type);
 		path = options.path->string();
 
 		if(compiler_type == decltype(compiler_type)::msvc) {
-			std::cerr
-				<< "Specifying compiler path for msvc compiler is not supported. "
-				<< "Please use built in vswhere by not specifying the path or specify "
-				<< "the path to clang instead.\n";
+			options.reporter.report(ecsact_rtb::error_message{
+				.content =
+					"Specifying compiler path for msvc compiler is not supported. "s +
+					"Please use built in vswhere by not specifying the path or "s +
+					"specify the path to clang instead."s,
+			});
 			std::exit(1);
 		}
 

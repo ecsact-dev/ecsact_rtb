@@ -16,20 +16,14 @@
 namespace bp = boost::process;
 namespace fs = std::filesystem;
 
-#define RED_TEXT(text)     "\033[31m" text "\033[0m"
-#define GREY_TEXT(text)    "\033[90m" text "\033[0m"
-#define GREEN_TEXT(text)   "\033[32m" text "\033[0m"
-
-#define PRINT_LIB_FN(fn_name, lib)\
-	if(!lib.has(#fn_name))\
-		std::cout <<   RED_TEXT("    NO  ") << #fn_name << "\n";\
-	else\
-		std::cout << GREEN_TEXT("   YES  ") << #fn_name << "\n";
+#define SET_MESSAGE_METHOD(fn_name, lib, message)\
+	message.methods[#fn_name] = {.available = lib.has(#fn_name)};
 
 static void msvc_runtime_compile
 	( const ecsact::rtb::options::runtime_compile& options
 	)
 {
+	using namespace std::string_literals;
 	using ecsact::cc_lang_support::cpp_identifier;
 
 	const fs::path cl = options.cpp_compiler.compiler_path;
@@ -71,7 +65,9 @@ static void msvc_runtime_compile
 	}
 
 	if(source_files.empty()) {
-		std::cerr << "[ERROR] No source files\n";
+		options.reporter.report(ecsact_rtb::error_message{
+			.content = "No source files",
+		});
 		std::exit(1);
 	}
 
@@ -80,12 +76,6 @@ static void msvc_runtime_compile
 	}
 
 	compile_proc_args.push_back("wasmer.lib");
-
-	std::string std_inc_paths;
-	for(auto& p : options.cpp_compiler.standard_include_paths) {
-		std_inc_paths += "  " + p + "\n";
-	}
-	std::cout << "std inc paths:\n" << std_inc_paths;
 
 	for(auto& inc_path : options.cpp_compiler.standard_include_paths) {
 		compile_proc_args.push_back("/I" + inc_path);
@@ -105,7 +95,8 @@ static void msvc_runtime_compile
 			wasmer.string(),
 			bp::start_dir(options.working_directory.string()),
 			bp::args({"config", "--includedir"}),
-			bp::std_out > wasmer_proc_flags_stdout
+			bp::std_out > wasmer_proc_flags_stdout,
+			bp::std_err > bp::null
 		);
 
 		std::getline(wasmer_proc_flags_stdout, compile_proc_args.emplace_back());
@@ -150,7 +141,8 @@ static void msvc_runtime_compile
 			wasmer.string(),
 			bp::start_dir(options.working_directory.string()),
 			bp::args({"config", "--libdir"}),
-			bp::std_out > wasmer_proc_flags_stdout
+			bp::std_out > wasmer_proc_flags_stdout,
+			bp::std_err > bp::null
 		);
 
 		std::getline(wasmer_proc_flags_stdout, compile_proc_args.emplace_back());
@@ -162,35 +154,33 @@ static void msvc_runtime_compile
 	compile_proc_args.push_back("/DLL");
 	compile_proc_args.push_back("/OUT:" + temp_out.string());
 
-	std::cout << "=== Compile Arguments ===\n";
-	for(auto& arg : compile_proc_args) {
-		std::cout << "  " << arg << "\n";
-	}
-	std::cout << "=========================\n";
-
-	std::cout << "Compiling runtime...\n";
 	bp::child compile_proc(
 		cl.string(),
 		bp::start_dir(options.working_directory.string()),
-		bp::args(compile_proc_args)
+		bp::args(compile_proc_args),
+		bp::std_out > bp::null,
+		bp::std_err > bp::null
 	);
 
 	compile_proc.wait();
 
 	if(auto exit_code = compile_proc.exit_code(); exit_code != 0) {
-		std::cerr
-			<< "Runtime compile " RED_TEXT("failed") ". Exited with code "
-			<< exit_code << "\n";
+		options.reporter.report(ecsact_rtb::error_message{
+			.content =
+				"Runtime compile failed. Exited with code "s +
+				std::to_string(exit_code),
+		});
 		std::exit(exit_code);
 	}
 
 	std::error_code ec;
 	fs::rename(temp_out, options.output_path, ec);
 	if(ec) {
-		std::cerr
-			<< "Moving " << temp_out.string()
-			<< " to " << options.output_path.string()
-			<< " " RED_TEXT("failed") << ". " << ec.message() << "\n";
+		options.reporter.report(ecsact_rtb::error_message{
+			.content =
+				"Moving " + temp_out.string() + " to " + options.output_path.string() +
+				" failed. " + ec.message(),
+		});
 		std::exit(1);
 	}
 }
@@ -199,10 +189,13 @@ static void clang_runtime_compile
 	( const ecsact::rtb::options::runtime_compile& options
 	)
 {
+	using namespace std::string_literals;
 	using ecsact::cc_lang_support::cpp_identifier;
 
 	if(fs::exists(options.working_directory)) {
-		std::cout << "Removing old working directory ...\n";
+		options.reporter.report(ecsact_rtb::info_message{
+			.content = "Removing old working directory ...",
+		});
 		fs::remove_all(options.working_directory);
 	}
 	fs::create_directory(options.working_directory);
@@ -276,13 +269,16 @@ static void clang_runtime_compile
 		);
 	}
 
-	std::cout << "Collecting wasmer compiler flags...\n";
+	options.reporter.report(ecsact_rtb::info_message{
+		.content = "Collecting wasmer compiler flags...",
+	});
 	bp::ipstream wasmer_proc_flags_stdout;
 	bp::child wasmer_proc_cflags(
 		wasmer.string(),
 		bp::start_dir(options.working_directory.string()),
 		bp::args({"config", "--cflags"}),
-		bp::std_out > wasmer_proc_flags_stdout
+		bp::std_out > wasmer_proc_flags_stdout,
+		bp::std_err > bp::null
 	);
 
 	std::getline(wasmer_proc_flags_stdout, compile_proc_args.emplace_back());
@@ -290,12 +286,15 @@ static void clang_runtime_compile
 	wasmer_proc_cflags.detach();
 
 	if(compile_proc_args.back().empty()) {
-		std::cerr
-			<< "Wasmer config --cflags " RED_TEXT("failed") "." << "\n";
+		options.reporter.report(ecsact_rtb::error_message{
+			.content = "Wasmer config --cflags failed.",
+		});
 		return;
 	}
 
-	std::cout << "Compiling runtime...\n";
+	options.reporter.report(ecsact_rtb::info_message{
+		.content = "Compiling runtime...",
+	});
 	bp::child compile_proc(
 		clang.string(),
 		bp::start_dir(options.working_directory.string()),
@@ -305,21 +304,27 @@ static void clang_runtime_compile
 	compile_proc.wait();
 
 	if(auto exit_code = compile_proc.exit_code(); exit_code != 0) {
-		std::cerr
-			<< "Runtime compile " RED_TEXT("failed") ". Exited with code "
-			<< exit_code << "\n";
+		options.reporter.report(ecsact_rtb::error_message{
+			.content =
+				"Runtime compile failed. Exited with code "s +
+				std::to_string(exit_code),
+		});
 		return;
 	}
 
 	std::vector<std::string> link_proc_args;
 
-	std::cout << "Collecting wasmer linker flags...\n";
+	options.reporter.report(ecsact_rtb::info_message{
+		.content = "Collecting wasmer linker flags...",
+	});
+
 	bp::ipstream wasmer_proc_libs_stdout;
 	bp::child wasmer_proc_libs(
 		wasmer.string(),
 		bp::start_dir(options.working_directory.string()),
 		bp::args({"config", "--libs"}),
-		bp::std_out > wasmer_proc_libs_stdout
+		bp::std_out > wasmer_proc_libs_stdout,
+		bp::std_err > bp::null
 	);
 
 	std::getline(wasmer_proc_libs_stdout, link_proc_args.emplace_back());
@@ -327,8 +332,9 @@ static void clang_runtime_compile
 	wasmer_proc_libs.detach();
 
 	if(link_proc_args.back().empty()) {
-		std::cerr
-			<< "wasmer config --libs " RED_TEXT("failed") "." << "\n";
+		options.reporter.report(ecsact_rtb::error_message{
+			.content = "wasmer config --libs failed.",
+		});
 		return;
 	}
 
@@ -345,25 +351,21 @@ static void clang_runtime_compile
 		link_proc_args.push_back(p.path().string());
 	}
 
-	std::cout << "\n\n" << clang.string() << " ";
-	for(auto arg : link_proc_args) {
-		std::cout << arg << " ";
-	}
-	std::cout << "\n\n";
-
-	std::cout << "Linking runtime...\n";
 	bp::child link_proc(
 		clang.string(),
 		bp::start_dir(options.working_directory.string()),
-		bp::args(link_proc_args)
+		bp::args(link_proc_args),
+		bp::std_out > bp::null,
+		bp::std_err > bp::null
 	);
 
 	link_proc.wait();
 
 	if(auto exit_code = link_proc.exit_code(); exit_code != 0) {
-		std::cerr
-			<< "Linking " RED_TEXT("failed") ". Exited with code "
-			<< exit_code << "\n";
+		options.reporter.report(ecsact_rtb::error_message{
+			.content =
+				"Linking failed. Exited with code " + std::to_string(exit_code),
+		});
 		std::exit(exit_code);
 	}
 }
@@ -372,6 +374,8 @@ void ecsact::rtb::runtime_compile
 	( const options::runtime_compile& options
 	)
 {
+	using namespace std::string_literals;
+	using magic_enum::enum_name;
 
 	switch(options.cpp_compiler.compiler_type) {
 		case result::compiler_type::clang:
@@ -381,16 +385,17 @@ void ecsact::rtb::runtime_compile
 			msvc_runtime_compile(options);
 			break;
 		default:
-			std::cerr
-				<< "Unhandled compiler type: "
-				<< magic_enum::enum_name(options.cpp_compiler.compiler_type) << "\n";
+			options.reporter.report(ecsact_rtb::error_message{
+				.content =
+					"Unhandled compiler type: "s +
+					std::string(enum_name(options.cpp_compiler.compiler_type)),
+			});
 			std::exit(10);
 	}
 
-	std::cout
-		<< "Runtime build complete "
-		<< options.output_path.generic_string()
-		<< "\n";
+	options.reporter.report(ecsact_rtb::success_message{
+		.content = "Runtime build complete " + options.output_path.generic_string(),
+	});
 
 	boost::system::error_code load_ec;
 	boost::dll::shared_library runtime_lib(
@@ -400,20 +405,35 @@ void ecsact::rtb::runtime_compile
 	);
 
 	if(load_ec) {
-		std::cerr << "[Err] Unable to load runtime: " << load_ec.message() << "\n";
+		options.reporter.report(ecsact_rtb::error_message{
+			.content = "Unable to load runtime: " + load_ec.message(),
+		});
 		return;
 	}
 
-	std::cout << GREY_TEXT("Core Runtime Functions:\n");
-	FOR_EACH_ECSACT_CORE_API_FN(PRINT_LIB_FN, runtime_lib);
-	std::cout << GREY_TEXT("Dynamic Runtime Functions:\n");
-	FOR_EACH_ECSACT_DYNAMIC_API_FN(PRINT_LIB_FN, runtime_lib);
-	std::cout << GREY_TEXT("Meta Runtime Functions:\n");
-	FOR_EACH_ECSACT_META_API_FN(PRINT_LIB_FN, runtime_lib);
-	std::cout << GREY_TEXT("Static Runtime Functions:\n");
-	FOR_EACH_ECSACT_STATIC_API_FN(PRINT_LIB_FN, runtime_lib);
-	std::cout << GREY_TEXT("Serialize Runtime Functions:\n");
-	FOR_EACH_ECSACT_SERIALIZE_API_FN(PRINT_LIB_FN, runtime_lib);
+	ecsact_rtb::module_methods_message message;
+	message.module_name = "core";
+	FOR_EACH_ECSACT_CORE_API_FN(SET_MESSAGE_METHOD, runtime_lib, message);
+	options.reporter.report(message);
+	message.methods.clear();
 
-	
+	message.module_name = "dynamic";
+	FOR_EACH_ECSACT_DYNAMIC_API_FN(SET_MESSAGE_METHOD, runtime_lib, message);
+	options.reporter.report(message);
+	message.methods.clear();
+
+	message.module_name = "meta";
+	FOR_EACH_ECSACT_META_API_FN(SET_MESSAGE_METHOD, runtime_lib, message);
+	options.reporter.report(message);
+	message.methods.clear();
+
+	message.module_name = "static";
+	FOR_EACH_ECSACT_STATIC_API_FN(SET_MESSAGE_METHOD, runtime_lib, message);
+	options.reporter.report(message);
+	message.methods.clear();
+
+	message.module_name = "serialize";
+	FOR_EACH_ECSACT_SERIALIZE_API_FN(SET_MESSAGE_METHOD, runtime_lib, message);
+	options.reporter.report(message);
+	message.methods.clear();
 }

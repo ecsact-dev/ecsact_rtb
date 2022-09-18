@@ -4,9 +4,12 @@
 #include <filesystem>
 #include "tools/cpp/runfiles/runfiles.h"
 
+#include "progress_report/progress_report.hh"
+
 namespace ecsact::rtb {
 	namespace options {
 		struct fetch_sources {
+			ecsact_rtb::progress_reporter& reporter;
 			/**
 			 * Temporary directory fetch_sources may write to.
 			 */

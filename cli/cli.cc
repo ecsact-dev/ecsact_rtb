@@ -2,7 +2,9 @@
 #include <iostream>
 #include <variant>
 #include <memory>
+#include <iostream>
 #include "docopt.h"
+#include "nlohmann/json.hpp"
 #include "tools/cpp/runfiles/runfiles.h" // bazel runfiles
 
 #include "fetch_sources/fetch_sources.hh"
@@ -12,6 +14,7 @@
 #include "find_ecsact_cli/find_ecsact_cli.hh"
 #include "executable_path/executable_path.hh"
 #include "find_cpp_compiler/find_cpp_compiler.hh"
+#include "progress_report/progress_report.hh"
 
 namespace fs = std::filesystem;
 
@@ -34,7 +37,48 @@ Options:
 		variable for the Ecsact CLI and using it's install directory.
 )";
 
+namespace ecsact_rtb {
+	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(alert_message, content)
+	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(info_message, content)
+	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(error_message, content)
+	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(warning_message, content)
+	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(success_message, content)
+	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(
+		module_methods_message::method_info,
+		available
+	)
+	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(
+		module_methods_message,
+		module_name,
+		methods
+	)
+}
+
+class stdout_progress_reporter : public ecsact_rtb::progress_reporter {
+	template<typename MessageT>
+	void _report
+		( MessageT& message
+		)
+	{
+		auto message_json = "{}"_json;
+		to_json(message_json, message);
+		message_json["type"] = MessageT::type;
+		std::cout << message_json.dump() << "\n";
+	}
+
+public:
+	void report
+		( ecsact_rtb::message_variant_t message
+		)
+	{
+		std::visit([this](auto& message) {
+			_report(message);
+		}, message);
+	}
+};
+
 int main(int argc, char* argv[]) {
+	using namespace std::string_literals;
 	using ecsact::rtb::find_wasmer;
 	using ecsact::rtb::fetch_sources;
 	using ecsact::rtb::generate_files;
@@ -45,6 +89,8 @@ int main(int argc, char* argv[]) {
 	using bazel::tools::cpp::runfiles::Runfiles;
 	using ecsact::rtb::util::managed_temp_directory;
 
+	stdout_progress_reporter reporter;
+
 	std::string runfiles_err;
 	auto argv0 = executable_path().string();
 	if(argv0.empty()) {
@@ -53,7 +99,9 @@ int main(int argc, char* argv[]) {
 
 	auto runfiles = Runfiles::Create(argv0, &runfiles_err);
 	if(runfiles == nullptr) {
-		std::cerr << "[Warning] Cannot load runfiles: " << runfiles_err << "\n";
+		reporter.report(ecsact_rtb::warning_message{
+			.content = "Cannot load runfiles: "s + runfiles_err,
+		});
 	}
 
 	auto args = docopt::docopt(USAGE, {argv + 1, argv + argc});
@@ -64,7 +112,9 @@ int main(int argc, char* argv[]) {
 		for(auto file : files) {
 			fs::path file_path(file);
 			if(!fs::exists(file_path)) {
-				std::cerr << "[ERR] File doesn't exist: " << file_path.string() << "\n";
+				reporter.report(ecsact_rtb::error_message{
+					.content = "File doesn't exist: " + file_path.string(),
+				});
 				return 1;
 			}
 
@@ -76,16 +126,20 @@ int main(int argc, char* argv[]) {
 
 #if defined(_WIN32)
 	if(output_path.extension() != ".dll") {
-		std::cerr
-			<< "Cross compilation not supported yet. Only allowed to build windows "
-			<< ".dll runtimes";
+		reporter.report(ecsact_rtb::error_message{
+			.content =
+				"Cross compilation not supported. Only allowed to build "s +
+				".dll runtimes.",
+		});
 		return 1;
 	}
 #elif defined(__linux__)
 	if(output_path.extension() != ".so") {
-		std::cerr
-			<< "Cross compilation not supported yet. Only allowed to build linux "
-			<< ".so runtimes";
+		reporter.report(ecsact_rtb::error_message{
+			.content =
+				"Cross compilation not supported. Only allowed to build "s +
+				".so runtimes.",
+		});
 		return 1;
 	}
 #else
@@ -118,11 +172,14 @@ int main(int argc, char* argv[]) {
 	}
 
 	auto ecsact_cli_path = find_ecsact_cli({
+		.reporter = reporter,
 		.esact_sdk_path = esact_sdk_path,
 	});
 
 	if(ecsact_cli_path.ecsact_cli_path.empty()) {
-		std::cerr << "[ERROR] Could not find ecsact CLI\n";
+		reporter.report(ecsact_rtb::error_message{
+			.content = "Could not find ecsact CLI",
+		});
 		return 1;
 	}
 
@@ -130,25 +187,30 @@ int main(int argc, char* argv[]) {
 	fs::create_directories(working_directory);
 
 	runtime_compile({
+		.reporter = reporter,
 		.generated_files = generate_files({
+			.reporter = reporter,
 			.temp_dir = temp_dir,
 			.ecsact_cli_path = ecsact_cli_path.ecsact_cli_path,
 			.ecsact_file_paths = ecsact_file_paths,
 		}),
 		.fetched_sources = fetch_sources({
+			.reporter = reporter,
 			.temp_dir = temp_dir,
 			.runfiles = runfiles,
 		}),
 		.cpp_compiler = find_cpp_compiler({
+			.reporter = reporter,
 			.working_directory = working_directory,
 			.path = compiler_path,
 			.runfiles = runfiles,
 		}),
-		.wasmer = find_wasmer({}),
+		.wasmer = find_wasmer({
+			.reporter = reporter,
+		}),
 		.output_path = output_path,
 		.working_directory = working_directory,
 	});
 
-	std::cout << "Exiting...\n";
 	return 0;
 }

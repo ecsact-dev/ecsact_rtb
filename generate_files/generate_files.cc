@@ -17,7 +17,9 @@ result::generate_files ecsact::rtb::generate_files
 
 	auto base_dir = options.temp_dir / "generated_files";
 	if(fs::exists(base_dir)) {
-		std::cout << "Removing old generated files...\n";
+		options.reporter.report(ecsact_rtb::info_message{
+			.content = "Removing old generated files..."s,
+		});
 	}
 	fs::remove_all(base_dir);
 	auto include_dir = base_dir / "include";
@@ -47,19 +49,27 @@ result::generate_files ecsact::rtb::generate_files
 
 	bp::child codegen_proc(
 		bp::exe(options.ecsact_cli_path.string()),
-		bp::args(codegen_proc_args)
+		bp::args(codegen_proc_args),
+		bp::std_out > bp::null,
+		bp::std_err > bp::null
 	);
 
 	codegen_proc.wait();
 
 	auto exit_code = codegen_proc.exit_code();
 	if(exit_code != 0) {
-		std::cerr
-			<< "[INFO] Codegen Command: " << options.ecsact_cli_path.string() << " ";
+		std::string codegen_command = options.ecsact_cli_path.string();
 		for(auto arg : codegen_proc_args) {
-			std::cerr << arg << " ";
+			codegen_command += arg + " ";
 		}
-		std::cerr << "Ecsact codegen failed wth exit code " << exit_code << "\n";
+		options.reporter.report(ecsact_rtb::info_message{
+			.content = "Codegen Command: "s + codegen_command
+		});
+
+		options.reporter.report(ecsact_rtb::error_message{
+			.content =
+				"Ecsact codegen failed wth exit code " + std::to_string(exit_code),
+		});
 		std::exit(exit_code);
 	}
 

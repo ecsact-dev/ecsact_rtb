@@ -6,9 +6,12 @@
 #include <filesystem>
 #include "tools/cpp/runfiles/runfiles.h" // bazel runfiles
 
+#include "progress_report/progress_report.hh"
+
 namespace ecsact::rtb {
 	namespace options {
 		struct find_cpp_compiler {
+			ecsact_rtb::progress_reporter& reporter;
 			std::filesystem::path working_directory;
 			std::optional<std::filesystem::path> path;
 			bazel::tools::cpp::runfiles::Runfiles* runfiles;

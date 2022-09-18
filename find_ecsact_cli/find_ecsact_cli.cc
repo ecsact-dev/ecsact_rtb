@@ -15,6 +15,7 @@ result::find_ecsact_cli ecsact::rtb::find_ecsact_cli
 	( const options::find_ecsact_cli& options
 	)
 {
+	using namespace std::string_literals;
 	using executable_path::executable_path;
 	
 	std::string path;
@@ -43,7 +44,9 @@ result::find_ecsact_cli ecsact::rtb::find_ecsact_cli
 	}
 
 	if(!path.empty()) {
-		std::cout << "Using Ecsact CLI: " << path << "\n";
+		options.reporter.report(ecsact_rtb::info_message{
+			.content = "Using Ecsact CLI: "s + path
+		});
 	}
 
 	return {

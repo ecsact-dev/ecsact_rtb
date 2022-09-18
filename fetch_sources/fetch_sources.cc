@@ -52,7 +52,9 @@ result::fetch_sources ecsact::rtb::fetch_sources
 
 	auto base_dir = options.temp_dir / "fetched_files";
 	if(fs::exists(base_dir)) {
-		std::cout << "Removing old fetched files...\n";
+		options.reporter.report(ecsact_rtb::info_message{
+			.content = "Removing old fetched files...",
+		});
 	}
 	fs::remove_all(base_dir);
 	auto include_dir = base_dir / "include";

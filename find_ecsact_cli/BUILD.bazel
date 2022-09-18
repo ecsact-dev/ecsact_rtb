@@ -9,6 +9,7 @@ cc_library(
     visibility = ["//visibility:public"],
     deps = [
         "//executable_path",
+        "//progress_report",
         "@boost//libs/process",
     ],
 )

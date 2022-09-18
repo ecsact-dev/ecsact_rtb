@@ -5,9 +5,12 @@
 #include <string>
 #include <filesystem>
 
+#include "progress_report/progress_report.hh"
+
 namespace ecsact::rtb {
 	namespace options {
 		struct find_ecsact_cli {
+			ecsact_rtb::progress_reporter& reporter;
 			std::optional<std::filesystem::path> esact_sdk_path;
 		};
 	}

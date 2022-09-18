@@ -3,9 +3,12 @@
 #include <vector>
 #include <filesystem>
 
+#include "progress_report/progress_report.hh"
+
 namespace ecsact::rtb {
 	namespace options {
 		struct generate_files {
+			ecsact_rtb::progress_reporter& reporter;
 			/**
 			 * Temporary directory generate_files may write to.
 			 */

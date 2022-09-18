@@ -15,10 +15,12 @@ cc_binary(
         "//find_ecsact_cli",
         "//find_wasmer",
         "//generate_files",
+        "//progress_report",
         "//runtime_compile",
         "//util:managed_temp_directory",
         "@bazel_tools//tools/cpp/runfiles",
         "@bazelregistry_docopt_cpp//:docopt",
+        "@nlohmann_json//:json",
     ],
 )
 
