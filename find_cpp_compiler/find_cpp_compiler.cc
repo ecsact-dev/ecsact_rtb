@@ -29,7 +29,9 @@ static std::vector<std::string> vsdevcmd_env_var
 		bp::std_err > bp::null
 	);
 
-	auto subcommand_id = extract_script_proc.id();
+	auto subcommand_id = static_cast<ecsact_rtb::subcommand_id_t>(
+		extract_script_proc.id()
+	);
 	reporter.report(ecsact_rtb::subcommand_start_message{
 		.id = subcommand_id,
 		.executable = vsdevcmd_path.string(),
@@ -77,7 +79,9 @@ static result::find_cpp_compiler find_msvc
 		bp::std_err > bp::null
 	);
 
-	auto subcommand_id = vswhere_proc.id();
+	auto subcommand_id = static_cast<ecsact_rtb::subcommand_id_t>(
+		vswhere_proc.id()
+	);
 	options.reporter.report(ecsact_rtb::subcommand_start_message{
 		.id = subcommand_id,
 		.executable = vswhere_path,

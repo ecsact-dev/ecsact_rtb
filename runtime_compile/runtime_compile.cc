@@ -181,7 +181,9 @@ static void msvc_runtime_compile
 		bp::std_err > compile_stderr.output_stream
 	);
 
-	auto compile_subcommand_id = compile_proc.id();
+	auto compile_subcommand_id = static_cast<ecsact_rtb::subcommand_id_t>(
+		compile_proc.id()
+	);
 	options.reporter.report(ecsact_rtb::subcommand_start_message{
 		.id = compile_subcommand_id,
 		.executable = cl.string(),
