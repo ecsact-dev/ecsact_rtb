@@ -157,6 +157,7 @@ sources:
     - ecsact/lib/runtime-cpp/registry.cc
   ecsact_rt_entt:
     - ecsact_rt_entt/runtime/common.template.hh
+    - ecsact_rt_entt/runtime/common.template.cc
     - ecsact_rt_entt/runtime/core.template.cc
     - ecsact_rt_entt/runtime/dynamic.template.cc
     - ecsact_rt_entt/runtime/event_markers.hh
