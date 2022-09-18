@@ -218,6 +218,10 @@ static void msvc_runtime_compile
 	}
 
 	std::error_code ec;
+	if(!fs::exists(options.output_path.parent_path())) {
+		fs::create_directories(options.output_path.parent_path());
+	}
+
 	fs::rename(temp_out, options.output_path, ec);
 	if(ec) {
 		options.reporter.report(ecsact_rtb::error_message{
