@@ -9,7 +9,7 @@
 #include "ecsact/runtime/core.h"
 #include "ecsact/runtime/dynamic.h"
 #include "ecsact/runtime/static.h"
-#include "ecsact/runtime/meta.h"
+#include "ecsact/runtime/meta.hh"
 #include "ecsact/runtime/serialize.h"
 #include "magic_enum.hpp"
 
@@ -103,19 +103,32 @@ static void msvc_runtime_compile
 		compile_proc_args.back() = "/I" + compile_proc_args.back();
 	}
 
-	// auto meta_header = options.main_package.source_file_path.filename();
-	// meta_header.replace_extension(
-	// 	meta_header.extension().string() + ".meta.hh"
-	// );
+	auto main_package_id = ecsact_meta_main_package();
+	if((int)main_package_id == -1) {
+		options.reporter.report(ecsact_rtb::alert_message{
+			.content = "Missing main ecsact package. Cannot build ecsact runtime.",
+		});
+		std::exit(1);
+	}
 
-	// compile_proc_args.push_back(
-	// 	"/DECSACT_ENTT_RUNTIME_USER_HEADER=\"" + meta_header.string() + "\""
-	// );
+	auto main_package_name = ecsact::meta::package_name(main_package_id);
+	auto main_package_source_file_path = fs::path{ecsact_meta_package_file_path(
+		main_package_id
+	)};
 
-	// compile_proc_args.push_back(
-	// 	"/DECSACT_ENTT_RUNTIME_PACKAGE=::" +
-	// 	to_cpp_identifier(options.main_package.name) + "::package"
-	// );
+	auto meta_header = main_package_source_file_path.filename();
+	meta_header.replace_extension(
+		meta_header.extension().string() + ".meta.hh"
+	);
+
+	compile_proc_args.push_back(
+		"/DECSACT_ENTT_RUNTIME_USER_HEADER=\"" + meta_header.string() + "\""
+	);
+
+	compile_proc_args.push_back(
+		"/DECSACT_ENTT_RUNTIME_PACKAGE=::" +
+		cpp_identifier(main_package_name) + "::package"
+	);
 	compile_proc_args.push_back("/DECSACT_CORE_API_EXPORT");
 	compile_proc_args.push_back("/DECSACT_DYNAMIC_API_EXPORT");
 	compile_proc_args.push_back("/DECSACT_STATIC_API_EXPORT");
@@ -162,15 +175,29 @@ static void msvc_runtime_compile
 		bp::std_err > bp::null
 	);
 
+	auto compile_subcommand_id = compile_proc.id();
+	options.reporter.report(ecsact_rtb::subcommand_start_message{
+		.id = compile_subcommand_id,
+		.executable = cl.string(),
+		.arguments = compile_proc_args,
+	});
+
 	compile_proc.wait();
 
-	if(auto exit_code = compile_proc.exit_code(); exit_code != 0) {
+	auto compile_exit_code = compile_proc.exit_code();
+
+	options.reporter.report(ecsact_rtb::subcommand_end_message{
+		.id = compile_subcommand_id,
+		.exit_code = compile_exit_code,
+	});
+
+	if(compile_exit_code != 0) {
 		options.reporter.report(ecsact_rtb::error_message{
 			.content =
 				"Runtime compile failed. Exited with code "s +
-				std::to_string(exit_code),
+				std::to_string(compile_exit_code),
 		});
-		std::exit(exit_code);
+		std::exit(compile_exit_code);
 	}
 
 	std::error_code ec;
@@ -222,19 +249,32 @@ static void clang_runtime_compile
 		options.working_directory
 	).generic_string());
 
-	// auto meta_header = options.main_package.source_file_path.filename();
-	// meta_header.replace_extension(
-	// 	meta_header.extension().string() + ".meta.hh"
-	// );
+	auto main_package_id = ecsact_meta_main_package();
+	if((int)main_package_id == -1) {
+		options.reporter.report(ecsact_rtb::alert_message{
+			.content = "Missing main ecsact package. Cannot build ecsact runtime.",
+		});
+		std::exit(1);
+	}
 
-	// compile_proc_args.push_back(
-	// 	"-DECSACT_ENTT_RUNTIME_USER_HEADER=\"" + meta_header.string() + "\""
-	// );
+	auto main_package_name = ecsact::meta::package_name(main_package_id);
+	auto main_package_source_file_path = fs::path{ecsact_meta_package_file_path(
+		main_package_id
+	)};
 
-	// compile_proc_args.push_back(
-	// 	"-DECSACT_ENTT_RUNTIME_PACKAGE=::" +
-	// 	to_cpp_identifier(options.main_package.name) + "::package"
-	// );
+	auto meta_header = main_package_source_file_path.filename();
+	meta_header.replace_extension(
+		meta_header.extension().string() + ".meta.hh"
+	);
+
+	compile_proc_args.push_back(
+		"-DECSACT_ENTT_RUNTIME_USER_HEADER=\"" + meta_header.string() + "\""
+	);
+
+	compile_proc_args.push_back(
+		"-DECSACT_ENTT_RUNTIME_PACKAGE=::" +
+		cpp_identifier(main_package_name) + "::package"
+	);
 	compile_proc_args.push_back("-DECSACT_CORE_API_EXPORT");
 	compile_proc_args.push_back("-DECSACT_DYNAMIC_API_EXPORT");
 	compile_proc_args.push_back("-DECSACT_STATIC_API_EXPORT");

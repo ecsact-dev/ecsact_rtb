@@ -5,6 +5,7 @@
 #include <iostream>
 #include "docopt.h"
 #include "nlohmann/json.hpp"
+#include "ecsact/parse_runtime_interop.h"
 #include "tools/cpp/runfiles/runfiles.h" // bazel runfiles
 
 #include "fetch_sources/fetch_sources.hh"
@@ -51,6 +52,22 @@ namespace ecsact_rtb {
 		module_methods_message,
 		module_name,
 		methods
+	)
+	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(
+		subcommand_start_message,
+		id,
+		executable,
+		arguments
+	)
+	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(
+		subcommand_progress_message,
+		id,
+		description
+	)
+	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(
+		subcommand_end_message,
+		id,
+		exit_code
 	)
 }
 
@@ -109,7 +126,9 @@ int main(int argc, char* argv[]) {
 	std::vector<fs::path> ecsact_file_paths;
 	{
 		auto files = args["<ecsact_file>"].asStringList();
-		for(auto file : files) {
+		std::vector<const char*> files_cstr;
+		files_cstr.reserve(files.size());
+		for(const auto& file : files) {
 			fs::path file_path(file);
 			if(!fs::exists(file_path)) {
 				reporter.report(ecsact_rtb::error_message{
@@ -119,7 +138,13 @@ int main(int argc, char* argv[]) {
 			}
 
 			ecsact_file_paths.push_back(file_path);
+			files_cstr.push_back(file.c_str());
 		}
+
+		ecsact_parse_runtime_interop(
+			files_cstr.data(),
+			static_cast<int32_t>(files_cstr.size())
+		);
 	}
 
 	auto output_path = fs::absolute(fs::path{args["--output"].asString()});

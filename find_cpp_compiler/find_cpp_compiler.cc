@@ -15,8 +15,9 @@ using namespace ecsact::rtb;
 [[maybe_unused]]
 #endif
 static std::vector<std::string> vsdevcmd_env_var
-	( const fs::path&     vsdevcmd_path
-	, const std::string&  env_var_name
+	( ecsact_rtb::progress_reporter&  reporter
+	, const fs::path&                 vsdevcmd_path
+	, const std::string&              env_var_name
 	)
 {
 	std::vector<std::string> result;
@@ -28,6 +29,13 @@ static std::vector<std::string> vsdevcmd_env_var
 		bp::std_err > bp::null
 	);
 
+	auto subcommand_id = extract_script_proc.id();
+	reporter.report(ecsact_rtb::subcommand_start_message{
+		.id = subcommand_id,
+		.executable = vsdevcmd_path.string(),
+		.arguments = {env_var_name},
+	});
+
 	for(;;) {
 		std::string var;
 		std::getline(is, var, ';');
@@ -37,6 +45,11 @@ static std::vector<std::string> vsdevcmd_env_var
 	}
 
 	extract_script_proc.detach();
+
+	reporter.report(ecsact_rtb::subcommand_end_message{
+		.id = subcommand_id,
+		.exit_code = 0, // We detached, so we don't have an exit code
+	});
 
 	return result;
 }
@@ -52,20 +65,33 @@ static result::find_cpp_compiler find_msvc
 	using namespace std::string_literals;
 
 	bp::ipstream vswhere_output_stream;
+	std::vector<std::string> vswhere_proc_args = {
+		"-format", "json",
+		"-requires", "Microsoft.VisualStudio.Component.VC.Tools.x86.x64",
+		"-requires", "Microsoft.VisualStudio.Component.Windows10SDK"
+	};
 	bp::child vswhere_proc(
 		vswhere_path,
-		bp::args({
-			"-format", "json",
-			"-requires", "Microsoft.VisualStudio.Component.VC.Tools.x86.x64",
-			"-requires", "Microsoft.VisualStudio.Component.Windows10SDK"
-		}),
+		bp::args(vswhere_proc_args),
 		bp::std_out > vswhere_output_stream,
 		bp::std_err > bp::null
 	);
 
+	auto subcommand_id = vswhere_proc.id();
+	options.reporter.report(ecsact_rtb::subcommand_start_message{
+		.id = subcommand_id,
+		.executable = vswhere_path,
+		.arguments = vswhere_proc_args,
+	});
+
 	auto vswhere_output = nlohmann::json::parse(vswhere_output_stream);
 
 	vswhere_proc.detach();
+
+	options.reporter.report(ecsact_rtb::subcommand_end_message{
+		.id = subcommand_id,
+		.exit_code = 0, // We detached, so we don't have an exit code
+	});
 
 	if(!vswhere_output.is_array()) {
 		options.reporter.report(ecsact_rtb::error_message{
@@ -109,7 +135,7 @@ static result::find_cpp_compiler find_msvc
 
 	// Quick labmda for convenience
 	auto vsdevcmd_env_varl = [&](const std::string& env_var) {
-		return vsdevcmd_env_var(vs_extract_env_path, env_var);
+		return vsdevcmd_env_var(options.reporter, vs_extract_env_path, env_var);
 	};
 
 	auto standard_include_paths = vsdevcmd_env_varl("INCLUDE");

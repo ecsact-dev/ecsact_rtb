@@ -54,9 +54,22 @@ result::generate_files ecsact::rtb::generate_files
 		bp::std_err > bp::null
 	);
 
+	auto subcommand_id = codegen_proc.id();
+	options.reporter.report(ecsact_rtb::subcommand_start_message{
+		.id = subcommand_id,
+		.executable = options.ecsact_cli_path.string(),
+		.arguments = codegen_proc_args,
+	});
+
 	codegen_proc.wait();
 
 	auto exit_code = codegen_proc.exit_code();
+
+	options.reporter.report(ecsact_rtb::subcommand_end_message{
+		.id = subcommand_id,
+		.exit_code = exit_code,
+	});
+
 	if(exit_code != 0) {
 		std::string codegen_command = options.ecsact_cli_path.string();
 		for(auto arg : codegen_proc_args) {

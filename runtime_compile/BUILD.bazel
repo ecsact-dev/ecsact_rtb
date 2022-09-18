@@ -16,6 +16,7 @@ cc_library(
         "@boost//libs/dll",
         "@boost//libs/process",
         "@ecsact_lang_cpp//:support",
+        "@ecsact_parse_runtime_interop",
         "@ecsact_runtime//:core",
         "@ecsact_runtime//:dynamic",
         "@ecsact_runtime//:meta",

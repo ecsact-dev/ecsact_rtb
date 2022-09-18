@@ -40,6 +40,25 @@ namespace ecsact_rtb {
 		std::map<std::string, method_info> methods;
 	};
 
+	struct subcommand_start_message {
+		static constexpr auto type = "subcommand_start";
+		unsigned long id;
+		std::string executable;
+		std::vector<std::string> arguments;
+	};
+
+	struct subcommand_progress_message {
+		static constexpr auto type = "subcommand_progress";
+		unsigned long id;
+		std::string description;
+	};
+
+	struct subcommand_end_message {
+		static constexpr auto type = "subcommand_end";
+		unsigned long id;
+		int exit_code;
+	};
+
 	using message_variant_t = std::variant
 		< alert_message
 		, info_message
@@ -47,6 +66,9 @@ namespace ecsact_rtb {
 		, warning_message
 		, success_message
 		, module_methods_message
+		, subcommand_start_message
+		, subcommand_progress_message
+		, subcommand_end_message
 		>;
 
 	class progress_reporter {
