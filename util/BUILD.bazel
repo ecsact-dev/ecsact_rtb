@@ -12,3 +12,13 @@ cc_library(
         "@boost//libs/process",
     ],
 )
+
+cc_library(
+    name = "report_subcommand_output",
+    hdrs = ["report_subcommand_output.hh"],
+    copts = copts,
+    deps = [
+        "//progress_report",
+        "@boost//libs/process",
+    ],
+)

@@ -3,6 +3,7 @@
 #include <variant>
 #include <memory>
 #include <iostream>
+#include <mutex>
 #include "docopt.h"
 #include "nlohmann/json.hpp"
 #include "ecsact/parse_runtime_interop.h"
@@ -60,6 +61,16 @@ namespace ecsact_rtb {
 		arguments
 	)
 	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(
+		subcommand_stdout_message,
+		id,
+		line
+	)
+	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(
+		subcommand_stderr_message,
+		id,
+		line
+	)
+	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(
 		subcommand_progress_message,
 		id,
 		description
@@ -72,6 +83,7 @@ namespace ecsact_rtb {
 }
 
 class stdout_progress_reporter : public ecsact_rtb::progress_reporter {
+	std::mutex _mutex;
 	template<typename MessageT>
 	void _report
 		( MessageT& message
@@ -80,7 +92,9 @@ class stdout_progress_reporter : public ecsact_rtb::progress_reporter {
 		auto message_json = "{}"_json;
 		to_json(message_json, message);
 		message_json["type"] = MessageT::type;
+		std::scoped_lock lk(_mutex);
 		std::cout << message_json.dump() << "\n";
+		std::cout.flush();
 	}
 
 public:

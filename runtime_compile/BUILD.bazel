@@ -13,6 +13,7 @@ cc_library(
         "//find_wasmer",
         "//generate_files",
         "//progress_report",
+        "//util:report_subcommand_output",
         "@boost//libs/dll",
         "@boost//libs/process",
         "@ecsact_lang_cpp//:support",

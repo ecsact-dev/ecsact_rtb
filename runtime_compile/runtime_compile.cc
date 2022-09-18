@@ -13,6 +13,8 @@
 #include "ecsact/runtime/serialize.h"
 #include "magic_enum.hpp"
 
+#include "util/report_subcommand_output.hh"
+
 namespace bp = boost::process;
 namespace fs = std::filesystem;
 
@@ -25,6 +27,7 @@ static void msvc_runtime_compile
 {
 	using namespace std::string_literals;
 	using ecsact::cc_lang_support::cpp_identifier;
+	using ecsact::rtb::util::report_subcommand_output;
 
 	const fs::path cl = options.cpp_compiler.compiler_path;
 	const fs::path wasmer = options.wasmer.wasmer_path;
@@ -167,12 +170,15 @@ static void msvc_runtime_compile
 	compile_proc_args.push_back("/DLL");
 	compile_proc_args.push_back("/OUT:" + temp_out.string());
 
+	report_subcommand_output compile_stdout;
+	report_subcommand_output compile_stderr;
+	
 	bp::child compile_proc(
 		cl.string(),
 		bp::start_dir(options.working_directory.string()),
 		bp::args(compile_proc_args),
-		bp::std_out > bp::null,
-		bp::std_err > bp::null
+		bp::std_out > compile_stdout.output_stream,
+		bp::std_err > compile_stderr.output_stream
 	);
 
 	auto compile_subcommand_id = compile_proc.id();
@@ -182,6 +188,17 @@ static void msvc_runtime_compile
 		.arguments = compile_proc_args,
 	});
 
+	compile_stdout.start<ecsact_rtb::subcommand_stdout_message>(
+		options.reporter,
+		compile_subcommand_id
+	);
+	compile_stderr.start<ecsact_rtb::subcommand_stderr_message>(
+		options.reporter,
+		compile_subcommand_id
+	);
+
+	compile_stdout.wait();
+	compile_stderr.wait();
 	compile_proc.wait();
 
 	auto compile_exit_code = compile_proc.exit_code();

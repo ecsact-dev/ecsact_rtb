@@ -47,6 +47,18 @@ namespace ecsact_rtb {
 		std::vector<std::string> arguments;
 	};
 
+	struct subcommand_stdout_message {
+		static constexpr auto type = "subcommand_stdout";
+		unsigned long id;
+		std::string line;
+	};
+
+	struct subcommand_stderr_message {
+		static constexpr auto type = "subcommand_stderr";
+		unsigned long id;
+		std::string line;
+	};
+
 	struct subcommand_progress_message {
 		static constexpr auto type = "subcommand_progress";
 		unsigned long id;
@@ -67,6 +79,8 @@ namespace ecsact_rtb {
 		, success_message
 		, module_methods_message
 		, subcommand_start_message
+		, subcommand_stdout_message
+		, subcommand_stderr_message
 		, subcommand_progress_message
 		, subcommand_end_message
 		>;
