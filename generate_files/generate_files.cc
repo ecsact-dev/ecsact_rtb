@@ -54,7 +54,9 @@ result::generate_files ecsact::rtb::generate_files
 		bp::std_err > bp::null
 	);
 
-	auto subcommand_id = codegen_proc.id();
+	auto subcommand_id = static_cast<ecsact_rtb::subcommand_id_t>(
+		codegen_proc.id()
+	);
 	options.reporter.report(ecsact_rtb::subcommand_start_message{
 		.id = subcommand_id,
 		.executable = options.ecsact_cli_path.string(),

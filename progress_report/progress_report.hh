@@ -2,9 +2,12 @@
 
 #include <variant>
 #include <string>
+#include <vector>
 #include <map>
 
 namespace ecsact_rtb {
+	using subcommand_id_t = long;
+
 	struct alert_message {
 		static constexpr auto type = "alert";
 		std::string content;
@@ -42,32 +45,32 @@ namespace ecsact_rtb {
 
 	struct subcommand_start_message {
 		static constexpr auto type = "subcommand_start";
-		unsigned long id;
+		subcommand_id_t id;
 		std::string executable;
 		std::vector<std::string> arguments;
 	};
 
 	struct subcommand_stdout_message {
 		static constexpr auto type = "subcommand_stdout";
-		unsigned long id;
+		subcommand_id_t id;
 		std::string line;
 	};
 
 	struct subcommand_stderr_message {
 		static constexpr auto type = "subcommand_stderr";
-		unsigned long id;
+		subcommand_id_t id;
 		std::string line;
 	};
 
 	struct subcommand_progress_message {
 		static constexpr auto type = "subcommand_progress";
-		unsigned long id;
+		subcommand_id_t id;
 		std::string description;
 	};
 
 	struct subcommand_end_message {
 		static constexpr auto type = "subcommand_end";
-		unsigned long id;
+		subcommand_id_t id;
 		int exit_code;
 	};
 

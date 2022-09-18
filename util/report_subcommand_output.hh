@@ -14,7 +14,7 @@ namespace ecsact::rtb::util {
 		template<typename MessageT>
 		void start
 			( ecsact_rtb::progress_reporter&  reporter
-			, unsigned long                   id
+			, ecsact_rtb::subcommand_id_t     id
 			)
 		{
 			_output_future = std::async(std::launch::async, [&] {
