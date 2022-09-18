@@ -45,11 +45,17 @@ static void msvc_runtime_compile
 	std::vector<std::string> compile_proc_args;
 
 	compile_proc_args.push_back("/std:c++20");
-	compile_proc_args.push_back("/O2");
-	compile_proc_args.push_back("/EHsc");
-	compile_proc_args.push_back("/MD");
+	if(options.debug) {
+		compile_proc_args.push_back("/DEBUG:FULL");
+		compile_proc_args.push_back("/MDd");
+		compile_proc_args.push_back("/Z7");
+	} else {
+		compile_proc_args.push_back("/O2");
+		compile_proc_args.push_back("/EHsc");
+		compile_proc_args.push_back("/MD");
+		compile_proc_args.push_back("/GL");
+	}
 	compile_proc_args.push_back("/MP");
-	compile_proc_args.push_back("/GL");
 
 	std::vector<std::filesystem::path> source_files;
 
@@ -232,6 +238,19 @@ static void msvc_runtime_compile
 				" failed. " + ec.message(),
 		});
 		std::exit(1);
+	}
+
+	if(options.debug) {
+		auto temp_pdb_out = fs::path{temp_out}.replace_extension("pdb");
+		auto pdb_out = fs::path{options.output_path}.replace_extension("pdb");
+		fs::rename(temp_pdb_out, pdb_out, ec);
+		if(ec) {
+			options.reporter.report(ecsact_rtb::warning_message{
+				.content =
+					"Moving " + temp_pdb_out.string() + " to " + pdb_out.string() +
+					" failed. " + ec.message(),
+			});
+		}
 	}
 }
 

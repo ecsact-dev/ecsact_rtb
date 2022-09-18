@@ -18,6 +18,7 @@ namespace ecsact::rtb {
 			result::find_wasmer wasmer;
 			std::filesystem::path output_path;
 			std::filesystem::path working_directory;
+			bool debug;
 		};
 	}
 
