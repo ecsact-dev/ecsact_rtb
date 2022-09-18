@@ -23,7 +23,7 @@ namespace fs = std::filesystem;
 constexpr auto USAGE = R"(
 Usage:
 	ecsact_rtb <ecsact_file>... --output=<output> [--temp_dir=<temp_dir>] 
-		[--compiler_path=<compiler_path>] [--ecsact_sdk=<path>]
+		[--compiler_path=<compiler_path>] [--ecsact_sdk=<path>] [--debug]
 
 Options:
 	--output=<output>
@@ -137,6 +137,8 @@ int main(int argc, char* argv[]) {
 
 	auto args = docopt::docopt(USAGE, {argv + 1, argv + argc});
 
+	const auto debug_build = args.at("--debug").asBool();
+
 	std::vector<fs::path> ecsact_file_paths;
 	{
 		auto files = args["<ecsact_file>"].asStringList();
@@ -249,6 +251,7 @@ int main(int argc, char* argv[]) {
 		}),
 		.output_path = output_path,
 		.working_directory = working_directory,
+		.debug = debug_build,
 	});
 
 	return 0;
