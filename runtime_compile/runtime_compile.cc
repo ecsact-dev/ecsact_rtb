@@ -19,7 +19,10 @@ namespace bp = boost::process;
 namespace fs = std::filesystem;
 
 #define SET_MESSAGE_METHOD(fn_name, lib, message)\
-	message.methods[#fn_name] = {.available = lib.has(#fn_name)};
+	message.methods.push_back({\
+		.method_name = #fn_name,\
+		.available = lib.has(#fn_name),\
+	});
 
 static void msvc_runtime_compile
 	( const ecsact::rtb::options::runtime_compile& options

@@ -3,7 +3,6 @@
 #include <variant>
 #include <string>
 #include <vector>
-#include <map>
 
 namespace ecsact_rtb {
 	using subcommand_id_t = long;
@@ -36,11 +35,12 @@ namespace ecsact_rtb {
 	struct module_methods_message {
 		static constexpr auto type = "module_methods";
 		struct method_info {
+			std::string method_name;
 			bool available;
 		};
 
 		std::string module_name;
-		std::map<std::string, method_info> methods;
+		std::vector<method_info> methods;
 	};
 
 	struct subcommand_start_message {
