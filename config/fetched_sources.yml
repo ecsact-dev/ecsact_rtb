@@ -1,6 +1,6 @@
 include:
   ../include:
-    - ecsactsi_wasm/ecsactsi_wasm.h
+    - ecsact_si_wasm/ecsactsi_wasm.h
   entt/config:
     - com_github_skypjack_entt/src/entt/config/config.h
     - com_github_skypjack_entt/src/entt/config/macro.h
@@ -152,11 +152,11 @@ include:
 
 sources:
   ../src:
-    - ecsactsi_wasm/ecsactsi_wasm.cc
-    - ecsactsi_wasm/wasm_ecsact_pointer_map.cc
-    - ecsactsi_wasm/wasm_ecsact_pointer_map.hh
-    - ecsactsi_wasm/wasm_ecsact_system_execution.cc
-    - ecsactsi_wasm/wasm_ecsact_system_execution.h
+    - ecsact_si_wasm/ecsactsi_wasm.cc
+    - ecsact_si_wasm/wasm_ecsact_pointer_map.cc
+    - ecsact_si_wasm/wasm_ecsact_pointer_map.hh
+    - ecsact_si_wasm/wasm_ecsact_system_execution.cc
+    - ecsact_si_wasm/wasm_ecsact_system_execution.h
   ecsact/runtime-cpp:
     - ecsact/lib/runtime-cpp/registry.cc
   ecsact_rt_entt:
