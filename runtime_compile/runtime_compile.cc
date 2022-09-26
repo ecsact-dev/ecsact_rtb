@@ -52,9 +52,9 @@ static void msvc_runtime_compile
 		compile_proc_args.push_back("/DEBUG:FULL");
 		compile_proc_args.push_back("/MDd");
 		compile_proc_args.push_back("/Z7");
+		compile_proc_args.push_back("/EHsc");
 	} else {
 		compile_proc_args.push_back("/O2");
-		compile_proc_args.push_back("/EHsc");
 		compile_proc_args.push_back("/MD");
 		compile_proc_args.push_back("/GL");
 	}

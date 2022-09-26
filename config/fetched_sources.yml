@@ -111,6 +111,9 @@ include:
     - ecsact_rt_entt/ecsact/entt/detail/mp11_util.hh
     - ecsact_rt_entt/ecsact/entt/detail/registry_info.hh
     - ecsact_rt_entt/ecsact/entt/detail/system_execution_context.hh
+  ecsact/cpp:
+    - ecsact_lang_cpp/ecsact/cpp/type_info.hh
+    - ecsact_lang_cpp/ecsact/cpp/execution_context.hh
   boost:
     - boost_mp11_files/include/boost/mp11.hpp
   boost/mp11:

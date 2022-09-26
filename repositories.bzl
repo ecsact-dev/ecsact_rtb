@@ -101,9 +101,9 @@ def ecsact_rtb_repositories():
 
     http_archive(
         name = "ecsact_rt_entt",
-        sha256 = "01179cb8499de697a3a05f8c114ab591686cb63b7d2113a286361d5e47d0015f",
-        strip_prefix = "ecsact_rt_entt-4c4f7755b0549eb09cc01edd6fb10f05839cc5b4",
-        urls = ["https://github.com/ecsact-dev/ecsact_rt_entt/archive/4c4f7755b0549eb09cc01edd6fb10f05839cc5b4.zip"],
+        sha256 = "a41ff69de20b63f1abbf4577fbfc3a9581272d1bf93d72113e7511f14fc45067",
+        strip_prefix = "ecsact_rt_entt-46bbcf6b93c52e808aba4769b5f65df1f4ecc0e9",
+        urls = ["https://github.com/ecsact-dev/ecsact_rt_entt/archive/46bbcf6b93c52e808aba4769b5f65df1f4ecc0e9.zip"],
     )
 
     http_archive(
@@ -137,9 +137,9 @@ def ecsact_rtb_repositories():
 
     http_archive(
         name = "ecsact_lang_cpp",
-        sha256 = "7a9998065ab78fcbf4355d82ee13c137c475639592d649cbe607386244c89cf7",
-        strip_prefix = "ecsact_lang_cpp-b62b41856d04990adef0f839a754a86e398af121",
-        url = "https://github.com/ecsact-dev/ecsact_lang_cpp/archive/b62b41856d04990adef0f839a754a86e398af121.zip",
+        sha256 = "937de89cc5d594904219075f440ce0361a3dc30cc7de906bd4a797f9dbe8fdeb",
+        strip_prefix = "ecsact_lang_cpp-34badd18ea6abeb3a6f5df588c99dde6d6881ae1",
+        url = "https://github.com/ecsact-dev/ecsact_lang_cpp/archive/34badd18ea6abeb3a6f5df588c99dde6d6881ae1.zip",
     )
 
     http_archive(
