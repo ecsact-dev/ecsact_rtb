@@ -9,6 +9,7 @@ cc_library(
     visibility = ["//visibility:public"],
     deps = [
         "//progress_report",
+        "//util:report_subcommand_output",
         "@boost//libs/process",
     ],
 )

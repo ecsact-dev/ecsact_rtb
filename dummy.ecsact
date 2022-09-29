@@ -3,3 +3,7 @@ main package dummy;
 component DummyComponent {
   i32 n;
 }
+
+system DummySystem {
+	readwrite DummyComponent;
+}
