@@ -101,9 +101,9 @@ def ecsact_rtb_repositories():
 
     http_archive(
         name = "ecsact_rt_entt",
-        sha256 = "c4fbcde50de216cd6ec52691f450f9953a8dd41168f1811fae5e4d430d66a5e3",
-        strip_prefix = "ecsact_rt_entt-d905e9b4b338b3564ed7105155e6ac2c2832dfc8",
-        urls = ["https://github.com/ecsact-dev/ecsact_rt_entt/archive/d905e9b4b338b3564ed7105155e6ac2c2832dfc8.zip"],
+        sha256 = "0b4f60e4a2f92e6fd27048b6f6e703c7716c51e3d1e85f4c385fec5fdf7c6625",
+        strip_prefix = "ecsact_rt_entt-2d465f01a4667dccecde4286359625eb12203926",
+        urls = ["https://github.com/ecsact-dev/ecsact_rt_entt/archive/2d465f01a4667dccecde4286359625eb12203926.zip"],
     )
 
     http_archive(
@@ -116,9 +116,9 @@ def ecsact_rtb_repositories():
 
     http_archive(
         name = "ecsact_runtime",
-        sha256 = "039e08ed758ec59ac8c318995a3ff707224808da33da1622f4b35ab381c0a31e",
-        strip_prefix = "ecsact_runtime-0e319a80db0158e16135ebeca02497406b46be53",
-        url = "https://github.com/ecsact-dev/ecsact_runtime/archive/0e319a80db0158e16135ebeca02497406b46be53.zip",
+        sha256 = "80b722a8790447627b621877c171a96d5e7d09005bfbed7d8b388cb37cefa7b6",
+        strip_prefix = "ecsact_runtime-f7ee18fe96c4400672caccf5475835d54281582c",
+        url = "https://github.com/ecsact-dev/ecsact_runtime/archive/f7ee18fe96c4400672caccf5475835d54281582c.zip",
     )
 
     http_archive(
@@ -137,9 +137,9 @@ def ecsact_rtb_repositories():
 
     http_archive(
         name = "ecsact_lang_cpp",
-        sha256 = "5f11ed3820945d04d391f3a4eedf7e30fad4973f66a95d4dfd306c6df66964a1",
-        strip_prefix = "ecsact_lang_cpp-4f94e11d56c0e16acd48cfd2d7c1d4ff3660415a",
-        url = "https://github.com/ecsact-dev/ecsact_lang_cpp/archive/4f94e11d56c0e16acd48cfd2d7c1d4ff3660415a.zip",
+        sha256 = "2b2adc4d1a002d7f8fbe24153c9aff5fd7c616de13cf36bd520b7ec4e345965a",
+        strip_prefix = "ecsact_lang_cpp-18c6f0df8be535a1586abb7f4e3460b635976a44",
+        url = "https://github.com/ecsact-dev/ecsact_lang_cpp/archive/18c6f0df8be535a1586abb7f4e3460b635976a44.zip",
     )
 
     http_archive(
