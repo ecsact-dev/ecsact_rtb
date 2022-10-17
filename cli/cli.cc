@@ -6,7 +6,7 @@
 #include <mutex>
 #include "docopt.h"
 #include "nlohmann/json.hpp"
-#include "ecsact/parse_runtime_interop.h"
+#include "ecsact/interpret/eval.hh"
 #include "tools/cpp/runfiles/runfiles.h" // bazel runfiles
 
 #include "fetch_sources/fetch_sources.hh"
@@ -43,6 +43,13 @@ namespace ecsact_rtb {
 	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(alert_message, content)
 	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(info_message, content)
 	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(error_message, content)
+	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(
+		ecsact_error_message,
+		ecsact_source_path,
+		message,
+		line,
+		character
+	)
 	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(warning_message, content)
 	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(success_message, content)
 	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(
@@ -141,8 +148,6 @@ int main(int argc, char* argv[]) {
 	std::vector<fs::path> ecsact_file_paths;
 	{
 		auto files = args["<ecsact_file>"].asStringList();
-		std::vector<const char*> files_cstr;
-		files_cstr.reserve(files.size());
 		for(const auto& file : files) {
 			fs::path file_path(file);
 			if(!fs::exists(file_path)) {
@@ -153,13 +158,22 @@ int main(int argc, char* argv[]) {
 			}
 
 			ecsact_file_paths.push_back(file_path);
-			files_cstr.push_back(file.c_str());
 		}
 
-		ecsact_parse_runtime_interop(
-			files_cstr.data(),
-			static_cast<int32_t>(files_cstr.size())
-		);
+		auto errors = ecsact::eval_files(ecsact_file_paths);
+		if(!errors.empty()) {
+			for(auto& err : errors) {
+				ecsact_rtb::ecsact_error_message err_msg;
+
+				err_msg.ecsact_source_path =
+					ecsact_file_paths.at(err.source_index).generic_string();
+				err_msg.message = err.error_message;
+				err_msg.line = err.line;
+				err_msg.character = err.character;
+
+				reporter.report(err_msg);
+			}
+		}
 	}
 
 	auto output_path = fs::absolute(fs::path{args["--output"].asString()});

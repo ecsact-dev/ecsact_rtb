@@ -22,6 +22,29 @@ namespace ecsact_rtb {
 		std::string content;
 	};
 
+	struct ecsact_error_message {
+		static constexpr auto type = "ecsact_error";
+		/**
+		 * Ecsact file path that contains error.
+		 */
+		std::string ecsact_source_path;
+
+		/**
+		 * Error message.
+		 */
+		std::string message;
+
+		/**
+		 * Line in ecsact file that has error. -1 if line is irrelevant.
+		 */
+		int32_t line = -1;
+
+		/**
+		 * Character in line where error starts. -1 if character is irrelevant.
+		 */
+		int32_t character = -1;
+	};
+
 	struct warning_message {
 		static constexpr auto type = "warning";
 		std::string content;
@@ -78,6 +101,7 @@ namespace ecsact_rtb {
 		< alert_message
 		, info_message
 		, error_message
+		, ecsact_error_message
 		, warning_message
 		, success_message
 		, module_methods_message
