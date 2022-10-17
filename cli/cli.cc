@@ -23,18 +23,13 @@ namespace fs = std::filesystem;
 
 constexpr auto USAGE = R"(
 Usage:
-	ecsact_rtb (-h | --help)
 	ecsact_rtb <ecsact_file>... --output=<output> [--temp_dir=<temp_dir>]
 		[--compiler_path=<compiler_path>] [--ecsact_sdk=<path>] [--debug]
 		[--wasm=<wasm>]
 )";
 
-// Separate options due to regex issue on msvc compiler.
-// SEE: https://github.com/docopt/docopt.cpp/issues/49
 constexpr auto OPTIONS = R"(
 Options:
-	--help
-		Shows this help message.
 	--output=<output>
 		Output path for runtime library.
 	--temp_dir=<temp_dir>
@@ -52,6 +47,29 @@ Options:
 			wasmer   Looks for Wasmer installation and errors if not found.
 			none     No Wasm support. Will not look for Wasmer installation.
 )";
+
+// Separate USAGE and OPTIONS due to regex issue on msvc compiler.
+// SEE: https://github.com/docopt/docopt.cpp/issues/49
+docopt::Options docopt_workaround(int argc, char* argv[]) {
+	docopt::Options options;
+	try {
+		options = docopt::docopt_parse(USAGE, {argv + 1, argv + argc});
+	} catch (docopt::DocoptExitHelp const&) {
+		std::cout << USAGE << OPTIONS << std::endl;
+		std::exit(0);
+	} catch (docopt::DocoptLanguageError const& error) {
+		std::cerr << "Docopt usage string could not be parsed" << std::endl;
+		std::cerr << error.what() << std::endl;
+		std::exit(-1);
+	} catch (docopt::DocoptArgumentError const& error) {
+		std::cerr << error.what();
+		std::cout << std::endl;
+		std::cout << USAGE << OPTIONS << std::endl;
+		std::exit(-1);
+	}
+
+	return options;
+}
 
 namespace ecsact_rtb {
 	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(alert_message, content)
@@ -155,11 +173,7 @@ int main(int argc, char* argv[]) {
 		});
 	}
 
-	auto args = docopt::docopt_parse(USAGE, {argv + 1, argv + argc}, false);
-	if(args.at("--help").asBool()) {
-		std::cerr << USAGE << OPTIONS;
-		return 0;
-	}
+	auto args = docopt_workaround(argc, argv);
 
 	const auto debug_build = args.at("--debug").asBool();
 	std::string wasm_support_str = "auto";
