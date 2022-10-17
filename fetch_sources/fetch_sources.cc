@@ -39,33 +39,15 @@ namespace {
 	}
 }
 
-result::fetch_sources ecsact::rtb::fetch_sources
-	( const options::fetch_sources& options
+static void load_fetched_sources_yaml
+	( const std::string&             runfile_path
+	, const fs::path&                src_dir
+	, const fs::path&                include_dir
+	, const options::fetch_sources&  options
 	)
 {
-	using namespace std::string_literals;
 
-	// Only option for fetching sources right now is through the bazel runfiles
-	if(options.runfiles == nullptr) {
-		return {};
-	}
-
-	auto base_dir = options.temp_dir / "fetched_files";
-	if(fs::exists(base_dir)) {
-		options.reporter.report(ecsact_rtb::info_message{
-			.content = "Removing old fetched files...",
-		});
-	}
-	fs::remove_all(base_dir);
-	auto include_dir = base_dir / "include";
-	auto src_dir = base_dir / "src";
-	fs::create_directory(base_dir);
-	fs::create_directory(include_dir);
-	fs::create_directory(src_dir);
-	
-	auto config_file_path = options.runfiles->Rlocation(
-		"ecsact_rtb/config/fetched_sources.yml"
-	);
+	auto config_file_path = options.runfiles->Rlocation(runfile_path);
 	auto config_file_contents = file_get_contents<std::vector<char>>(
 		config_file_path.c_str()
 	);
@@ -108,6 +90,47 @@ result::fetch_sources ecsact::rtb::fetch_sources
 				}
 			}
 		}
+	}
+}
+
+result::fetch_sources ecsact::rtb::fetch_sources
+	( const options::fetch_sources& options
+	)
+{
+	using namespace std::string_literals;
+
+	// Only option for fetching sources right now is through the bazel runfiles
+	if(options.runfiles == nullptr) {
+		return {};
+	}
+
+	auto base_dir = options.temp_dir / "fetched_files";
+	if(fs::exists(base_dir)) {
+		options.reporter.report(ecsact_rtb::info_message{
+			.content = "Removing old fetched files...",
+		});
+	}
+	fs::remove_all(base_dir);
+	auto include_dir = base_dir / "include";
+	auto src_dir = base_dir / "src";
+	fs::create_directory(base_dir);
+	fs::create_directory(include_dir);
+	fs::create_directory(src_dir);
+
+	load_fetched_sources_yaml(
+		"ecsact_rtb/config/minimal_fetched_sources.yml",
+		src_dir,
+		include_dir,
+		options
+	);
+
+	if(options.fetch_wasm_related_sources) {
+		load_fetched_sources_yaml(
+			"ecsact_rtb/config/wasm_fetched_sources.yml",
+			src_dir,
+			include_dir,
+			options
+		);
 	}
 
 	result::fetch_sources result;

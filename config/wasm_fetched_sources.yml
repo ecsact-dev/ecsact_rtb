@@ -1,0 +1,11 @@
+include:
+  ../include:
+    - ecsact_si_wasm/ecsactsi_wasm.h
+
+sources:
+  ../src:
+    - ecsact_si_wasm/ecsactsi_wasm.cc
+    - ecsact_si_wasm/wasm_ecsact_pointer_map.cc
+    - ecsact_si_wasm/wasm_ecsact_pointer_map.hh
+    - ecsact_si_wasm/wasm_ecsact_system_execution.cc
+    - ecsact_si_wasm/wasm_ecsact_system_execution.h

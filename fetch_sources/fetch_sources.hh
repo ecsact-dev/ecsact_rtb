@@ -20,6 +20,11 @@ namespace ecsact::rtb {
 			 * be `nullptr`.
 			 */
 			bazel::tools::cpp::runfiles::Runfiles* runfiles;
+
+			/**
+			 * Fetch sources needed to compile with Wasm support.
+			 */
+			bool fetch_wasm_related_sources;
 		};
 	}
 

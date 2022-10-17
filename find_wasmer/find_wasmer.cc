@@ -20,7 +20,7 @@ result::find_wasmer ecsact::rtb::find_wasmer
 	if(options.path.has_value()) {
 		version = get_wasmer_version(*options.path);
 		path = options.path->string();
-	} else {
+	} else if(options.wasm_support != wasm_support::NONE) {
 		auto wasmer_path = bp::search_path("wasmer");
 		if(wasmer_path.empty()) {
 			auto wasmer_dir = std::getenv("WASMER_DIR");

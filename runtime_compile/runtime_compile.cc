@@ -104,7 +104,7 @@ static void msvc_runtime_compile
 		"/I" + abs_from_wd(options.generated_files.include_dir).string()
 	);
 
-	{
+	if(!wasmer.empty()) {
 		bp::ipstream wasmer_proc_flags_stdout;
 		bp::child wasmer_proc_cflags(
 			wasmer.string(),
@@ -148,7 +148,9 @@ static void msvc_runtime_compile
 	compile_proc_args.push_back("/DECSACT_DYNAMIC_API_EXPORT");
 	compile_proc_args.push_back("/DECSACT_STATIC_API_EXPORT");
 	compile_proc_args.push_back("/DECSACT_SERIALIZE_API_EXPORT");
-	compile_proc_args.push_back("/DECSACTSI_WASM_API_EXPORT");
+	if(!wasmer.empty()) {
+		compile_proc_args.push_back("/DECSACTSI_WASM_API_EXPORT");
+	}
 	compile_proc_args.push_back("/DECSACT_ENTT_RUNTIME_DYNAMIC_SYSTEM_IMPLS");
 	compile_proc_args.push_back("/DWASM_API_EXTERN=extern");
 
@@ -328,7 +330,9 @@ static void clang_runtime_compile
 	compile_proc_args.push_back("-DECSACT_STATIC_API_EXPORT");
 	compile_proc_args.push_back("-DECSACT_SERIALIZE_API_EXPORT");
 	compile_proc_args.push_back("-DECSACT_SERIALIZE_API_EXPORT");
-	compile_proc_args.push_back("-DECSACTSI_WASM_API_EXPORT");
+	if(!wasmer.empty()) {
+		compile_proc_args.push_back("-DECSACTSI_WASM_API_EXPORT");
+	}
 	compile_proc_args.push_back("-DECSACT_ENTT_RUNTIME_DYNAMIC_SYSTEM_IMPLS");
 #ifdef _WIN32
 	compile_proc_args.push_back("-D_CRT_SECURE_NO_WARNINGS");

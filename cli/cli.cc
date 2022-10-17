@@ -158,6 +158,8 @@ int main(int argc, char* argv[]) {
 	using bazel::tools::cpp::runfiles::Runfiles;
 	using ecsact::rtb::util::managed_temp_directory;
 
+	std::ios_base::sync_with_stdio(false);
+
 	stdout_progress_reporter reporter;
 
 	std::string runfiles_err;
@@ -291,6 +293,12 @@ int main(int argc, char* argv[]) {
 	auto working_directory = temp_dir / "work";
 	fs::create_directories(working_directory);
 
+	auto wasmer = find_wasmer({
+		.wasm_support = wasm_support,
+		.reporter = reporter,
+		.path = {},
+	});
+
 	runtime_compile({
 		.reporter = reporter,
 		.generated_files = generate_files({
@@ -303,6 +311,7 @@ int main(int argc, char* argv[]) {
 			.reporter = reporter,
 			.temp_dir = temp_dir,
 			.runfiles = runfiles,
+			.fetch_wasm_related_sources = !wasmer.wasmer_path.empty(),
 		}),
 		.cpp_compiler = find_cpp_compiler({
 			.reporter = reporter,
@@ -310,11 +319,7 @@ int main(int argc, char* argv[]) {
 			.path = compiler_path,
 			.runfiles = runfiles,
 		}),
-		.wasmer = find_wasmer({
-			.wasm_support = wasm_support,
-			.reporter = reporter,
-			.path = {},
-		}),
+		.wasmer = wasmer,
 		.output_path = output_path,
 		.working_directory = working_directory,
 		.debug = debug_build,
