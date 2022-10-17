@@ -173,6 +173,8 @@ int main(int argc, char* argv[]) {
 
 				reporter.report(err_msg);
 			}
+
+			return 1;
 		}
 	}
 
