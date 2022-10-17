@@ -29,6 +29,8 @@ Usage:
 		[--wasm=<wasm>]
 )";
 
+// Separate options due to regex issue on msvc compiler.
+// SEE: https://github.com/docopt/docopt.cpp/issues/49
 constexpr auto OPTIONS = R"(
 Options:
 	--help
