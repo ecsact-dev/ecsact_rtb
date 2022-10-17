@@ -4,6 +4,7 @@
 #include <memory>
 #include <iostream>
 #include <mutex>
+#include <string>
 #include "docopt.h"
 #include "nlohmann/json.hpp"
 #include "ecsact/interpret/eval.hh"
@@ -22,9 +23,12 @@ namespace fs = std::filesystem;
 
 constexpr auto USAGE = R"(
 Usage:
-	ecsact_rtb <ecsact_file>... --output=<output> [--temp_dir=<temp_dir>] 
+	ecsact_rtb <ecsact_file>... --output=<output> [--temp_dir=<temp_dir>]
 		[--compiler_path=<compiler_path>] [--ecsact_sdk=<path>] [--debug]
+		[--wasm=<wasm>]
+)";
 
+constexpr auto OPTIONS = R"(
 Options:
 	--output=<output>
 		Output path for runtime library.
@@ -37,7 +41,35 @@ Options:
 	--ecsact_sdk=<path>
 		Path to Ecsact SDK installation. Defaults to searching your PATH environment
 		variable for the Ecsact CLI and using it's install directory.
+	--wasm=<wasm>  [default: auto]
+		Configures Wasm system implementation support. Can be one of the followig:
+			auto     Looks for Wasmer installation and if not found acts like `none`.
+			wasmer   Looks for Wasmer installation and errors if not found.
+			none     No Wasm support. Will not look for Wasmer installation.
 )";
+
+// Separate USAGE and OPTIONS due to regex issue on msvc compiler.
+// SEE: https://github.com/docopt/docopt.cpp/issues/49
+docopt::Options docopt_workaround(int argc, char* argv[]) {
+	docopt::Options options;
+	try {
+		options = docopt::docopt_parse(USAGE, {argv + 1, argv + argc});
+	} catch (docopt::DocoptExitHelp const&) {
+		std::cout << USAGE << OPTIONS << std::endl;
+		std::exit(0);
+	} catch (docopt::DocoptLanguageError const& error) {
+		std::cerr << "Docopt usage string could not be parsed" << std::endl;
+		std::cerr << error.what() << std::endl;
+		std::exit(-1);
+	} catch (docopt::DocoptArgumentError const& error) {
+		std::cerr << error.what();
+		std::cout << std::endl;
+		std::cout << USAGE << OPTIONS << std::endl;
+		std::exit(-1);
+	}
+
+	return options;
+}
 
 namespace ecsact_rtb {
 	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(alert_message, content)
@@ -126,6 +158,8 @@ int main(int argc, char* argv[]) {
 	using bazel::tools::cpp::runfiles::Runfiles;
 	using ecsact::rtb::util::managed_temp_directory;
 
+	std::ios_base::sync_with_stdio(false);
+
 	stdout_progress_reporter reporter;
 
 	std::string runfiles_err;
@@ -141,9 +175,26 @@ int main(int argc, char* argv[]) {
 		});
 	}
 
-	auto args = docopt::docopt(USAGE, {argv + 1, argv + argc});
+	auto args = docopt_workaround(argc, argv);
 
 	const auto debug_build = args.at("--debug").asBool();
+	std::string wasm_support_str = "auto";
+	if(args.at("--wasm").isString()) {
+		wasm_support_str = args.at("--wasm").asString();
+	}
+
+	ecsact::rtb::wasm_support wasm_support{};
+	if(wasm_support_str == "auto") {
+		wasm_support = ecsact::rtb::wasm_support::AUTO;
+	} else if(wasm_support_str == "wasmer") {
+		wasm_support = ecsact::rtb::wasm_support::WASMER;
+	} else if(wasm_support_str == "none") {
+		wasm_support = ecsact::rtb::wasm_support::NONE;
+	} else {
+		std::cerr << "Invalid --wasm option.\n\n";
+		std::cerr << USAGE << OPTIONS;
+		return 1;
+	}
 
 	std::vector<fs::path> ecsact_file_paths;
 	{
@@ -242,6 +293,12 @@ int main(int argc, char* argv[]) {
 	auto working_directory = temp_dir / "work";
 	fs::create_directories(working_directory);
 
+	auto wasmer = find_wasmer({
+		.wasm_support = wasm_support,
+		.reporter = reporter,
+		.path = {},
+	});
+
 	runtime_compile({
 		.reporter = reporter,
 		.generated_files = generate_files({
@@ -254,6 +311,7 @@ int main(int argc, char* argv[]) {
 			.reporter = reporter,
 			.temp_dir = temp_dir,
 			.runfiles = runfiles,
+			.fetch_wasm_related_sources = !wasmer.wasmer_path.empty(),
 		}),
 		.cpp_compiler = find_cpp_compiler({
 			.reporter = reporter,
@@ -261,9 +319,7 @@ int main(int argc, char* argv[]) {
 			.path = compiler_path,
 			.runfiles = runfiles,
 		}),
-		.wasmer = find_wasmer({
-			.reporter = reporter,
-		}),
+		.wasmer = wasmer,
 		.output_path = output_path,
 		.working_directory = working_directory,
 		.debug = debug_build,
