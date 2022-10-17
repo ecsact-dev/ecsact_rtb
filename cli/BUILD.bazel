@@ -7,6 +7,11 @@ cc_binary(
     srcs = ["cli.cc"],
     copts = copts,
     data = ecsact_rtb_runfiles,
+    defines = [
+        # https://github.com/docopt/docopt.cpp/issues/49
+        "_REGEX_MAX_COMPLEXITY_COUNT=0L",
+        "_REGEX_MAX_STACK_COUNT=10000L",
+    ],
     visibility = ["//visibility:public"],
     deps = [
         "//executable_path",

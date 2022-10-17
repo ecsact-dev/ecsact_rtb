@@ -88,7 +88,9 @@ static void msvc_runtime_compile
 		compile_proc_args.push_back(src.string());
 	}
 
-	compile_proc_args.push_back("wasmer.lib");
+	if(!wasmer.empty()) {
+		compile_proc_args.push_back("wasmer.lib");
+	}
 
 	for(auto& inc_path : options.cpp_compiler.standard_include_paths) {
 		compile_proc_args.push_back("/I" + inc_path);
@@ -161,7 +163,7 @@ static void msvc_runtime_compile
 	compile_proc_args.push_back("/DEFAULTLIB:Advapi32");
 	compile_proc_args.push_back("/DEFAULTLIB:Userenv");
 
-	{
+	if(!wasmer.empty()) {
 		bp::ipstream wasmer_proc_flags_stdout;
 		bp::child wasmer_proc_cflags(
 			wasmer.string(),
@@ -355,27 +357,29 @@ static void clang_runtime_compile
 		);
 	}
 
-	options.reporter.report(ecsact_rtb::info_message{
-		.content = "Collecting wasmer compiler flags...",
-	});
-	bp::ipstream wasmer_proc_flags_stdout;
-	bp::child wasmer_proc_cflags(
-		wasmer.string(),
-		bp::start_dir(options.working_directory.string()),
-		bp::args({"config", "--cflags"}),
-		bp::std_out > wasmer_proc_flags_stdout,
-		bp::std_err > bp::null
-	);
-
-	std::getline(wasmer_proc_flags_stdout, compile_proc_args.emplace_back());
-
-	wasmer_proc_cflags.detach();
-
-	if(compile_proc_args.back().empty()) {
-		options.reporter.report(ecsact_rtb::error_message{
-			.content = "Wasmer config --cflags failed.",
+	if(!wasmer.empty()) {
+		options.reporter.report(ecsact_rtb::info_message{
+			.content = "Collecting wasmer compiler flags...",
 		});
-		return;
+		bp::ipstream wasmer_proc_flags_stdout;
+		bp::child wasmer_proc_cflags(
+			wasmer.string(),
+			bp::start_dir(options.working_directory.string()),
+			bp::args({"config", "--cflags"}),
+			bp::std_out > wasmer_proc_flags_stdout,
+			bp::std_err > bp::null
+		);
+
+		std::getline(wasmer_proc_flags_stdout, compile_proc_args.emplace_back());
+
+		wasmer_proc_cflags.detach();
+
+		if(compile_proc_args.back().empty()) {
+			options.reporter.report(ecsact_rtb::error_message{
+				.content = "Wasmer config --cflags failed.",
+			});
+			return;
+		}
 	}
 
 	options.reporter.report(ecsact_rtb::info_message{
@@ -404,24 +408,26 @@ static void clang_runtime_compile
 		.content = "Collecting wasmer linker flags...",
 	});
 
-	bp::ipstream wasmer_proc_libs_stdout;
-	bp::child wasmer_proc_libs(
-		wasmer.string(),
-		bp::start_dir(options.working_directory.string()),
-		bp::args({"config", "--libs"}),
-		bp::std_out > wasmer_proc_libs_stdout,
-		bp::std_err > bp::null
-	);
+	if(!wasmer.empty()) {
+		bp::ipstream wasmer_proc_libs_stdout;
+		bp::child wasmer_proc_libs(
+			wasmer.string(),
+			bp::start_dir(options.working_directory.string()),
+			bp::args({"config", "--libs"}),
+			bp::std_out > wasmer_proc_libs_stdout,
+			bp::std_err > bp::null
+		);
 
-	std::getline(wasmer_proc_libs_stdout, link_proc_args.emplace_back());
+		std::getline(wasmer_proc_libs_stdout, link_proc_args.emplace_back());
 
-	wasmer_proc_libs.detach();
+		wasmer_proc_libs.detach();
 
-	if(link_proc_args.back().empty()) {
-		options.reporter.report(ecsact_rtb::error_message{
-			.content = "wasmer config --libs failed.",
-		});
-		return;
+		if(link_proc_args.back().empty()) {
+			options.reporter.report(ecsact_rtb::error_message{
+				.content = "wasmer config --libs failed.",
+			});
+			return;
+		}
 	}
 
 	link_proc_args.push_back("-shared");

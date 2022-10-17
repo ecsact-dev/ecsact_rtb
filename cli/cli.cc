@@ -4,6 +4,7 @@
 #include <memory>
 #include <iostream>
 #include <mutex>
+#include <string>
 #include "docopt.h"
 #include "nlohmann/json.hpp"
 #include "ecsact/interpret/eval.hh"
@@ -22,10 +23,16 @@ namespace fs = std::filesystem;
 
 constexpr auto USAGE = R"(
 Usage:
-	ecsact_rtb <ecsact_file>... --output=<output> [--temp_dir=<temp_dir>] 
+	ecsact_rtb (-h | --help)
+	ecsact_rtb <ecsact_file>... --output=<output> [--temp_dir=<temp_dir>]
 		[--compiler_path=<compiler_path>] [--ecsact_sdk=<path>] [--debug]
+		[--wasm=<wasm>]
+)";
 
+constexpr auto OPTIONS = R"(
 Options:
+	--help
+		Shows this help message.
 	--output=<output>
 		Output path for runtime library.
 	--temp_dir=<temp_dir>
@@ -37,6 +44,11 @@ Options:
 	--ecsact_sdk=<path>
 		Path to Ecsact SDK installation. Defaults to searching your PATH environment
 		variable for the Ecsact CLI and using it's install directory.
+	--wasm=<wasm>  [default: auto]
+		Configures Wasm system implementation support. Can be one of the followig:
+			auto     Looks for Wasmer installation and if not found acts like `none`.
+			wasmer   Looks for Wasmer installation and errors if not found.
+			none     No Wasm support. Will not look for Wasmer installation.
 )";
 
 namespace ecsact_rtb {
@@ -141,9 +153,30 @@ int main(int argc, char* argv[]) {
 		});
 	}
 
-	auto args = docopt::docopt(USAGE, {argv + 1, argv + argc});
+	auto args = docopt::docopt_parse(USAGE, {argv + 1, argv + argc}, false);
+	if(args.at("--help").asBool()) {
+		std::cerr << USAGE << OPTIONS;
+		return 0;
+	}
 
 	const auto debug_build = args.at("--debug").asBool();
+	std::string wasm_support_str = "auto";
+	if(args.at("--wasm").isString()) {
+		wasm_support_str = args.at("--wasm").asString();
+	}
+
+	ecsact::rtb::wasm_support wasm_support{};
+	if(wasm_support_str == "auto") {
+		wasm_support = ecsact::rtb::wasm_support::AUTO;
+	} else if(wasm_support_str == "wasmer") {
+		wasm_support = ecsact::rtb::wasm_support::WASMER;
+	} else if(wasm_support_str == "none") {
+		wasm_support = ecsact::rtb::wasm_support::NONE;
+	} else {
+		std::cerr << "Invalid --wasm option.\n\n";
+		std::cerr << USAGE << OPTIONS;
+		return 1;
+	}
 
 	std::vector<fs::path> ecsact_file_paths;
 	{
@@ -262,7 +295,9 @@ int main(int argc, char* argv[]) {
 			.runfiles = runfiles,
 		}),
 		.wasmer = find_wasmer({
+			.wasm_support = wasm_support,
 			.reporter = reporter,
+			.path = {},
 		}),
 		.output_path = output_path,
 		.working_directory = working_directory,

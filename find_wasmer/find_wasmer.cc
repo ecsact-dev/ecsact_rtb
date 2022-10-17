@@ -33,22 +33,28 @@ result::find_wasmer ecsact::rtb::find_wasmer
 		}
 
 		if(wasmer_path.empty()) {
-			options.reporter.report(ecsact_rtb::error_message{
-				.content =
-					"Failed to find wasmer in PATH or with WASMER_DIR environment "s +
-					"variables."s
+			if(options.wasm_support == wasm_support::WASMER) {
+				options.reporter.report(ecsact_rtb::error_message{
+					.content =
+						"Failed to find wasmer in PATH or with WASMER_DIR environment "s +
+						"variables."s
+				});
+				std::exit(1);
+			} else {
+				path = "";
+				version = "";
+				options.reporter.report(ecsact_rtb::info_message{
+					.content = "Building without Wasm support"s,
+				});
+			}
+		} else {
+			path = wasmer_path.string();
+			version = get_wasmer_version(path);
+			options.reporter.report(ecsact_rtb::info_message{
+				.content = "Using wasmer at "s + path + " ("s + version + ")"s,
 			});
-			std::exit(1);
 		}
-		
-		std::filesystem::path path_thing = wasmer_path.string();
-		version = get_wasmer_version(path_thing);
-		path = wasmer_path.string();
 	}
-
-	options.reporter.report(ecsact_rtb::info_message{
-		.content = "Using wasmer at "s + path + " ("s + version + ")"s,
-	});
 
 	return {
 		.wasmer_version = version,
