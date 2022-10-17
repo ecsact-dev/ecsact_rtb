@@ -20,7 +20,7 @@ cc_binary(
         "//util:managed_temp_directory",
         "@bazel_tools//tools/cpp/runfiles",
         "@bazelregistry_docopt_cpp//:docopt",
-        "@ecsact_parse_runtime_interop",
+        "@ecsact_interpret",
         "@nlohmann_json//:json",
     ],
 )
