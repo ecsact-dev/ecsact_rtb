@@ -100,7 +100,8 @@ find_msvc(const options::find_cpp_compiler& options, std::string vswhere_path) {
 		options.reporter.report(ecsact_rtb::error_message{
 			.content =
 				"Expected array in vswhere output. Instead got the following: "s +
-				vswhere_output.dump(2, ' ')});
+				vswhere_output.dump(2, ' '),
+		});
 		std::exit(10);
 	}
 
@@ -111,7 +112,8 @@ find_msvc(const options::find_cpp_compiler& options, std::string vswhere_path) {
 				"Could not find Visual Studio installation with vswhere. Make sure "s +
 				"you have the following components installed:\n"s +
 				" - Microsoft.VisualStudio.Component.VC.Tools.x86.x64\n"s +
-				" - Microsoft.VisualStudio.Component.Windows10SDK\n"s});
+				" - Microsoft.VisualStudio.Component.Windows10SDK\n"s,
+		});
 		std::exit(3);
 	}
 
@@ -125,11 +127,11 @@ find_msvc(const options::find_cpp_compiler& options, std::string vswhere_path) {
 
 	{
 		std::ofstream env_extract_script_stream(vs_extract_env_path);
-		env_extract_script_stream << "@echo off\n"
-															<< "setlocal EnableDelayedExpansion\n"
-															<< "call \"" << vsdevcmd_path
-															<< "\" -arch=x64 > NUL\n"
-															<< "echo !%*!\n";
+		env_extract_script_stream //
+			<< "@echo off\n"
+			<< "setlocal EnableDelayedExpansion\n"
+			<< "call \"" << vsdevcmd_path << "\" -arch=x64 > NUL\n"
+			<< "echo !%*!\n";
 		env_extract_script_stream.flush();
 		env_extract_script_stream.close();
 	}

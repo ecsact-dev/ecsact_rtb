@@ -75,7 +75,8 @@ static void run_codegen(
 			codegen_command += arg + " ";
 		}
 		options.reporter.report(ecsact_rtb::info_message{
-			.content = "Codegen Command: "s + codegen_command});
+			.content = "Codegen Command: "s + codegen_command,
+		});
 
 		options.reporter.report(ecsact_rtb::error_message{
 			.content =

@@ -44,7 +44,8 @@ result::find_ecsact_cli ecsact::rtb::find_ecsact_cli(
 
 	if(!path.empty()) {
 		options.reporter.report(ecsact_rtb::info_message{
-			.content = "Using Ecsact CLI: "s + path});
+			.content = "Using Ecsact CLI: "s + path,
+		});
 	}
 
 	return {

@@ -34,7 +34,8 @@ result::find_wasmer ecsact::rtb::find_wasmer( //
 				options.reporter.report(ecsact_rtb::error_message{
 					.content =
 						"Failed to find wasmer in PATH or with WASMER_DIR environment "s +
-						"variables."s});
+						"variables."s,
+				});
 				std::exit(1);
 			} else {
 				path = "";
