@@ -11,13 +11,12 @@ namespace fs = std::filesystem;
 namespace bp = boost::process;
 using namespace ecsact::rtb;
 
-result::find_ecsact_cli ecsact::rtb::find_ecsact_cli
-	( const options::find_ecsact_cli& options
-	)
-{
+result::find_ecsact_cli ecsact::rtb::find_ecsact_cli(
+	const options::find_ecsact_cli& options
+) {
 	using namespace std::string_literals;
 	using executable_path::executable_path;
-	
+
 	std::string path;
 	std::string search_exe = "ecsact";
 #if _WIN32
@@ -45,8 +44,7 @@ result::find_ecsact_cli ecsact::rtb::find_ecsact_cli
 
 	if(!path.empty()) {
 		options.reporter.report(ecsact_rtb::info_message{
-			.content = "Using Ecsact CLI: "s + path
-		});
+			.content = "Using Ecsact CLI: "s + path});
 	}
 
 	return {

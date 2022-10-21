@@ -10,47 +10,39 @@ namespace fs = std::filesystem;
 using namespace ecsact::rtb;
 
 namespace {
-	template<class CharContainer>
-	size_t file_get_contents
-		( const char*     filename
-		, CharContainer*  v
-		)
-	{
-		::FILE *fp = ::fopen(filename, "rb");
-		::fseek(fp, 0, SEEK_END);
-		long sz = ::ftell(fp);
-		v->resize(static_cast<typename CharContainer::size_type>(sz));
-		if(sz) {
-			::rewind(fp);
-			size_t ret = ::fread(&(*v)[0], 1, v->size(), fp);
-		}
-		::fclose(fp);
-		return v->size();
-	}
 
-	template<class CharContainer>
-	CharContainer file_get_contents
-		( const char* filename
-		)
-	{
-		CharContainer cc;
-		file_get_contents(filename, &cc);
-		return cc;
+template<class CharContainer>
+size_t file_get_contents(const char* filename, CharContainer* v) {
+	::FILE* fp = ::fopen(filename, "rb");
+	::fseek(fp, 0, SEEK_END);
+	long sz = ::ftell(fp);
+	v->resize(static_cast<typename CharContainer::size_type>(sz));
+	if(sz) {
+		::rewind(fp);
+		size_t ret = ::fread(&(*v)[0], 1, v->size(), fp);
 	}
+	::fclose(fp);
+	return v->size();
 }
 
-static void load_fetched_sources_yaml
-	( const std::string&             runfile_path
-	, const fs::path&                src_dir
-	, const fs::path&                include_dir
-	, const options::fetch_sources&  options
-	)
-{
+template<class CharContainer>
+CharContainer file_get_contents(const char* filename) {
+	CharContainer cc;
+	file_get_contents(filename, &cc);
+	return cc;
+}
 
+} // namespace
+
+static void load_fetched_sources_yaml(
+	const std::string&            runfile_path,
+	const fs::path&               src_dir,
+	const fs::path&               include_dir,
+	const options::fetch_sources& options
+) {
 	auto config_file_path = options.runfiles->Rlocation(runfile_path);
-	auto config_file_contents = file_get_contents<std::vector<char>>(
-		config_file_path.c_str()
-	);
+	auto config_file_contents =
+		file_get_contents<std::vector<char>>(config_file_path.c_str());
 	auto tree = ryml::parse_in_place(ryml::to_substr(config_file_contents));
 	auto root = tree.rootref();
 
@@ -61,7 +53,7 @@ static void load_fetched_sources_yaml
 
 		for(const auto& item : entry.children()) {
 			std::string item_str{item.val().str, item.val().len};
-			auto inc_runfile_path = options.runfiles->Rlocation(item_str);
+			auto        inc_runfile_path = options.runfiles->Rlocation(item_str);
 			if(!inc_runfile_path.empty()) {
 				if(fs::exists(inc_runfile_path)) {
 					fs::copy_file(
@@ -80,7 +72,7 @@ static void load_fetched_sources_yaml
 
 		for(const auto& item : entry.children()) {
 			std::string item_str{item.val().str, item.val().len};
-			auto inc_runfile_path = options.runfiles->Rlocation(item_str);
+			auto        inc_runfile_path = options.runfiles->Rlocation(item_str);
 			if(!inc_runfile_path.empty()) {
 				if(fs::exists(inc_runfile_path)) {
 					fs::copy_file(
@@ -93,10 +85,9 @@ static void load_fetched_sources_yaml
 	}
 }
 
-result::fetch_sources ecsact::rtb::fetch_sources
-	( const options::fetch_sources& options
-	)
-{
+result::fetch_sources ecsact::rtb::fetch_sources(
+	const options::fetch_sources& options
+) {
 	using namespace std::string_literals;
 
 	// Only option for fetching sources right now is through the bazel runfiles

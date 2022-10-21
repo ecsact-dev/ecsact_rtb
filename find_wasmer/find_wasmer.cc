@@ -8,10 +8,9 @@ namespace fs = std::filesystem;
 namespace bp = boost::process;
 using namespace ecsact::rtb;
 
-result::find_wasmer ecsact::rtb::find_wasmer
-	( const options::find_wasmer& options
-	)
-{
+result::find_wasmer ecsact::rtb::find_wasmer( //
+	const options::find_wasmer& options
+) {
 	using namespace std::string_literals;
 
 	std::string version;
@@ -25,10 +24,8 @@ result::find_wasmer ecsact::rtb::find_wasmer
 		if(wasmer_path.empty()) {
 			auto wasmer_dir = std::getenv("WASMER_DIR");
 			if(wasmer_dir != nullptr) {
-				wasmer_path = bp::search_path(
-					"wasmer",
-					{(fs::path{wasmer_dir} / "bin").string()}
-				);
+				wasmer_path =
+					bp::search_path("wasmer", {(fs::path{wasmer_dir} / "bin").string()});
 			}
 		}
 
@@ -37,8 +34,7 @@ result::find_wasmer ecsact::rtb::find_wasmer
 				options.reporter.report(ecsact_rtb::error_message{
 					.content =
 						"Failed to find wasmer in PATH or with WASMER_DIR environment "s +
-						"variables."s
-				});
+						"variables."s});
 				std::exit(1);
 			} else {
 				path = "";
@@ -62,22 +58,15 @@ result::find_wasmer ecsact::rtb::find_wasmer
 	};
 }
 
-std::string ecsact::rtb::get_wasmer_version
-	( std::filesystem::path wasmer_path
-	)
-{
+std::string ecsact::rtb::get_wasmer_version(std::filesystem::path wasmer_path) {
 	namespace bp = boost::process;
 	boost::filesystem::path boost_path = wasmer_path.string();
-	bp::ipstream is;
-	bp::child process(
-		boost_path,
-		"--version",
-		bp::std_out > is,
-		bp::std_err > bp::null
-	);
+	bp::ipstream            is;
+	bp::child
+		process(boost_path, "--version", bp::std_out > is, bp::std_err > bp::null);
 
 	std::vector<std::string> data;
-	std::string line;
+	std::string              line;
 
 	while(process.running() && std::getline(is, line) && !line.empty()) {
 		data.push_back(line);
