@@ -18,16 +18,15 @@
 namespace bp = boost::process;
 namespace fs = std::filesystem;
 
-#define SET_MESSAGE_METHOD(fn_name, lib, message)\
-	message.methods.push_back({\
-		.method_name = #fn_name,\
-		.available = lib.has(#fn_name),\
+#define SET_MESSAGE_METHOD(fn_name, lib, message) \
+	message.methods.push_back({                     \
+		.method_name = #fn_name,                      \
+		.available = lib.has(#fn_name),               \
 	});
 
-static void msvc_runtime_compile
-	( const ecsact::rtb::options::runtime_compile& options
-	)
-{
+static void msvc_runtime_compile(
+	const ecsact::rtb::options::runtime_compile& options
+) {
 	using namespace std::string_literals;
 	using ecsact::cc_lang_support::cpp_identifier;
 	using ecsact::rtb::util::report_subcommand_output;
@@ -38,11 +37,13 @@ static void msvc_runtime_compile
 	// Relative path to absolute path from working directory
 	auto abs_from_wd = [&options](fs::path rel_path) {
 		assert(!rel_path.empty());
-		if(rel_path.is_absolute()) return rel_path;
-		return fs::canonical(options.working_directory / fs::relative(
-			rel_path,
-			options.working_directory
-		));
+		if(rel_path.is_absolute()) {
+			return rel_path;
+		}
+		return fs::canonical(
+			options.working_directory /
+			fs::relative(rel_path, options.working_directory)
+		);
 	};
 
 	std::vector<std::string> compile_proc_args;
@@ -65,14 +66,18 @@ static void msvc_runtime_compile
 
 	for(auto src : options.fetched_sources.source_files) {
 		// Don't pass headers to compiler
-		if(src.extension().string().starts_with(".h")) continue;
+		if(src.extension().string().starts_with(".h")) {
+			continue;
+		}
 
 		source_files.push_back(abs_from_wd(src));
 	}
 
 	for(auto src : options.generated_files.source_file_paths) {
 		// Don't pass headers to compiler
-		if(src.extension().string().starts_with(".h")) continue;
+		if(src.extension().string().starts_with(".h")) {
+			continue;
+		}
 
 		source_files.push_back(abs_from_wd(src));
 	}
@@ -106,13 +111,13 @@ static void msvc_runtime_compile
 
 	if(!wasmer.empty()) {
 		bp::ipstream wasmer_proc_flags_stdout;
-		bp::child wasmer_proc_cflags(
-			wasmer.string(),
-			bp::start_dir(options.working_directory.string()),
-			bp::args({"config", "--includedir"}),
-			bp::std_out > wasmer_proc_flags_stdout,
-			bp::std_err > bp::null
-		);
+		bp::child    wasmer_proc_cflags(
+      wasmer.string(),
+      bp::start_dir(options.working_directory.string()),
+      bp::args({"config", "--includedir"}),
+      bp::std_out > wasmer_proc_flags_stdout,
+      bp::std_err > bp::null
+    );
 
 		std::getline(wasmer_proc_flags_stdout, compile_proc_args.emplace_back());
 		compile_proc_args.back() = "/I" + compile_proc_args.back();
@@ -127,22 +132,19 @@ static void msvc_runtime_compile
 	}
 
 	auto main_package_name = ecsact::meta::package_name(main_package_id);
-	auto main_package_source_file_path = fs::path{ecsact_meta_package_file_path(
-		main_package_id
-	)};
+	auto main_package_source_file_path =
+		fs::path{ecsact_meta_package_file_path(main_package_id)};
 
 	auto meta_header = main_package_source_file_path.filename();
-	meta_header.replace_extension(
-		meta_header.extension().string() + ".meta.hh"
-	);
+	meta_header.replace_extension(meta_header.extension().string() + ".meta.hh");
 
 	compile_proc_args.push_back(
 		"/DECSACT_ENTT_RUNTIME_USER_HEADER=\"" + meta_header.string() + "\""
 	);
 
 	compile_proc_args.push_back(
-		"/DECSACT_ENTT_RUNTIME_PACKAGE=::" +
-		cpp_identifier(main_package_name) + "::package"
+		"/DECSACT_ENTT_RUNTIME_PACKAGE=::" + cpp_identifier(main_package_name) +
+		"::package"
 	);
 	compile_proc_args.push_back("/DECSACT_CORE_API_EXPORT");
 	compile_proc_args.push_back("/DECSACT_DYNAMIC_API_EXPORT");
@@ -167,13 +169,13 @@ static void msvc_runtime_compile
 
 	if(!wasmer.empty()) {
 		bp::ipstream wasmer_proc_flags_stdout;
-		bp::child wasmer_proc_cflags(
-			wasmer.string(),
-			bp::start_dir(options.working_directory.string()),
-			bp::args({"config", "--libdir"}),
-			bp::std_out > wasmer_proc_flags_stdout,
-			bp::std_err > bp::null
-		);
+		bp::child    wasmer_proc_cflags(
+      wasmer.string(),
+      bp::start_dir(options.working_directory.string()),
+      bp::args({"config", "--libdir"}),
+      bp::std_out > wasmer_proc_flags_stdout,
+      bp::std_err > bp::null
+    );
 
 		std::getline(wasmer_proc_flags_stdout, compile_proc_args.emplace_back());
 		compile_proc_args.back() = "/LIBPATH:" + compile_proc_args.back();
@@ -186,7 +188,7 @@ static void msvc_runtime_compile
 
 	report_subcommand_output compile_stdout;
 	report_subcommand_output compile_stderr;
-	
+
 	bp::child compile_proc(
 		cl.string(),
 		bp::start_dir(options.working_directory.string()),
@@ -195,9 +197,8 @@ static void msvc_runtime_compile
 		bp::std_err > compile_stderr.output_stream
 	);
 
-	auto compile_subcommand_id = static_cast<ecsact_rtb::subcommand_id_t>(
-		compile_proc.id()
-	);
+	auto compile_subcommand_id =
+		static_cast<ecsact_rtb::subcommand_id_t>(compile_proc.id());
 	options.reporter.report(ecsact_rtb::subcommand_start_message{
 		.id = compile_subcommand_id,
 		.executable = cl.string(),
@@ -226,8 +227,7 @@ static void msvc_runtime_compile
 
 	if(compile_exit_code != 0) {
 		options.reporter.report(ecsact_rtb::error_message{
-			.content =
-				"Runtime compile failed. Exited with code "s +
+			.content = "Runtime compile failed. Exited with code "s +
 				std::to_string(compile_exit_code),
 		});
 		std::exit(compile_exit_code);
@@ -241,9 +241,8 @@ static void msvc_runtime_compile
 	fs::rename(temp_out, options.output_path, ec);
 	if(ec) {
 		options.reporter.report(ecsact_rtb::error_message{
-			.content =
-				"Moving " + temp_out.string() + " to " + options.output_path.string() +
-				" failed. " + ec.message(),
+			.content = "Moving " + temp_out.string() + " to " +
+				options.output_path.string() + " failed. " + ec.message(),
 		});
 		std::exit(1);
 	}
@@ -254,18 +253,16 @@ static void msvc_runtime_compile
 		fs::rename(temp_pdb_out, pdb_out, ec);
 		if(ec) {
 			options.reporter.report(ecsact_rtb::warning_message{
-				.content =
-					"Moving " + temp_pdb_out.string() + " to " + pdb_out.string() +
-					" failed. " + ec.message(),
+				.content = "Moving " + temp_pdb_out.string() + " to " +
+					pdb_out.string() + " failed. " + ec.message(),
 			});
 		}
 	}
 }
 
-static void clang_runtime_compile
-	( const ecsact::rtb::options::runtime_compile& options
-	)
-{
+static void clang_runtime_compile(
+	const ecsact::rtb::options::runtime_compile& options
+) {
 	using namespace std::string_literals;
 	using ecsact::cc_lang_support::cpp_identifier;
 
@@ -287,17 +284,17 @@ static void clang_runtime_compile
 	compile_proc_args.push_back("-fPIC");
 #endif
 	compile_proc_args.push_back("-std=c++20");
-	
+
 	compile_proc_args.push_back("-isystem");
-	compile_proc_args.push_back(fs::relative(
-		options.fetched_sources.include_dir,
-		options.working_directory
-	).generic_string());
+	compile_proc_args.push_back(
+		fs::relative(options.fetched_sources.include_dir, options.working_directory)
+			.generic_string()
+	);
 	compile_proc_args.push_back("-isystem");
-	compile_proc_args.push_back(fs::relative(
-		options.generated_files.include_dir,
-		options.working_directory
-	).generic_string());
+	compile_proc_args.push_back(
+		fs::relative(options.generated_files.include_dir, options.working_directory)
+			.generic_string()
+	);
 
 	auto main_package_id = ecsact_meta_main_package();
 	if((int)main_package_id == -1) {
@@ -308,22 +305,19 @@ static void clang_runtime_compile
 	}
 
 	auto main_package_name = ecsact::meta::package_name(main_package_id);
-	auto main_package_source_file_path = fs::path{ecsact_meta_package_file_path(
-		main_package_id
-	)};
+	auto main_package_source_file_path =
+		fs::path{ecsact_meta_package_file_path(main_package_id)};
 
 	auto meta_header = main_package_source_file_path.filename();
-	meta_header.replace_extension(
-		meta_header.extension().string() + ".meta.hh"
-	);
+	meta_header.replace_extension(meta_header.extension().string() + ".meta.hh");
 
 	compile_proc_args.push_back(
 		"-DECSACT_ENTT_RUNTIME_USER_HEADER=\"" + meta_header.string() + "\""
 	);
 
 	compile_proc_args.push_back(
-		"-DECSACT_ENTT_RUNTIME_PACKAGE=::" +
-		cpp_identifier(main_package_name) + "::package"
+		"-DECSACT_ENTT_RUNTIME_PACKAGE=::" + cpp_identifier(main_package_name) +
+		"::package"
 	);
 	compile_proc_args.push_back("-DECSACT_CORE_API_EXPORT");
 	compile_proc_args.push_back("-DECSACT_DYNAMIC_API_EXPORT");
@@ -345,7 +339,9 @@ static void clang_runtime_compile
 	compile_proc_args.push_back("-O3");
 	for(auto src : options.fetched_sources.source_files) {
 		// Do pass headers to compiler
-		if(src.extension().string().starts_with(".h")) continue;
+		if(src.extension().string().starts_with(".h")) {
+			continue;
+		}
 
 		compile_proc_args.push_back(
 			fs::relative(src, options.working_directory).generic_string()
@@ -354,7 +350,9 @@ static void clang_runtime_compile
 
 	for(auto src : options.generated_files.source_file_paths) {
 		// Do pass headers to compiler
-		if(src.extension().string().starts_with(".h")) continue;
+		if(src.extension().string().starts_with(".h")) {
+			continue;
+		}
 
 		compile_proc_args.push_back(
 			fs::relative(src, options.working_directory).generic_string()
@@ -366,13 +364,13 @@ static void clang_runtime_compile
 			.content = "Collecting wasmer compiler flags...",
 		});
 		bp::ipstream wasmer_proc_flags_stdout;
-		bp::child wasmer_proc_cflags(
-			wasmer.string(),
-			bp::start_dir(options.working_directory.string()),
-			bp::args({"config", "--cflags"}),
-			bp::std_out > wasmer_proc_flags_stdout,
-			bp::std_err > bp::null
-		);
+		bp::child    wasmer_proc_cflags(
+      wasmer.string(),
+      bp::start_dir(options.working_directory.string()),
+      bp::args({"config", "--cflags"}),
+      bp::std_out > wasmer_proc_flags_stdout,
+      bp::std_err > bp::null
+    );
 
 		std::getline(wasmer_proc_flags_stdout, compile_proc_args.emplace_back());
 
@@ -399,8 +397,7 @@ static void clang_runtime_compile
 
 	if(auto exit_code = compile_proc.exit_code(); exit_code != 0) {
 		options.reporter.report(ecsact_rtb::error_message{
-			.content =
-				"Runtime compile failed. Exited with code "s +
+			.content = "Runtime compile failed. Exited with code "s +
 				std::to_string(exit_code),
 		});
 		return;
@@ -414,13 +411,13 @@ static void clang_runtime_compile
 
 	if(!wasmer.empty()) {
 		bp::ipstream wasmer_proc_libs_stdout;
-		bp::child wasmer_proc_libs(
-			wasmer.string(),
-			bp::start_dir(options.working_directory.string()),
-			bp::args({"config", "--libs"}),
-			bp::std_out > wasmer_proc_libs_stdout,
-			bp::std_err > bp::null
-		);
+		bp::child    wasmer_proc_libs(
+      wasmer.string(),
+      bp::start_dir(options.working_directory.string()),
+      bp::args({"config", "--libs"}),
+      bp::std_out > wasmer_proc_libs_stdout,
+      bp::std_err > bp::null
+    );
 
 		std::getline(wasmer_proc_libs_stdout, link_proc_args.emplace_back());
 
@@ -466,10 +463,7 @@ static void clang_runtime_compile
 	}
 }
 
-void ecsact::rtb::runtime_compile
-	( const options::runtime_compile& options
-	)
-{
+void ecsact::rtb::runtime_compile(const options::runtime_compile& options) {
 	using namespace std::string_literals;
 	using magic_enum::enum_name;
 
@@ -482,8 +476,7 @@ void ecsact::rtb::runtime_compile
 			break;
 		default:
 			options.reporter.report(ecsact_rtb::error_message{
-				.content =
-					"Unhandled compiler type: "s +
+				.content = "Unhandled compiler type: "s +
 					std::string(enum_name(options.cpp_compiler.compiler_type)),
 			});
 			std::exit(10);
@@ -493,7 +486,7 @@ void ecsact::rtb::runtime_compile
 		.content = "Runtime build complete " + options.output_path.generic_string(),
 	});
 
-	boost::system::error_code load_ec;
+	boost::system::error_code  load_ec;
 	boost::dll::shared_library runtime_lib(
 		options.output_path.string(),
 		boost::dll::load_mode::default_mode,

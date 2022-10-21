@@ -54,14 +54,14 @@ docopt::Options docopt_workaround(int argc, char* argv[]) {
 	docopt::Options options;
 	try {
 		options = docopt::docopt_parse(USAGE, {argv + 1, argv + argc});
-	} catch (docopt::DocoptExitHelp const&) {
+	} catch(docopt::DocoptExitHelp const&) {
 		std::cout << USAGE << OPTIONS << std::endl;
 		std::exit(0);
-	} catch (docopt::DocoptLanguageError const& error) {
+	} catch(docopt::DocoptLanguageError const& error) {
 		std::cerr << "Docopt usage string could not be parsed" << std::endl;
 		std::cerr << error.what() << std::endl;
 		std::exit(-1);
-	} catch (docopt::DocoptArgumentError const& error) {
+	} catch(docopt::DocoptArgumentError const& error) {
 		std::cerr << error.what();
 		std::cout << std::endl;
 		std::cout << USAGE << OPTIONS << std::endl;
@@ -72,63 +72,43 @@ docopt::Options docopt_workaround(int argc, char* argv[]) {
 }
 
 namespace ecsact_rtb {
-	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(alert_message, content)
-	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(info_message, content)
-	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(error_message, content)
-	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(
-		ecsact_error_message,
-		ecsact_source_path,
-		message,
-		line,
-		character
-	)
-	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(warning_message, content)
-	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(success_message, content)
-	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(
-		module_methods_message::method_info,
-		method_name,
-		available
-	)
-	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(
-		module_methods_message,
-		module_name,
-		methods
-	)
-	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(
-		subcommand_start_message,
-		id,
-		executable,
-		arguments
-	)
-	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(
-		subcommand_stdout_message,
-		id,
-		line
-	)
-	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(
-		subcommand_stderr_message,
-		id,
-		line
-	)
-	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(
-		subcommand_progress_message,
-		id,
-		description
-	)
-	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(
-		subcommand_end_message,
-		id,
-		exit_code
-	)
-}
+
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(alert_message, content)
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(info_message, content)
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(error_message, content)
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(
+	ecsact_error_message,
+	ecsact_source_path,
+	message,
+	line,
+	character
+)
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(warning_message, content)
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(success_message, content)
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(
+	module_methods_message::method_info,
+	method_name,
+	available
+)
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(module_methods_message, module_name, methods)
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(
+	subcommand_start_message,
+	id,
+	executable,
+	arguments
+)
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(subcommand_stdout_message, id, line)
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(subcommand_stderr_message, id, line)
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(subcommand_progress_message, id, description)
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(subcommand_end_message, id, exit_code)
+
+} // namespace ecsact_rtb
 
 class stdout_progress_reporter : public ecsact_rtb::progress_reporter {
 	std::mutex _mutex;
+
 	template<typename MessageT>
-	void _report
-		( MessageT& message
-		)
-	{
+	void _report(MessageT& message) {
 		auto message_json = "{}"_json;
 		to_json(message_json, message);
 		message_json["type"] = MessageT::type;
@@ -136,34 +116,29 @@ class stdout_progress_reporter : public ecsact_rtb::progress_reporter {
 	}
 
 public:
-	void report
-		( ecsact_rtb::message_variant_t message
-		)
-	{
-		std::visit([this](auto& message) {
-			_report(message);
-		}, message);
+	void report(ecsact_rtb::message_variant_t message) {
+		std::visit([this](auto& message) { _report(message); }, message);
 	}
 };
 
 int main(int argc, char* argv[]) {
 	using namespace std::string_literals;
-	using ecsact::rtb::find_wasmer;
-	using ecsact::rtb::fetch_sources;
-	using ecsact::rtb::generate_files;
-	using ecsact::rtb::find_ecsact_cli;
-	using ecsact::rtb::runtime_compile;
-	using ecsact::rtb::find_cpp_compiler;
-	using executable_path::executable_path;
 	using bazel::tools::cpp::runfiles::Runfiles;
+	using ecsact::rtb::fetch_sources;
+	using ecsact::rtb::find_cpp_compiler;
+	using ecsact::rtb::find_ecsact_cli;
+	using ecsact::rtb::find_wasmer;
+	using ecsact::rtb::generate_files;
+	using ecsact::rtb::runtime_compile;
 	using ecsact::rtb::util::managed_temp_directory;
+	using executable_path::executable_path;
 
 	std::ios_base::sync_with_stdio(false);
 
 	stdout_progress_reporter reporter;
 
 	std::string runfiles_err;
-	auto argv0 = executable_path().string();
+	auto        argv0 = executable_path().string();
 	if(argv0.empty()) {
 		argv0 = std::string(argv[0]);
 	}
@@ -177,7 +152,7 @@ int main(int argc, char* argv[]) {
 
 	auto args = docopt_workaround(argc, argv);
 
-	const auto debug_build = args.at("--debug").asBool();
+	const auto  debug_build = args.at("--debug").asBool();
 	std::string wasm_support_str = "auto";
 	if(args.at("--wasm").isString()) {
 		wasm_support_str = args.at("--wasm").asString();
@@ -234,8 +209,7 @@ int main(int argc, char* argv[]) {
 #if defined(_WIN32)
 	if(output_path.extension() != ".dll") {
 		reporter.report(ecsact_rtb::error_message{
-			.content =
-				"Cross compilation not supported. Only allowed to build "s +
+			.content = "Cross compilation not supported. Only allowed to build "s +
 				".dll runtimes.",
 		});
 		return 1;
@@ -243,8 +217,7 @@ int main(int argc, char* argv[]) {
 #elif defined(__linux__)
 	if(output_path.extension() != ".so") {
 		reporter.report(ecsact_rtb::error_message{
-			.content =
-				"Cross compilation not supported. Only allowed to build "s +
+			.content = "Cross compilation not supported. Only allowed to build "s +
 				".so runtimes.",
 		});
 		return 1;
@@ -262,9 +235,10 @@ int main(int argc, char* argv[]) {
 		temp_dir_v.emplace<managed_temp_directory>();
 	}
 
-	const auto temp_dir = std::visit([&](const auto& temp_dir) -> fs::path {		
-		return temp_dir;
-	}, temp_dir_v);
+	const auto temp_dir = std::visit(
+		[&](const auto& temp_dir) -> fs::path { return temp_dir; },
+		temp_dir_v
+	);
 
 	std::optional<std::filesystem::path> compiler_path;
 	if(args["--compiler_path"].isString()) {
