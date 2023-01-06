@@ -264,6 +264,18 @@ static void msvc_runtime_compile(
 			});
 		}
 	}
+
+	auto temp_lib_out = fs::path{temp_out}.replace_extension("lib");
+	if(fs::exists(temp_lib_out)) {
+		auto lib_out = fs::path{options.output_path}.replace_extension("lib");
+		fs::rename(temp_lib_out, lib_out, ec);
+		if(ec) {
+			options.reporter.report(ecsact_rtb::warning_message{
+				.content = "Moving " + temp_lib_out.string() + " to " +
+					lib_out.string() + " failed. " + ec.message(),
+			});
+		}
+	}
 }
 
 static void clang_runtime_compile(
