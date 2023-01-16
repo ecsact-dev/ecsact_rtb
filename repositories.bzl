@@ -116,9 +116,9 @@ def ecsact_rtb_repositories():
 
     http_archive(
         name = "ecsact_runtime",
-        sha256 = "be0052b3e7a21044be7b61cedae42785e3f3e0f2196a1a96d27d90c7d0b5fc1d",
-        strip_prefix = "ecsact_runtime-4eec253fd4f1d07f35103ad085dcc7b7d01cd0a9",
-        url = "https://github.com/ecsact-dev/ecsact_runtime/archive/4eec253fd4f1d07f35103ad085dcc7b7d01cd0a9.zip",
+        sha256 = "3c1a7da253cd7a99d87b0336e48ed2b10e463d35785bd6e03f2660f3e116f687",
+        strip_prefix = "ecsact_runtime-d4069af2f2ba6c5614ad95bf2777d156d836ce19",
+        url = "https://github.com/ecsact-dev/ecsact_runtime/archive/d4069af2f2ba6c5614ad95bf2777d156d836ce19.zip",
     )
 
     http_archive(

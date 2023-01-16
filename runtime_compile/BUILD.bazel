@@ -18,6 +18,7 @@ cc_library(
         "@boost//libs/process",
         "@ecsact_interpret",
         "@ecsact_lang_cpp//:support",
+        "@ecsact_runtime//:async",
         "@ecsact_runtime//:core",
         "@ecsact_runtime//:dynamic",
         "@ecsact_runtime//:meta",

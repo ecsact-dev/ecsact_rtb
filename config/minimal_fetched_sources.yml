@@ -87,6 +87,7 @@ include:
     - ecsact_runtime/ecsact/runtime.h
   ecsact/runtime:
     - ecsact_runtime/ecsact/runtime/common.h
+    - ecsact_runtime/ecsact/runtime/async.h
     - ecsact_runtime/ecsact/runtime/core.h
     - ecsact_runtime/ecsact/runtime/core.hh
     - ecsact_runtime/ecsact/runtime/definitions.h
@@ -163,3 +164,20 @@ sources:
     - ecsact_rt_entt/runtime/runtime.template.cc
     - ecsact_rt_entt/runtime/system_entt_view.hh
     - ecsact_rt_entt/runtime/system_execution_context.hh
+  ecsact_runtime/reference:
+    - ecsact_runtime/reference/async_reference/async_reference.hh
+    - ecsact_runtime/reference/async_reference/async_reference.cc
+    - ecsact_runtime/reference/async.cc
+    - ecsact_runtime/reference/async_reference/tick_manager/tick_manager.hh
+    - ecsact_runtime/reference/async_reference/tick_manager/tick_manager.cc
+    - ecsact_runtime/reference/async_reference/callbacks/async_callbacks.hh
+    - ecsact_runtime/reference/async_reference/callbacks/async_callbacks.cc
+    - ecsact_runtime/reference/async_reference/callbacks/execution_callbacks.hh
+    - ecsact_runtime/reference/async_reference/callbacks/execution_callbacks.cc
+    - ecsact_runtime/reference/async_reference/entity_manager/entity_manager.hh
+    - ecsact_runtime/reference/async_reference/entity_manager/entity_manager.cc
+    - ecsact_runtime/reference/async_reference/detail/c_execution_options.hh
+    - ecsact_runtime/reference/async_reference/detail/c_execution_options.cc
+    - ecsact_runtime/reference/async_reference/util/util.hh
+    - ecsact_runtime/reference/async_reference/util/util.cc
+    - ecsact_runtime/reference/async_reference/util/types.hh
