@@ -151,6 +151,7 @@ static void msvc_runtime_compile(
 	compile_proc_args.push_back("/DECSACT_DYNAMIC_API_EXPORT");
 	compile_proc_args.push_back("/DECSACT_STATIC_API_EXPORT");
 	compile_proc_args.push_back("/DECSACT_SERIALIZE_API_EXPORT");
+	compile_proc_args.push_back("/DECSACT_ASYNC_API_EXPORT");
 	if(!wasmer.empty()) {
 		compile_proc_args.push_back("/DECSACTSI_WASM_API_EXPORT");
 	}

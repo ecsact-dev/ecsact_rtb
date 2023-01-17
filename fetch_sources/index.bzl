@@ -10,6 +10,7 @@ ecsact_rtb_runfiles = [
     "@ecsact_rt_entt//:headers",
     "@ecsact_rt_entt//runtime:sources",
     "@ecsact_runtime//:headers",
+    "@ecsact_runtime//reference/async_reference:sources",
     "@ecsact_si_wasm//:headers",
     "@ecsact_si_wasm//:sources",
     "@vswhere//file",
