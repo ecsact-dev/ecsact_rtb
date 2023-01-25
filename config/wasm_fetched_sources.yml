@@ -3,9 +3,27 @@ include:
     - ecsact_si_wasm/ecsactsi_wasm.h
 
 sources:
-  ../src:
-    - ecsact_si_wasm/ecsactsi_wasm.cc
-    - ecsact_si_wasm/wasm_ecsact_pointer_map.cc
-    - ecsact_si_wasm/wasm_ecsact_pointer_map.hh
-    - ecsact_si_wasm/wasm_ecsact_system_execution.cc
-    - ecsact_si_wasm/wasm_ecsact_system_execution.h
+  detail:
+    - ecsact_si_wasm/detail/ecsactsi_logger.cc
+    - ecsact_si_wasm/detail/ecsactsi_logger.hh
+    - ecsact_si_wasm/detail/ecsactsi_wasi.cc
+    - ecsact_si_wasm/detail/ecsactsi_wasi.hh
+    - ecsact_si_wasm/detail/ecsactsi_wasi_fs.cc
+    - ecsact_si_wasm/detail/ecsactsi_wasi_fs.hh
+    - ecsact_si_wasm/detail/ecsactsi_wasm.cc
+    - ecsact_si_wasm/detail/ecsactsi_wasm_internal.cc
+    - ecsact_si_wasm/detail/ecsactsi_wasm_internal.hh
+    - ecsact_si_wasm/detail/guest_imports.hh
+    - ecsact_si_wasm/detail/wasm_ecsact_memory.cc
+    - ecsact_si_wasm/detail/wasm_ecsact_memory.hh
+    - ecsact_si_wasm/detail/wasm_ecsact_pointer_map.cc
+    - ecsact_si_wasm/detail/wasm_ecsact_pointer_map.hh
+    - ecsact_si_wasm/detail/wasm_ecsact_system_execution.cc
+    - ecsact_si_wasm/detail/wasm_ecsact_system_execution.h
+    - ecsact_si_wasm/detail/wasm_file_binary.hh
+    - ecsact_si_wasm/detail/wasm_util.hh
+
+  detail/guest_imports:
+    - ecsact_si_wasm/detail/guest_imports/env.hh
+    - ecsact_si_wasm/detail/guest_imports/wasi_snapshot_preview1.hh
+
