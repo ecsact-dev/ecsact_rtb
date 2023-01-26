@@ -5,6 +5,7 @@
 #include <iostream>
 #include <mutex>
 #include <string>
+#include <memory>
 #include "docopt.h"
 #include "nlohmann/json.hpp"
 #include "ecsact/interpret/eval.hh"
@@ -19,19 +20,28 @@
 #include "find_cpp_compiler/find_cpp_compiler.hh"
 #include "progress_report/progress_report.hh"
 
+#include "stdout_text_progress_reporter.hh"
+
 namespace fs = std::filesystem;
 
 constexpr auto USAGE = R"(
 Usage:
-	ecsact_rtb <ecsact_file>... --output=<output> [--temp_dir=<temp_dir>]
-		[--compiler_path=<compiler_path>] [--ecsact_sdk=<path>] [--debug]
-		[--wasm=<wasm>]
+	ecsact_rtb <ecsact_file>... --output=<output> [--report_format=<format>]
+		[--temp_dir=<temp_dir>] [--compiler_path=<compiler_path>]
+		[--ecsact_sdk=<path>] [--debug] [--wasm=<wasm>]
 )";
 
 constexpr auto OPTIONS = R"(
 Options:
 	--output=<output>
 		Output path for runtime library.
+	--report_format=<format> [default: json]
+		Which format to report progress of runtime builder. Allowed the following:
+			json   Progress is reported in JSON format. One JSON object per line to
+			       stdout.
+			text   Progress is reported in human readable text to stdout. Format
+			       should not be relied upon. Only useful when running ecsact_rtb
+			       manually.
 	--temp_dir=<temp_dir>
 		Optionally supply a temporary directory to write the generated/fetched
 		source files. If one is not provided one will be generated.
@@ -104,9 +114,7 @@ NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(subcommand_end_message, id, exit_code)
 
 } // namespace ecsact_rtb
 
-class stdout_progress_reporter : public ecsact_rtb::progress_reporter {
-	std::mutex _mutex;
-
+class stdout_json_progress_reporter : public ecsact_rtb::progress_reporter {
 	template<typename MessageT>
 	void _report(MessageT& message) {
 		auto message_json = "{}"_json;
@@ -135,8 +143,6 @@ int main(int argc, char* argv[]) {
 
 	std::ios_base::sync_with_stdio(false);
 
-	stdout_progress_reporter reporter;
-
 	std::string runfiles_err;
 	auto        argv0 = executable_path().string();
 	if(argv0.empty()) {
@@ -144,13 +150,34 @@ int main(int argc, char* argv[]) {
 	}
 
 	auto runfiles = Runfiles::Create(argv0, &runfiles_err);
+	auto args = docopt_workaround(argc, argv);
+
+	auto reporter = [&]() -> std::unique_ptr<ecsact_rtb::progress_reporter> {
+		auto report_format_str = std::string{};
+		if(!args.contains("--report_format")) {
+			report_format_str = "json";
+		} else {
+			report_format_str = args.at("--report_format").asString();
+		}
+
+		if(report_format_str == "json") {
+			return std::make_unique<stdout_json_progress_reporter>();
+		}
+
+		if(report_format_str == "text") {
+			return std::make_unique<ecsact_rtb::stdout_text_progress_reporter>();
+		}
+
+		return nullptr;
+	}();
+
+	assert(reporter);
+
 	if(runfiles == nullptr) {
-		reporter.report(ecsact_rtb::warning_message{
+		reporter->report(ecsact_rtb::warning_message{
 			.content = "Cannot load runfiles: "s + runfiles_err,
 		});
 	}
-
-	auto args = docopt_workaround(argc, argv);
 
 	const auto  debug_build = args.at("--debug").asBool();
 	std::string wasm_support_str = "auto";
@@ -177,7 +204,7 @@ int main(int argc, char* argv[]) {
 		for(const auto& file : files) {
 			fs::path file_path(file);
 			if(!fs::exists(file_path)) {
-				reporter.report(ecsact_rtb::error_message{
+				reporter->report(ecsact_rtb::error_message{
 					.content = "File doesn't exist: " + file_path.string(),
 				});
 				return 1;
@@ -197,7 +224,7 @@ int main(int argc, char* argv[]) {
 				err_msg.line = err.line;
 				err_msg.character = err.character;
 
-				reporter.report(err_msg);
+				reporter->report(err_msg);
 			}
 
 			return 1;
@@ -208,7 +235,7 @@ int main(int argc, char* argv[]) {
 
 #if defined(_WIN32)
 	if(output_path.extension() != ".dll") {
-		reporter.report(ecsact_rtb::error_message{
+		reporter->report(ecsact_rtb::error_message{
 			.content = "Cross compilation not supported. Only allowed to build "s +
 				".dll runtimes.",
 		});
@@ -216,7 +243,7 @@ int main(int argc, char* argv[]) {
 	}
 #elif defined(__linux__)
 	if(output_path.extension() != ".so") {
-		reporter.report(ecsact_rtb::error_message{
+		reporter->report(ecsact_rtb::error_message{
 			.content = "Cross compilation not supported. Only allowed to build "s +
 				".so runtimes.",
 		});
@@ -253,12 +280,12 @@ int main(int argc, char* argv[]) {
 	}
 
 	auto ecsact_cli_path = find_ecsact_cli({
-		.reporter = reporter,
+		.reporter = *reporter,
 		.esact_sdk_path = esact_sdk_path,
 	});
 
 	if(ecsact_cli_path.ecsact_cli_path.empty()) {
-		reporter.report(ecsact_rtb::error_message{
+		reporter->report(ecsact_rtb::error_message{
 			.content = "Could not find ecsact CLI",
 		});
 		return 1;
@@ -269,30 +296,36 @@ int main(int argc, char* argv[]) {
 
 	auto wasmer = find_wasmer({
 		.wasm_support = wasm_support,
-		.reporter = reporter,
+		.reporter = *reporter,
 		.path = {},
 	});
 
+	auto generated_files = generate_files({
+		.reporter = *reporter,
+		.temp_dir = temp_dir,
+		.ecsact_cli_path = ecsact_cli_path.ecsact_cli_path,
+		.ecsact_file_paths = ecsact_file_paths,
+	});
+
+	auto fetched_sources = fetch_sources({
+		.reporter = *reporter,
+		.temp_dir = temp_dir,
+		.runfiles = runfiles,
+		.fetch_wasm_related_sources = !wasmer.wasmer_path.empty(),
+	});
+
+	auto cpp_compiler = find_cpp_compiler({
+		.reporter = *reporter,
+		.working_directory = working_directory,
+		.path = compiler_path,
+		.runfiles = runfiles,
+	});
+
 	runtime_compile({
-		.reporter = reporter,
-		.generated_files = generate_files({
-			.reporter = reporter,
-			.temp_dir = temp_dir,
-			.ecsact_cli_path = ecsact_cli_path.ecsact_cli_path,
-			.ecsact_file_paths = ecsact_file_paths,
-		}),
-		.fetched_sources = fetch_sources({
-			.reporter = reporter,
-			.temp_dir = temp_dir,
-			.runfiles = runfiles,
-			.fetch_wasm_related_sources = !wasmer.wasmer_path.empty(),
-		}),
-		.cpp_compiler = find_cpp_compiler({
-			.reporter = reporter,
-			.working_directory = working_directory,
-			.path = compiler_path,
-			.runfiles = runfiles,
-		}),
+		.reporter = *reporter,
+		.generated_files = generated_files,
+		.fetched_sources = fetched_sources,
+		.cpp_compiler = cpp_compiler,
 		.wasmer = wasmer,
 		.output_path = output_path,
 		.working_directory = working_directory,

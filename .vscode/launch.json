@@ -15,7 +15,8 @@
 					"--output=${workspaceFolder}/tmp/test_runtime.dll",
 					"--temp_dir=${workspaceFolder}/tmp",
 					"--ecsact_sdk=${workspaceFolder}/../ecsact_sdk/dist",
-					"--debug"
+					"--debug",
+					"--report_format=text"
 				]
 			},
 			"args": [

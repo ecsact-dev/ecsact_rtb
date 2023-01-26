@@ -1,0 +1,23 @@
+load("@bazel_skylib//rules:native_binary.bzl", "native_binary")
+
+native_binary(
+    name = "test_runtime_build_windows",
+    src = "@ecsact_rtb//cli:ecsact_rtb",
+    out = "test_runtime_build_cli_ecsact_rtb.exe",
+    data = [
+        "dummy.ecsact",
+        "@ecsact_sdk_windows//:bin/ecsact.exe",
+        "@ecsact_sdk_windows//:all_files",
+    ],
+    args = [
+        "$(location dummy.ecsact)",
+        "--report_format=text",
+        "--output=./_test_runtime_build_windows_temp/test_runtime.dll",
+        "--temp_dir=./_test_runtime_build_windows_temp",
+        "--ecsact_sdk=$(location @ecsact_sdk_windows//:bin/ecsact.exe)/../..",
+        "--debug",
+    ],
+    target_compatible_with = [
+        "@platforms//os:windows",
+    ],
+)

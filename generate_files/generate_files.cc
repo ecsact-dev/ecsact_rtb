@@ -6,6 +6,7 @@
 #include <boost/process.hpp>
 
 #include "util/report_subcommand_output.hh"
+#include "util/report_error_code.hh"
 
 namespace fs = std::filesystem;
 namespace bp = boost::process;
@@ -92,18 +93,23 @@ result::generate_files ecsact::rtb::generate_files(
 ) {
 	using namespace std::string_literals;
 
+	auto ec = std::error_code{};
 	auto base_dir = options.temp_dir / "generated_files";
 	if(fs::exists(base_dir)) {
 		options.reporter.report(ecsact_rtb::info_message{
 			.content = "Removing old generated files..."s,
 		});
+		fs::remove_all(base_dir, ec);
+		util::report_error_code_and_exit(options.reporter, ec);
 	}
-	fs::remove_all(base_dir);
 	auto include_dir = base_dir / "include";
 	auto src_dir = base_dir / "src";
-	fs::create_directories(base_dir);
-	fs::create_directory(include_dir);
-	fs::create_directory(src_dir);
+	fs::create_directories(base_dir, ec);
+	util::report_error_code_and_exit(options.reporter, ec);
+	fs::create_directory(include_dir, ec);
+	util::report_error_code_and_exit(options.reporter, ec);
+	fs::create_directory(src_dir, ec);
+	util::report_error_code_and_exit(options.reporter, ec);
 
 	run_codegen(
 		options,
