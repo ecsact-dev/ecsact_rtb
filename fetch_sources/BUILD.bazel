@@ -9,6 +9,7 @@ cc_library(
     visibility = ["//visibility:public"],
     deps = [
         "//progress_report",
+        "//util:report_error_code",
         "@bazel_tools//tools/cpp/runfiles",
         "@boost//libs/process",
         "@com_github_biojppm_c4core//:c4core",

@@ -1,0 +1,56 @@
+workspace(name = "ecsact_rtb_tests")
+
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+
+local_repository(
+    name = "ecsact_rtb",
+    path = "../",
+)
+
+load("@ecsact_rtb//:repositories.bzl", "ecsact_rtb_repositories")
+
+ecsact_rtb_repositories()
+
+load("@ecsact_rtb//:workspace.bzl", "ecsact_rtb_workspace")
+
+ecsact_rtb_workspace()
+
+_EXPORTS_ALL = """
+package(default_visibility = ["//visibility:public"])
+exports_files(glob(["**/*"]))
+filegroup(
+    name = "all_files",
+    srcs = glob(["**/*"]),
+)
+"""
+
+http_archive(
+    name = "ecsact_sdk_windows",
+    sha256 = "b7ff3612159a9cf4f042d46531656580b1616b593bdf395593a6e699f5336bf5",
+    url = "https://github.com/ecsact-dev/ecsact_sdk/releases/download/0.4.4/ecsact_sdk_0.4.4_windows_x64.zip",
+    build_file_content = _EXPORTS_ALL,
+)
+
+http_archive(
+    name = "bazel_skylib",
+    sha256 = "74d544d96f4a5bb630d465ca8bbcfe231e3594e5aae57e1edbf17a6eb3ca2506",
+    urls = [
+        "https://mirror.bazel.build/github.com/bazelbuild/bazel-skylib/releases/download/1.3.0/bazel-skylib-1.3.0.tar.gz",
+        "https://github.com/bazelbuild/bazel-skylib/releases/download/1.3.0/bazel-skylib-1.3.0.tar.gz",
+    ],
+)
+
+load("@bazel_skylib//:workspace.bzl", "bazel_skylib_workspace")
+
+bazel_skylib_workspace()
+
+http_archive(
+    name = "hedron_compile_commands",
+    sha256 = "b0e084fa3fb7cf43d149debedfcc941c3e3607b2b79de272f5e61463c52860c3",
+    strip_prefix = "bazel-compile-commands-extractor-57046dba8d60f819887ea81933ed90f8e23a458a",
+    url = "https://github.com/hedronvision/bazel-compile-commands-extractor/archive/57046dba8d60f819887ea81933ed90f8e23a458a.tar.gz",
+)
+
+load("@hedron_compile_commands//:workspace_setup.bzl", "hedron_compile_commands_setup")
+
+hedron_compile_commands_setup()

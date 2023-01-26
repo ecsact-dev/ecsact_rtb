@@ -4,7 +4,7 @@ load("//bazel:copts.bzl", "copts")
 
 cc_binary(
     name = "ecsact_rtb",
-    srcs = ["cli.cc"],
+    srcs = ["cli.cc", "stdout_text_progress_reporter.hh"],
     copts = copts,
     data = ecsact_rtb_runfiles,
     visibility = ["//visibility:public"],

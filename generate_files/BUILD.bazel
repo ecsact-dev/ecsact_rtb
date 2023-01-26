@@ -10,6 +10,7 @@ cc_library(
     deps = [
         "//progress_report",
         "//util:report_subcommand_output",
+        "//util:report_error_code",
         "@boost//libs/process",
     ],
 )
