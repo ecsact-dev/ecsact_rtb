@@ -6,6 +6,8 @@
 #include <ryml_std.hpp>
 #include <ryml.hpp>
 
+#include "util/report_error_code.hh"
+
 namespace fs = std::filesystem;
 using namespace ecsact::rtb;
 
@@ -40,6 +42,7 @@ static void load_fetched_sources_yaml(
 	const fs::path&               include_dir,
 	const options::fetch_sources& options
 ) {
+	auto ec = std::error_code{};
 	auto config_file_path = options.runfiles->Rlocation(runfile_path);
 	auto config_file_contents =
 		file_get_contents<std::vector<char>>(config_file_path.c_str());
@@ -49,7 +52,8 @@ static void load_fetched_sources_yaml(
 	for(const auto& entry : root.find_child("include")) {
 		const auto& key = entry.key();
 		auto dirname = include_dir / fs::path{std::string_view{key.str, key.len}};
-		fs::create_directories(dirname);
+		fs::create_directories(dirname, ec);
+		util::report_error_code_and_exit(options.reporter, ec);
 
 		for(const auto& item : entry.children()) {
 			std::string item_str{item.val().str, item.val().len};
@@ -58,8 +62,10 @@ static void load_fetched_sources_yaml(
 				if(fs::exists(inc_runfile_path)) {
 					fs::copy_file(
 						inc_runfile_path,
-						dirname / fs::path{inc_runfile_path}.filename()
+						dirname / fs::path{inc_runfile_path}.filename(),
+						ec
 					);
+					util::report_error_code_and_exit(options.reporter, ec);
 				}
 			}
 		}
@@ -68,7 +74,8 @@ static void load_fetched_sources_yaml(
 	for(const auto& entry : root.find_child("sources")) {
 		const auto& key = entry.key();
 		auto dirname = src_dir / fs::path{std::string_view{key.str, key.len}};
-		fs::create_directories(dirname);
+		fs::create_directories(dirname, ec);
+		util::report_error_code_and_exit(options.reporter, ec);
 
 		for(const auto& item : entry.children()) {
 			std::string item_str{item.val().str, item.val().len};
@@ -77,8 +84,10 @@ static void load_fetched_sources_yaml(
 				if(fs::exists(inc_runfile_path)) {
 					fs::copy_file(
 						inc_runfile_path,
-						dirname / fs::path{inc_runfile_path}.filename()
+						dirname / fs::path{inc_runfile_path}.filename(),
+						ec
 					);
+					util::report_error_code_and_exit(options.reporter, ec);
 				}
 			}
 		}
@@ -95,18 +104,23 @@ result::fetch_sources ecsact::rtb::fetch_sources(
 		return {};
 	}
 
+	auto ec = std::error_code{};
 	auto base_dir = options.temp_dir / "fetched_files";
 	if(fs::exists(base_dir)) {
 		options.reporter.report(ecsact_rtb::info_message{
 			.content = "Removing old fetched files...",
 		});
 	}
-	fs::remove_all(base_dir);
+	fs::remove_all(base_dir, ec);
+	util::report_error_code_and_exit(options.reporter, ec);
 	auto include_dir = base_dir / "include";
 	auto src_dir = base_dir / "src";
-	fs::create_directory(base_dir);
-	fs::create_directory(include_dir);
-	fs::create_directory(src_dir);
+	fs::create_directory(base_dir, ec);
+	util::report_error_code_and_exit(options.reporter, ec);
+	fs::create_directory(include_dir, ec);
+	util::report_error_code_and_exit(options.reporter, ec);
+	fs::create_directory(src_dir, ec);
+	util::report_error_code_and_exit(options.reporter, ec);
 
 	load_fetched_sources_yaml(
 		"ecsact_rtb/config/minimal_fetched_sources.yml",

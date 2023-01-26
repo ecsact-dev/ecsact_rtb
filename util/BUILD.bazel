@@ -22,3 +22,9 @@ cc_library(
         "@boost//libs/process",
     ],
 )
+
+cc_library(
+    name = "report_error_code",
+    hdrs = ["report_error_code.hh"],
+    copts = copts,
+)
