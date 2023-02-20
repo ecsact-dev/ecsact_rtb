@@ -163,9 +163,6 @@ include:
     - ecsact_runtime/reference/async_reference/async_reference.hh
     - ecsact_runtime/reference/async_reference/async_reference.cc
     - ecsact_runtime/reference/async_reference/async.cc
-  reference/async_reference/entity_manager:
-    - ecsact_runtime/reference/async_reference/entity_manager/entity_manager.hh
-    - ecsact_runtime/reference/async_reference/entity_manager/entity_manager.cc
   reference/async_reference/tick_manager:
     - ecsact_runtime/reference/async_reference/tick_manager/tick_manager.hh
     - ecsact_runtime/reference/async_reference/tick_manager/tick_manager.cc
@@ -199,9 +196,6 @@ sources:
     - ecsact_runtime/reference/async_reference/async_reference.hh
     - ecsact_runtime/reference/async_reference/async_reference.cc
     - ecsact_runtime/reference/async_reference/async.cc
-  ecsact_runtime/reference/async_reference/entity_manager:
-    - ecsact_runtime/reference/async_reference/entity_manager/entity_manager.hh
-    - ecsact_runtime/reference/async_reference/entity_manager/entity_manager.cc
   ecsact_runtime/reference/async_reference/tick_manager:
     - ecsact_runtime/reference/async_reference/tick_manager/tick_manager.hh
     - ecsact_runtime/reference/async_reference/tick_manager/tick_manager.cc
