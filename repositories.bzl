@@ -144,9 +144,9 @@ def ecsact_rtb_repositories():
 
     http_archive(
         name = "ecsact_si_wasm",
-        sha256 = "ca4f93deefc55a3fe8fa3bc03b7b48770f89d35391bc0b7cfb22c188722dbb71",
-        strip_prefix = "ecsact_si_wasm-4c91ffb7c623d27a9d035f882d1f2f1c7b1f3eaa",
-        urls = ["https://github.com/seaube/ecsact_si_wasm/archive/4c91ffb7c623d27a9d035f882d1f2f1c7b1f3eaa.zip"],
+        sha256 = "4153154fd80e2cd48ddd8e0d0c208691f134b33d5c67dc6fc081b3f77149b2c2",
+        strip_prefix = "ecsact_si_wasm-2f8922cd9a72d54b7924742153a6113a88cc0867",
+        urls = ["https://github.com/seaube/ecsact_si_wasm/archive/2f8922cd9a72d54b7924742153a6113a88cc0867.zip"],
     )
 
     http_archive(
