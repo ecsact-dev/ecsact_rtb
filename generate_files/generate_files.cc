@@ -102,6 +102,11 @@ result::generate_files ecsact::rtb::generate_files(
 		fs::remove_all(base_dir, ec);
 		util::report_error_code_and_exit(options.reporter, ec);
 	}
+
+	auto codegen_dll = options.temp_dir / "fetched_files" / "share" / "plugins" /
+		"codegen_bin.dll";
+
+	fs::remove_all(base_dir);
 	auto include_dir = base_dir / "include";
 	auto src_dir = base_dir / "src";
 	fs::create_directories(base_dir, ec);
@@ -122,8 +127,22 @@ result::generate_files ecsact::rtb::generate_files(
 		}
 	);
 
-	return {
-		.include_dir = include_dir,
-		.source_file_paths = {},
-	};
+	run_codegen(
+		options,
+		src_dir,
+		{
+			codegen_dll.string(),
+		}
+	);
+
+	result::generate_files result;
+	result.include_dir = include_dir;
+
+	for(const auto& entry : fs::recursive_directory_iterator(src_dir)) {
+		if(entry.is_regular_file()) {
+			result.source_file_paths.push_back(entry.path());
+		}
+	}
+
+	return result;
 }

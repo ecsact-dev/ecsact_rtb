@@ -1,10 +1,10 @@
 #include "fetch_sources.hh"
 
-#include <vector>
-#include <iostream>
 #include <filesystem>
-#include <ryml_std.hpp>
+#include <iostream>
 #include <ryml.hpp>
+#include <ryml_std.hpp>
+#include <vector>
 
 #include "util/report_error_code.hh"
 
@@ -40,6 +40,7 @@ static void load_fetched_sources_yaml(
 	const std::string&            runfile_path,
 	const fs::path&               src_dir,
 	const fs::path&               include_dir,
+	const fs::path&               share_dir,
 	const options::fetch_sources& options
 ) {
 	auto ec = std::error_code{};
@@ -92,6 +93,25 @@ static void load_fetched_sources_yaml(
 			}
 		}
 	}
+
+	for(const auto& entry : root.find_child("share")) {
+		const auto& key = entry.key();
+		auto dirname = share_dir / fs::path{std::string_view{key.str, key.len}};
+		fs::create_directories(dirname);
+
+		for(const auto& item : entry.children()) {
+			std::string item_str{item.val().str, item.val().len};
+			auto        inc_runfile_path = options.runfiles->Rlocation(item_str);
+			if(!inc_runfile_path.empty()) {
+				if(fs::exists(inc_runfile_path)) {
+					fs::copy_file(
+						inc_runfile_path,
+						dirname / fs::path{inc_runfile_path}.filename()
+					);
+				}
+			}
+		}
+	}
 }
 
 result::fetch_sources ecsact::rtb::fetch_sources(
@@ -121,11 +141,17 @@ result::fetch_sources ecsact::rtb::fetch_sources(
 	util::report_error_code_and_exit(options.reporter, ec);
 	fs::create_directory(src_dir, ec);
 	util::report_error_code_and_exit(options.reporter, ec);
+	auto share_dir = base_dir / "share";
+	auto plugins_dir = share_dir / "plugins";
+
+	fs::create_directory(share_dir);
+	fs::create_directory(plugins_dir);
 
 	load_fetched_sources_yaml(
 		"ecsact_rtb/config/minimal_fetched_sources.yml",
 		src_dir,
 		include_dir,
+		share_dir,
 		options
 	);
 
@@ -134,6 +160,7 @@ result::fetch_sources ecsact::rtb::fetch_sources(
 			"ecsact_rtb/config/wasm_fetched_sources.yml",
 			src_dir,
 			include_dir,
+			share_dir,
 			options
 		);
 	}

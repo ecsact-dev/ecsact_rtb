@@ -1,3 +1,6 @@
+plugins:
+  - ecsact_runtime/reference/serialize_reference/codegen/codegen_bin.dll
+
 include:
   entt/config:
     - com_github_skypjack_entt/src/entt/config/config.h
@@ -87,6 +90,7 @@ include:
     - ecsact_runtime/ecsact/runtime.h
   ecsact/runtime:
     - ecsact_runtime/ecsact/runtime/common.h
+    - ecsact_runtime/ecsact/runtime/async.h
     - ecsact_runtime/ecsact/runtime/core.h
     - ecsact_runtime/ecsact/runtime/core.hh
     - ecsact_runtime/ecsact/runtime/definitions.h
@@ -95,6 +99,7 @@ include:
     - ecsact_runtime/ecsact/runtime/meta.h
     - ecsact_runtime/ecsact/runtime/meta.hh
     - ecsact_runtime/ecsact/runtime/serialize.h
+    - ecsact_runtime/ecsact/runtime/serialize.hh
     - ecsact_runtime/ecsact/runtime/static.h
   ecsact/codegen:
     - ecsact_runtime/ecsact/codegen/plugin_validate.hh
@@ -147,6 +152,27 @@ include:
     - boost_mp11_files/include/boost/mp11/detail/mp_void.hpp
     - boost_mp11_files/include/boost/mp11/detail/mp_with_index.hpp
     - boost_mp11_files/include/boost/mp11/detail/mpl_common.hpp
+  reference/async_reference/util:
+    - ecsact_runtime/reference/async_reference/util/util.hh
+    - ecsact_runtime/reference/async_reference/util/util.cc
+    - ecsact_runtime/reference/async_reference/util/types.hh
+  reference/async_reference/detail/c_execution_options:
+    - ecsact_runtime/reference/async_reference/detail/c_execution_options/c_execution_options.hh
+    - ecsact_runtime/reference/async_reference/detail/c_execution_options/c_execution_options.cc
+  reference/async_reference:
+    - ecsact_runtime/reference/async_reference/async_reference.hh
+    - ecsact_runtime/reference/async_reference/async_reference.cc
+    - ecsact_runtime/reference/async_reference/async.cc
+  reference/async_reference/tick_manager:
+    - ecsact_runtime/reference/async_reference/tick_manager/tick_manager.hh
+    - ecsact_runtime/reference/async_reference/tick_manager/tick_manager.cc
+  reference/async_reference/callbacks:
+    - ecsact_runtime/reference/async_reference/callbacks/async_callbacks.hh
+    - ecsact_runtime/reference/async_reference/callbacks/async_callbacks.cc
+    - ecsact_runtime/reference/async_reference/callbacks/execution_callbacks.hh
+    - ecsact_runtime/reference/async_reference/callbacks/execution_callbacks.cc
+  ecsact_runtime/reference/serialize_reference:
+    - ecsact_runtime/reference/serialize_reference/serialize_reference.cc
 
 sources:
   ecsact/runtime-cpp:
@@ -163,3 +189,28 @@ sources:
     - ecsact_rt_entt/runtime/runtime.template.cc
     - ecsact_rt_entt/runtime/system_entt_view.hh
     - ecsact_rt_entt/runtime/system_execution_context.hh
+  ecsact_runtime/reference/async_reference/detail/c_execution_options:
+    - ecsact_runtime/reference/async_reference/detail/c_execution_options/c_execution_options.hh
+    - ecsact_runtime/reference/async_reference/detail/c_execution_options/c_execution_options.cc
+  ecsact_runtime/reference/async_reference:
+    - ecsact_runtime/reference/async_reference/async_reference.hh
+    - ecsact_runtime/reference/async_reference/async_reference.cc
+    - ecsact_runtime/reference/async_reference/async.cc
+  ecsact_runtime/reference/async_reference/tick_manager:
+    - ecsact_runtime/reference/async_reference/tick_manager/tick_manager.hh
+    - ecsact_runtime/reference/async_reference/tick_manager/tick_manager.cc
+  ecsact_runtime/reference/async_reference/callbacks:
+    - ecsact_runtime/reference/async_reference/callbacks/async_callbacks.hh
+    - ecsact_runtime/reference/async_reference/callbacks/async_callbacks.cc
+    - ecsact_runtime/reference/async_reference/callbacks/execution_callbacks.hh
+    - ecsact_runtime/reference/async_reference/callbacks/execution_callbacks.cc
+  ecsact_runtime/reference/async_reference/util:
+    - ecsact_runtime/reference/async_reference/util/util.hh
+    - ecsact_runtime/reference/async_reference/util/util.cc
+    - ecsact_runtime/reference/async_reference/util/types.hh
+  ecsact_runtime/reference/serialize_reference:
+    - ecsact_runtime/reference/serialize_reference/serialize_reference.cc
+
+share:
+  plugins:
+    - ecsact_runtime/reference/serialize_reference/codegen/codegen_bin.dll

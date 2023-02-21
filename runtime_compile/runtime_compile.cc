@@ -9,6 +9,7 @@
 #include "ecsact/runtime/core.h"
 #include "ecsact/runtime/dynamic.h"
 #include "ecsact/runtime/static.h"
+#include "ecsact/runtime/async.h"
 #include "ecsact/runtime/meta.hh"
 #include "ecsact/runtime/serialize.h"
 #include "magic_enum.hpp"
@@ -67,6 +68,10 @@ static void msvc_runtime_compile(
 	for(auto src : options.fetched_sources.source_files) {
 		// Don't pass headers to compiler
 		if(src.extension().string().starts_with(".h")) {
+			continue;
+		}
+		// Don't pass Ecsact plugins to compiler
+		if(src.extension() == ".dll") {
 			continue;
 		}
 
@@ -150,6 +155,7 @@ static void msvc_runtime_compile(
 	compile_proc_args.push_back("/DECSACT_DYNAMIC_API_EXPORT");
 	compile_proc_args.push_back("/DECSACT_STATIC_API_EXPORT");
 	compile_proc_args.push_back("/DECSACT_SERIALIZE_API_EXPORT");
+	compile_proc_args.push_back("/DECSACT_ASYNC_API_EXPORT");
 	if(!wasmer.empty()) {
 		compile_proc_args.push_back("/DECSACTSI_WASM_API_EXPORT");
 	}
@@ -523,6 +529,11 @@ void ecsact::rtb::runtime_compile(const options::runtime_compile& options) {
 
 	message.module_name = "serialize";
 	FOR_EACH_ECSACT_SERIALIZE_API_FN(SET_MESSAGE_METHOD, runtime_lib, message);
+	options.reporter.report(message);
+	message.methods.clear();
+
+	message.module_name = "async";
+	FOR_EACH_ECSACT_ASYNC_API_FN(SET_MESSAGE_METHOD, runtime_lib, message);
 	options.reporter.report(message);
 	message.methods.clear();
 }
