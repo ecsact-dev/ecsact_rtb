@@ -322,7 +322,7 @@ int main(int argc, char* argv[]) {
 	});
 
 	runtime_compile({
-		.reporter = reporter,
+		.reporter = *reporter,
 		.generated_files = generated_files,
 		.fetched_sources = fetched_sources,
 		.cpp_compiler = cpp_compiler,
