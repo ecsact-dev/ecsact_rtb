@@ -26,3 +26,5 @@ sources:
   detail/guest_imports:
     - ecsact_si_wasm/detail/guest_imports/env.hh
     - ecsact_si_wasm/detail/guest_imports/wasi_snapshot_preview1.hh
+
+share: {}

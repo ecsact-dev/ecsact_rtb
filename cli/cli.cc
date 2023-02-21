@@ -300,18 +300,18 @@ int main(int argc, char* argv[]) {
 		.path = {},
 	});
 
-	auto generated_files = generate_files({
-		.reporter = *reporter,
-		.temp_dir = temp_dir,
-		.ecsact_cli_path = ecsact_cli_path.ecsact_cli_path,
-		.ecsact_file_paths = ecsact_file_paths,
-	});
-
 	auto fetched_sources = fetch_sources({
 		.reporter = *reporter,
 		.temp_dir = temp_dir,
 		.runfiles = runfiles,
 		.fetch_wasm_related_sources = !wasmer.wasmer_path.empty(),
+	});
+
+	auto generated_files = generate_files({
+		.reporter = *reporter,
+		.temp_dir = temp_dir,
+		.ecsact_cli_path = ecsact_cli_path.ecsact_cli_path,
+		.ecsact_file_paths = ecsact_file_paths,
 	});
 
 	auto cpp_compiler = find_cpp_compiler({

@@ -1,6 +1,3 @@
-plugins:
-  - ecsact_runtime/reference/serialize_reference/codegen/codegen_bin.dll
-
 include:
   entt/config:
     - com_github_skypjack_entt/src/entt/config/config.h
@@ -152,27 +149,6 @@ include:
     - boost_mp11_files/include/boost/mp11/detail/mp_void.hpp
     - boost_mp11_files/include/boost/mp11/detail/mp_with_index.hpp
     - boost_mp11_files/include/boost/mp11/detail/mpl_common.hpp
-  reference/async_reference/util:
-    - ecsact_runtime/reference/async_reference/util/util.hh
-    - ecsact_runtime/reference/async_reference/util/util.cc
-    - ecsact_runtime/reference/async_reference/util/types.hh
-  reference/async_reference/detail/c_execution_options:
-    - ecsact_runtime/reference/async_reference/detail/c_execution_options/c_execution_options.hh
-    - ecsact_runtime/reference/async_reference/detail/c_execution_options/c_execution_options.cc
-  reference/async_reference:
-    - ecsact_runtime/reference/async_reference/async_reference.hh
-    - ecsact_runtime/reference/async_reference/async_reference.cc
-    - ecsact_runtime/reference/async_reference/async.cc
-  reference/async_reference/tick_manager:
-    - ecsact_runtime/reference/async_reference/tick_manager/tick_manager.hh
-    - ecsact_runtime/reference/async_reference/tick_manager/tick_manager.cc
-  reference/async_reference/callbacks:
-    - ecsact_runtime/reference/async_reference/callbacks/async_callbacks.hh
-    - ecsact_runtime/reference/async_reference/callbacks/async_callbacks.cc
-    - ecsact_runtime/reference/async_reference/callbacks/execution_callbacks.hh
-    - ecsact_runtime/reference/async_reference/callbacks/execution_callbacks.cc
-  ecsact_runtime/reference/serialize_reference:
-    - ecsact_runtime/reference/serialize_reference/serialize_reference.cc
 
 sources:
   ecsact/runtime-cpp:
@@ -210,6 +186,8 @@ sources:
     - ecsact_runtime/reference/async_reference/util/types.hh
   ecsact_runtime/reference/serialize_reference:
     - ecsact_runtime/reference/serialize_reference/serialize_reference.cc
+  ecsact_runtime/reference/async_reference/request_id_factory:
+    - ecsact_runtime/reference/async_reference/request_id_factory/request_id_factory.hh
 
 share:
   plugins:
