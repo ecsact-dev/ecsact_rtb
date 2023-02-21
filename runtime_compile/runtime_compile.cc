@@ -70,6 +70,10 @@ static void msvc_runtime_compile(
 		if(src.extension().string().starts_with(".h")) {
 			continue;
 		}
+		// Don't pass Ecsact plugins to compiler
+		if(src.extension() == ".dll") {
+			continue;
+		}
 
 		source_files.push_back(abs_from_wd(src));
 	}

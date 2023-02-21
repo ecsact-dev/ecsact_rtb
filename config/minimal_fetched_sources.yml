@@ -1,3 +1,6 @@
+plugins:
+  - ecsact_runtime/reference/serialize_reference/codegen/codegen_bin.dll
+
 include:
   entt/config:
     - com_github_skypjack_entt/src/entt/config/config.h
@@ -213,3 +216,7 @@ sources:
     - ecsact_runtime/reference/async_reference/util/types.hh
   ecsact_runtime/reference/serialize_reference:
     - ecsact_runtime/reference/serialize_reference/serialize_reference.cc
+
+share:
+  plugins:
+    - ecsact_runtime/reference/serialize_reference/codegen/codegen_bin.dll
