@@ -94,9 +94,9 @@ def ecsact_rtb_repositories():
 
     http_archive(
         name = "rules_ecsact",
-        sha256 = "8cfdc8395502ae8d764611d0b6911d26461dc41511151675ccc019d9ebe723c5",
-        strip_prefix = "rules_ecsact-0.1.5",
-        url = "https://github.com/ecsact-dev/rules_ecsact/archive/refs/tags/0.1.5.tar.gz",
+        sha256 = "8eaaf1f05eccbfcf4a0123c951436519672190a7a908fa847c24adf0778041f6",
+        strip_prefix = "rules_ecsact-0.2.2",
+        url = "https://github.com/ecsact-dev/rules_ecsact/archive/refs/tags/0.2.2.tar.gz",
     )
 
     http_archive(
