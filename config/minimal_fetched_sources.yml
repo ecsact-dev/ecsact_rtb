@@ -112,6 +112,7 @@ include:
     - ecsact_rt_entt/ecsact/entt/detail/registry_info.hh
     - ecsact_rt_entt/ecsact/entt/detail/system_execution_context.hh
     - ecsact_rt_entt/ecsact/entt/detail/internal_markers.hh
+    - ecsact_rt_entt/ecsact/entt/detail/meta_util.hh
   ecsact/cpp:
     - ecsact_lang_cpp/ecsact/cpp/type_info.hh
     - ecsact_lang_cpp/ecsact/cpp/execution_context.hh
