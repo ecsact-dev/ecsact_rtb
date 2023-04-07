@@ -45,14 +45,16 @@ auto main(int argc, char* argv[]) -> int {
 		return 1;
 	}
 
-	fs::remove_all("tmp");
+	auto tmp_dir = fs::absolute("tmp");
+
+	fs::remove_all(tmp_dir);
 
 	auto rtb_proc = bp::child(
 		bp::exe(rtb_proc_path),
 		bp::args({
 			runfiles->Rlocation("ecsact_rtb/test/dummy.ecsact"),
 			"--output=tmp/test_runtime"s + dll_suffix,
-			"--temp_dir=tmp"s,
+			"--temp_dir="s + tmp_dir.string(),
 			"--debug"s,
 			"--report_format=text"s,
 			"--wasm=wasmer"s,
