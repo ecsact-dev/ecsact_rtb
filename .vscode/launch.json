@@ -26,6 +26,17 @@
 				"--temp_dir=${workspaceFolder}/tmp"
 			],
 			"preLaunchTask": "Build"
+		},
+		{
+			"type": "cppdbg",
+			"request": "launch",
+			"name": "run //test:test",
+			"cwd": "${workspaceFolder}",
+			"program": "${workspaceFolder}/bazel-bin/test/test",
+			"windows": {
+				"type": "cppvsdbg",
+				"program": "${workspaceFolder}/bazel-bin/test/test.exe"
+			},
 		}
 	]
 }

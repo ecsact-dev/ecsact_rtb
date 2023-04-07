@@ -1,0 +1,18 @@
+load("@rules_cc//cc:defs.bzl", "cc_test")
+load("//bazel:copts.bzl", "copts")
+
+cc_test(
+    name = "test",
+    copts = copts,
+    srcs = ["ecsact_rtb_test.cc"],
+    deps = [
+        "@bazel_tools//tools/cpp/runfiles",
+        "@boost//libs/process",
+        "@boost//libs/dll",
+        "@bazelregistry_docopt_cpp//:docopt",
+    ],
+    data = [
+        "//cli:ecsact_rtb",
+        "dummy.ecsact",
+    ],
+)
