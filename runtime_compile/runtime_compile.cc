@@ -57,10 +57,12 @@ static void msvc_runtime_compile(
 		compile_proc_args.push_back("/EHsc");
 		compile_proc_args.push_back("/bigobj");
 	} else {
-		compile_proc_args.push_back("/O2");
 		compile_proc_args.push_back("/MD");
-		compile_proc_args.push_back("/GL");
 	}
+
+	compile_proc_args.push_back("/DNDEBUG");
+	compile_proc_args.push_back("/O2");
+	compile_proc_args.push_back("/GL");
 	compile_proc_args.push_back("/MP");
 
 	std::vector<std::filesystem::path> source_files;
@@ -172,6 +174,11 @@ static void msvc_runtime_compile(
 	compile_proc_args.push_back("/DEFAULTLIB:Bcrypt");
 	compile_proc_args.push_back("/DEFAULTLIB:Advapi32");
 	compile_proc_args.push_back("/DEFAULTLIB:Userenv");
+
+	// Wasmer needs these
+	compile_proc_args.push_back("/DEFAULTLIB:Ole32");
+	compile_proc_args.push_back("/DEFAULTLIB:NtDll");
+	compile_proc_args.push_back("/DEFAULTLIB:Shell32");
 
 	if(!wasmer.empty()) {
 		bp::ipstream wasmer_proc_flags_stdout;
