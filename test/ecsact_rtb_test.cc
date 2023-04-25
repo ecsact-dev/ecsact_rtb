@@ -63,5 +63,5 @@ auto main(int argc, char* argv[]) -> int {
 
 	rtb_proc.wait();
 
-	return 0;
+	return rtb_proc.exit_code();
 }
