@@ -17,10 +17,10 @@ result::find_ecsact_cli ecsact::rtb::find_ecsact_cli(
 	using namespace std::string_literals;
 	using executable_path::executable_path;
 
-	std::string path;
-	std::string search_exe = "ecsact";
+	auto path = std::string{};
+	auto executable_name = std::string{"ecsact"};
 #if _WIN32
-	search_exe += ".exe";
+	executable_name += ".exe";
 #endif
 
 	fs::path ecsact_sdk_path;
@@ -32,11 +32,11 @@ result::find_ecsact_cli ecsact::rtb::find_ecsact_cli(
 		ecsact_sdk_path = executable_path().parent_path().parent_path();
 	}
 
-	auto sdk_ecsact_exe = ecsact_sdk_path / "bin" / search_exe;
+	auto sdk_ecsact_exe = ecsact_sdk_path / "bin" / executable_name;
 	if(fs::exists(sdk_ecsact_exe)) {
 		path = sdk_ecsact_exe.string();
 	} else {
-		auto ecsact_cli_from_path = bp::search_path(search_exe);
+		auto ecsact_cli_from_path = bp::search_path("ecsact");
 		if(!ecsact_cli_from_path.empty()) {
 			path = ecsact_cli_from_path.string();
 		} else {
@@ -47,7 +47,10 @@ result::find_ecsact_cli ecsact::rtb::find_ecsact_cli(
 				auto windows_apps_dir =
 					fs::path(std::string(local_app_data)) / "Microsoft" / "WindowsApps";
 
-				path = (windows_apps_dir / "ecsact.exe").string();
+				path = (windows_apps_dir / executable_name).string();
+				if(!fs::exists(path)) {
+					path = "";
+				}
 			}
 #endif
 		}

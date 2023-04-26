@@ -217,11 +217,21 @@ static result::compiler_type get_compiler_type_from_path(
 #ifndef _WIN32
 [[maybe_unused]]
 #endif
-static result::find_cpp_compiler
-find_msvc_vswhere(const options::find_cpp_compiler& options) {
-	std::string vswhere_path;
-	if(options.runfiles) {
-		vswhere_path = options.runfiles->Rlocation("vswhere/file/vswhere.exe");
+static auto
+find_msvc_vswhere(const options::find_cpp_compiler& options)
+	-> result::find_cpp_compiler {
+	auto vswhere_path = std::string{};
+
+	if(auto program_files = std::getenv("ProgramFiles(x86)"); program_files) {
+		// https://github.com/Microsoft/vswhere/wiki/Installing
+		vswhere_path = //
+			(fs::path(program_files) / "Microsoft Visual Studio" / "Installer" /
+			 "vswhere.exe")
+				.string();
+
+		if(!fs::exists(vswhere_path)) {
+			vswhere_path = "";
+		}
 	}
 
 	if(vswhere_path.empty()) {

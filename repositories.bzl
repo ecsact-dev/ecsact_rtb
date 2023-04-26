@@ -37,13 +37,6 @@ def git_repository(name, **kwargs):
 def ecsact_rtb_repositories():
     """Dependencies for ecsact_rtb
     """
-    http_file(
-        name = "vswhere",
-        downloaded_file_path = "vswhere.exe",
-        executable = True,
-        sha256 = "261d281ce9c95c3e46900e67ace8c3518dd7b2596774f63c92e2bb1fbce71d4c",
-        urls = ["https://github.com/microsoft/vswhere/releases/download/3.0.3/vswhere.exe"],
-    )
 
     git_repository(
         name = "com_github_biojppm_c4core",

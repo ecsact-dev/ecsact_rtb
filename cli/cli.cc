@@ -175,8 +175,9 @@ int main(int argc, char* argv[]) {
 
 	if(runfiles == nullptr) {
 		reporter->report(ecsact_rtb::warning_message{
-			.content = "Cannot load runfiles: "s + runfiles_err,
+			.content = "Cannot load runfiles: "s,
 		});
+		reporter->report(ecsact_rtb::error_message{runfiles_err});
 	}
 
 	const auto  debug_build = args.at("--debug").asBool();

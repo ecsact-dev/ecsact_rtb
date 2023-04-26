@@ -1,0 +1,21 @@
+load("@rules_cc//cc:defs.bzl", "cc_binary")
+load("//bazel:copts.bzl", "copts")
+load("//fetch_sources:index.bzl", "ecsact_rtb_runfiles")
+
+# Cannot be cc_test because environment variables are required to find the
+# Ecsact SDK on the test machine.
+cc_binary(
+    name = "test",
+    copts = copts,
+    srcs = ["ecsact_rtb_test.cc"],
+    deps = [
+        "@bazel_tools//tools/cpp/runfiles",
+        "@boost//libs/process",
+        "@boost//libs/dll",
+        "@bazelregistry_docopt_cpp//:docopt",
+    ],
+    data = [
+        "//cli:ecsact_rtb",
+        "dummy.ecsact",
+    ],
+)

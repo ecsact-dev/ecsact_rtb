@@ -20,6 +20,10 @@ jobs:
   build-windows:
     runs-on: windows-latest
     steps:
+      - name: Setup Wasmer
+        uses: wasmerio/setup-wasmer@v2
+      - name: Setup Ecsact SDK
+        uses: ecsact-dev/github-action@d23575eab73bb667ffa2772ac511608394ab94e5
       - uses: actions/cache@v3
         with:
           path: |
@@ -27,7 +31,8 @@ jobs:
             /Users/runneradmin/.cache/bazel-disk-cache
           key: ${{runner.os}}-bazel-cache
       - uses: actions/checkout@v2
-      - run: bazel build --config=ci //...
+      - run: bazelisk build --config=ci //...
+      - run: bazelisk run --config=ci //test
   build-linux:
     runs-on: ubuntu-latest
     steps:
@@ -38,4 +43,5 @@ jobs:
             ~/.cache/bazel-disk-cache
           key: ${{runner.os}}-bazel-cache
       - uses: actions/checkout@v3
-      - run: bazel build --config=ci //...
+      - run: bazelisk build --config=ci //...
+
