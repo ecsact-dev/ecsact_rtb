@@ -23,7 +23,7 @@ jobs:
       - name: Setup Wasmer
         uses: wasmerio/setup-wasmer@v2
       - name: Setup Ecsact SDK
-        uses: ecsact-dev/github-action@2a007e1ea7356a683827c4aad9eb527312c4d990
+        uses: ecsact-dev/github-action@d23575eab73bb667ffa2772ac511608394ab94e5
       - uses: actions/cache@v3
         with:
           path: |
