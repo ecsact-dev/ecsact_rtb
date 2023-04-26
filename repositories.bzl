@@ -41,7 +41,7 @@ def ecsact_rtb_repositories():
         name = "vswhere",
         downloaded_file_path = "vswhere.exe",
         executable = True,
-        sha256 = "0ac010f232d3089200c5e545bcbd6480cf68b705de6930d8ff7cdb0a29f5b47b",
+        sha256 = "9f5252c4ea90a216fa4cb04afb8ede0bcad084d03021fc15c589fedf07a777e4",
         urls = ["https://github.com/microsoft/vswhere/releases/download/3.1.4/vswhere.exe"],
     )
 
