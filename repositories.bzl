@@ -87,7 +87,7 @@ def ecsact_rtb_repositories():
         name = "com_github_skypjack_entt",
         patch_args = ["-p1"],
         patches = ["@ecsact_rtb//patches:entt_export_source_files.patch"],
-        sha256 = "",
+        sha256 = "0ac010f232d3089200c5e545bcbd6480cf68b705de6930d8ff7cdb0a29f5b47b",
         strip_prefix = "entt-3.11.1",
         url = "https://github.com/skypjack/entt/archive/refs/tags/v3.11.1.tar.gz",
     )

@@ -39,8 +39,14 @@ include:
     - com_github_skypjack_entt/src/entt/entity/snapshot.hpp
     - com_github_skypjack_entt/src/entt/entity/sparse_set.hpp
     - com_github_skypjack_entt/src/entt/entity/storage.hpp
+    - com_github_skypjack_entt/src/entt/entity/storage_mixin.hpp
     - com_github_skypjack_entt/src/entt/entity/utility.hpp
     - com_github_skypjack_entt/src/entt/entity/view.hpp
+  entt/graph:
+    - com_github_skypjack_entt/src/entt/graph/adjacency_matrix.hpp
+    - com_github_skypjack_entt/src/entt/graph/flow.hpp
+    - com_github_skypjack_entt/src/entt/graph/dot.hpp
+    - com_github_skypjack_entt/src/entt/graph/fwd.hpp
   entt:
     - com_github_skypjack_entt/src/entt/entt.hpp
     - com_github_skypjack_entt/src/entt/fwd.hpp
@@ -49,6 +55,7 @@ include:
   entt/meta:
     - com_github_skypjack_entt/src/entt/meta/adl_pointer.hpp
     - com_github_skypjack_entt/src/entt/meta/container.hpp
+    - com_github_skypjack_entt/src/entt/meta/context.hpp
     - com_github_skypjack_entt/src/entt/meta/ctx.hpp
     - com_github_skypjack_entt/src/entt/meta/factory.hpp
     - com_github_skypjack_entt/src/entt/meta/fwd.hpp
