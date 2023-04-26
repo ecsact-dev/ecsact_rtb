@@ -40,7 +40,7 @@ auto main(int argc, char* argv[]) -> int {
 	rtb_proc_path += ".exe";
 #endif
 
-	if(!fs::exists(rtb_proc_path)) {
+	if(rtb_proc_path.empty() || !fs::exists(rtb_proc_path)) {
 		std::cerr << "Could not find rtb proc\n";
 		return 1;
 	}
@@ -63,5 +63,10 @@ auto main(int argc, char* argv[]) -> int {
 
 	rtb_proc.wait();
 
-	return rtb_proc.exit_code();
+	auto exit_code = rtb_proc.exit_code();
+
+	std::cout //
+		<< "ecsact_rtb exiting with exit code " << rtb_proc.exit_code() << "\n";
+
+	return exit_code;
 }

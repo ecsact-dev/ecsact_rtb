@@ -28,6 +28,7 @@ jobs:
           key: ${{runner.os}}-bazel-cache
       - uses: actions/checkout@v2
       - run: bazel build --config=ci //...
+      - run: bazel run --config=ci //test
   build-linux:
     runs-on: ubuntu-latest
     steps:
@@ -39,3 +40,5 @@ jobs:
           key: ${{runner.os}}-bazel-cache
       - uses: actions/checkout@v3
       - run: bazel build --config=ci //...
+      - run: bazel run --config=ci //test
+
