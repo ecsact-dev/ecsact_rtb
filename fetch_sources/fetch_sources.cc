@@ -59,6 +59,7 @@ static void load_fetched_sources_yaml(
 		for(const auto& item : entry.children()) {
 			std::string item_str{item.val().str, item.val().len};
 			auto        inc_runfile_path = options.runfiles->Rlocation(item_str);
+
 			if(!inc_runfile_path.empty()) {
 				if(fs::exists(inc_runfile_path)) {
 					fs::copy_file(
@@ -68,6 +69,10 @@ static void load_fetched_sources_yaml(
 					);
 					util::report_error_code_and_exit(options.reporter, ec);
 				}
+			} else {
+				options.reporter.report(ecsact_rtb::warning_message{
+					"Unknown fetched include: " + item_str,
+				});
 			}
 		}
 	}
@@ -90,6 +95,10 @@ static void load_fetched_sources_yaml(
 					);
 					util::report_error_code_and_exit(options.reporter, ec);
 				}
+			} else {
+				options.reporter.report(ecsact_rtb::warning_message{
+					"Unknown fetched source: " + item_str,
+				});
 			}
 		}
 	}
@@ -109,6 +118,10 @@ static void load_fetched_sources_yaml(
 						dirname / fs::path{inc_runfile_path}.filename()
 					);
 				}
+			} else {
+				options.reporter.report(ecsact_rtb::warning_message{
+					"Unknown fetched share: " + item_str,
+				});
 			}
 		}
 	}
@@ -121,6 +134,9 @@ result::fetch_sources ecsact::rtb::fetch_sources(
 
 	// Only option for fetching sources right now is through the bazel runfiles
 	if(options.runfiles == nullptr) {
+		options.reporter.report(ecsact_rtb::error_message{
+			"Cannot fetch sources without Runfiles",
+		});
 		return {};
 	}
 

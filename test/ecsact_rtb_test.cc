@@ -42,12 +42,15 @@ auto main(int argc, char* argv[]) -> int {
 		return 1;
 	}
 
-	auto wsd = std::getenv("BUILD_WORKSPACE_DIRECTORY");
-	if(wsd != nullptr) {
-		fs::current_path(std::string(wsd));
+	if(fs::is_symlink(rtb_proc_path)) {
+		rtb_proc_path = fs::read_symlink(rtb_proc_path).string();
 	}
 
+	auto wsd = std::getenv("BUILD_WORKSPACE_DIRECTORY");
 	auto tmp_dir = fs::absolute("tmp");
+	if(wsd != nullptr) {
+		tmp_dir = fs::absolute(fs::path{wsd} / "tmp");
+	}
 
 	fs::remove_all(tmp_dir);
 

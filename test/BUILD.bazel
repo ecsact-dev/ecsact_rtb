@@ -1,7 +1,10 @@
-load("@rules_cc//cc:defs.bzl", "cc_test")
+load("@rules_cc//cc:defs.bzl", "cc_binary")
 load("//bazel:copts.bzl", "copts")
+load("//fetch_sources:index.bzl", "ecsact_rtb_runfiles")
 
-cc_test(
+# Cannot be cc_test because environment variables are required to find the
+# Ecsact SDK on the test machine.
+cc_binary(
     name = "test",
     copts = copts,
     srcs = ["ecsact_rtb_test.cc"],
@@ -11,7 +14,10 @@ cc_test(
         "@boost//libs/dll",
         "@bazelregistry_docopt_cpp//:docopt",
     ],
-    data = [
+    # Our binary is running ecsact_rtb as a child process so it's runfiles must
+    # be explicitly mentioned here due to how runfiles are resolved from the
+    # top most runnning process.
+    data = ecsact_rtb_runfiles + [
         "//cli:ecsact_rtb",
         "dummy.ecsact",
     ],
