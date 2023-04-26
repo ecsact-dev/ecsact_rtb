@@ -20,7 +20,7 @@ jobs:
   build-windows:
     runs-on: windows-latest
     steps:
-      - uses: ecsact-dev/github-action@0a4669327c51b50e0095e474d56a80f4249add61
+      - uses: ecsact-dev/github-action@e84afed03a73464eb88c29cf0d3995a287a4a95a
       - uses: actions/cache@v3
         with:
           path: |
