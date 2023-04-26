@@ -21,7 +21,9 @@ jobs:
     runs-on: windows-latest
     steps:
       - name: Setup Wasmer
-        uses: zaucy/setup-wasmer@40c997ada622a2c494e05df82f221e67489c0d67
+        uses: wasmerio/setup-wasmer@v2
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
       - name: Setup Ecsact SDK
         uses: ecsact-dev/github-action@d23575eab73bb667ffa2772ac511608394ab94e5
       - uses: actions/cache@v3
