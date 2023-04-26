@@ -14,10 +14,7 @@ cc_binary(
         "@boost//libs/dll",
         "@bazelregistry_docopt_cpp//:docopt",
     ],
-    # Our binary is running ecsact_rtb as a child process so it's runfiles must
-    # be explicitly mentioned here due to how runfiles are resolved from the
-    # top most runnning process.
-    data = ecsact_rtb_runfiles + [
+    data = [
         "//cli:ecsact_rtb",
         "dummy.ecsact",
     ],

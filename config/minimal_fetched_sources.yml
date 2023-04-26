@@ -40,7 +40,6 @@ include:
     - com_github_skypjack_entt/src/entt/entity/sparse_set.hpp
     - com_github_skypjack_entt/src/entt/entity/storage.hpp
     - com_github_skypjack_entt/src/entt/entity/storage_mixin.hpp
-    - com_github_skypjack_entt/src/entt/entity/utility.hpp
     - com_github_skypjack_entt/src/entt/entity/view.hpp
   entt/graph:
     - com_github_skypjack_entt/src/entt/graph/adjacency_matrix.hpp
@@ -159,20 +158,11 @@ include:
     - boost_mp11_files/include/boost/mp11/detail/mpl_common.hpp
 
 sources:
-  ecsact/runtime-cpp:
-    - ecsact/lib/runtime-cpp/registry.cc
   ecsact_rt_entt:
     - ecsact_rt_entt/runtime/common.template.hh
     - ecsact_rt_entt/runtime/common.template.cc
     - ecsact_rt_entt/runtime/core.template.cc
     - ecsact_rt_entt/runtime/dynamic.template.cc
-    - ecsact_rt_entt/runtime/event_markers.hh
-    - ecsact_rt_entt/runtime/execution_events_collector.hh
-    - ecsact_rt_entt/runtime/registry_info.hh
-    - ecsact_rt_entt/runtime/runtime.hh
-    - ecsact_rt_entt/runtime/runtime.template.cc
-    - ecsact_rt_entt/runtime/system_entt_view.hh
-    - ecsact_rt_entt/runtime/system_execution_context.hh
   ecsact_runtime/reference/async_reference/detail/c_execution_options:
     - ecsact_runtime/reference/async_reference/detail/c_execution_options/c_execution_options.hh
     - ecsact_runtime/reference/async_reference/detail/c_execution_options/c_execution_options.cc
