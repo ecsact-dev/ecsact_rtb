@@ -27,10 +27,7 @@ auto main(int argc, char* argv[]) -> int {
 		return 1;
 	}
 
-	auto wsd = std::getenv("BUILD_WORKSPACE_DIRECTORY");
-	if(wsd != nullptr) {
-		fs::current_path(std::string(wsd));
-	}
+	auto dummy_ecsact_file = runfiles->Rlocation("ecsact_rtb/test/dummy.ecsact");
 
 	const auto dll_suffix = boost::dll::shared_library::suffix().string();
 
@@ -45,6 +42,11 @@ auto main(int argc, char* argv[]) -> int {
 		return 1;
 	}
 
+	auto wsd = std::getenv("BUILD_WORKSPACE_DIRECTORY");
+	if(wsd != nullptr) {
+		fs::current_path(std::string(wsd));
+	}
+
 	auto tmp_dir = fs::absolute("tmp");
 
 	fs::remove_all(tmp_dir);
@@ -52,7 +54,7 @@ auto main(int argc, char* argv[]) -> int {
 	auto rtb_proc = bp::child(
 		bp::exe(rtb_proc_path),
 		bp::args({
-			runfiles->Rlocation("ecsact_rtb/test/dummy.ecsact"),
+			dummy_ecsact_file,
 			"--output=tmp/test_runtime"s + dll_suffix,
 			"--temp_dir="s + tmp_dir.string(),
 			"--debug"s,
