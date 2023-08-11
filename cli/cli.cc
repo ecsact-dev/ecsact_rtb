@@ -172,7 +172,8 @@ int main(int argc, char* argv[]) {
 	}();
 
 	assert(reporter);
-	reporter->report(ecsact_rtb::info_message{"Current Path: " + fs::current_path().string()});
+	reporter->report(ecsact_rtb::info_message{
+		"Current Path: " + fs::current_path().string()});
 
 	if(runfiles == nullptr) {
 		reporter->report(ecsact_rtb::warning_message{

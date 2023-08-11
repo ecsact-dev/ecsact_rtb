@@ -45,7 +45,8 @@ static void load_fetched_sources_yaml(
 ) {
 	auto ec = std::error_code{};
 	auto config_file_path = options.runfiles->Rlocation(runfile_path);
-	auto config_file_exists = !config_file_path.empty() && fs::exists(config_file_path, ec);
+	auto config_file_exists = !config_file_path.empty() &&
+		fs::exists(config_file_path, ec);
 	util::report_error_code_and_exit(options.reporter, ec);
 	if(!config_file_exists) {
 		options.reporter.report(ecsact_rtb::error_message{
@@ -53,7 +54,7 @@ static void load_fetched_sources_yaml(
 		});
 		std::exit(1);
 	}
-	
+
 	auto config_file_contents =
 		file_get_contents<std::vector<char>>(config_file_path.c_str());
 	auto tree = ryml::parse_in_place(ryml::to_substr(config_file_contents));
