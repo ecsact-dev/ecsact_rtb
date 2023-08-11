@@ -35,7 +35,6 @@ include:
     - com_github_skypjack_entt/src/entt/entity/organizer.hpp
     - com_github_skypjack_entt/src/entt/entity/registry.hpp
     - com_github_skypjack_entt/src/entt/entity/runtime_view.hpp
-    - com_github_skypjack_entt/src/entt/entity/sigh_storage_mixin.hpp
     - com_github_skypjack_entt/src/entt/entity/snapshot.hpp
     - com_github_skypjack_entt/src/entt/entity/sparse_set.hpp
     - com_github_skypjack_entt/src/entt/entity/storage.hpp
@@ -55,7 +54,6 @@ include:
     - com_github_skypjack_entt/src/entt/meta/adl_pointer.hpp
     - com_github_skypjack_entt/src/entt/meta/container.hpp
     - com_github_skypjack_entt/src/entt/meta/context.hpp
-    - com_github_skypjack_entt/src/entt/meta/ctx.hpp
     - com_github_skypjack_entt/src/entt/meta/factory.hpp
     - com_github_skypjack_entt/src/entt/meta/fwd.hpp
     - com_github_skypjack_entt/src/entt/meta/meta.hpp
@@ -107,6 +105,7 @@ include:
   ecsact/codegen:
     - ecsact_runtime/ecsact/codegen/plugin_validate.hh
   ecsact/entt:
+    - ecsact_rt_entt/ecsact/entt/entity.hh
     - ecsact_rt_entt/ecsact/entt/runtime.hh
     - ecsact_rt_entt/ecsact/entt/system_view.hh
     - ecsact_rt_entt/ecsact/entt/trivial_system_impl.hh
