@@ -2,6 +2,12 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## 0.2.1 - 2023-08-11
+#### Bug Fixes
+- add missing header from ecsact_rt_entt (#85) - (68cd017) - Ezekiel Warren
+
+- - -
+
 ## 0.2.0 - 2023-08-11
 #### Features
 - report runfiles error (#84) - (83ab8c7) - Ezekiel Warren
