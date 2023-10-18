@@ -25,7 +25,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
       - name: Setup Ecsact SDK
-        uses: ecsact-dev/github-action@d23575eab73bb667ffa2772ac511608394ab94e5
+        uses: ecsact-dev/github-action@20dce3b35d5212e824ef00d8737ec4953ce3e5d3
       - uses: actions/cache@v3
         with:
           path: |
