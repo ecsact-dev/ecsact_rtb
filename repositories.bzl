@@ -144,7 +144,7 @@ def ecsact_rtb_repositories():
 
     http_archive(
         name = "magic_enum",
-        sha256 = "5e7680e877dd4cf68d9d0c0e3c2a683b432a9ba84fc1993c4da3de70db894c3c",
-        strip_prefix = "magic_enum-0.8.0",
-        urls = ["https://github.com/Neargye/magic_enum/archive/refs/tags/v0.8.0.tar.gz"],
+        sha256 = "44ad80db5a72f5047e01d90e18315751d9ac90c0ab42cbea7a6f9ec66a4cd679",
+        strip_prefix = "magic_enum-0.9.5",
+        urls = ["https://github.com/Neargye/magic_enum/archive/refs/tags/v0.9.5.tar.gz"],
     )
