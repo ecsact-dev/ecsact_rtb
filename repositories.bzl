@@ -87,9 +87,9 @@ def ecsact_rtb_repositories():
 
     http_archive(
         name = "ecsact_rt_entt",
-        sha256 = "dddf4534b302aebf3801062fb992d1e247dc8af213f830dcb76da4222a5dec09",
-        strip_prefix = "ecsact_rt_entt-0.1.0",
-        urls = ["https://github.com/ecsact-dev/ecsact_rt_entt/archive/refs/tags/0.1.0.tar.gz"],
+        sha256 = "d2d0dd910699eb5bd54f9e3c3bf846e2a3e859b79a13e22025248b5d84021bab",
+        strip_prefix = "ecsact_rt_entt-0.2.2",
+        urls = ["https://github.com/ecsact-dev/ecsact_rt_entt/archive/refs/tags/0.2.2.tar.gz"],
     )
 
     http_archive(
@@ -102,37 +102,37 @@ def ecsact_rtb_repositories():
 
     http_archive(
         name = "ecsact_runtime",
-        sha256 = "e846a1ea81ca5d0ba9d39a4cd55209eb74c22bd85bc37a411eb5f6582b95040d",
-        strip_prefix = "ecsact_runtime-0.1.0",
-        urls = ["https://github.com/ecsact-dev/ecsact_runtime/archive/refs/tags/0.1.0.tar.gz"],
+        sha256 = "940861866ff673b5f4e38d9024e4a3482d240b7816f094f34f65949e536fc98a",
+        strip_prefix = "ecsact_runtime-0.5.4",
+        urls = ["https://github.com/ecsact-dev/ecsact_runtime/archive/refs/tags/0.5.4.tar.gz"],
     )
 
     http_archive(
         name = "ecsact_interpret",
-        sha256 = "c4d1aa8bd9194aed5676c6188d4ced6dfefbf5af51cad8486c5267d1892fa680",
-        strip_prefix = "ecsact_interpret-0.1.0",
-        urls = ["https://github.com/ecsact-dev/ecsact_interpret/archive/refs/tags/0.1.0.tar.gz"],
+        sha256 = "e00e8e1723febd64b258c2a26d8592238c3f3078b2926f4c37b216cf50abb79a",
+        strip_prefix = "ecsact_interpret-0.5.3",
+        urls = ["https://github.com/ecsact-dev/ecsact_interpret/archive/refs/tags/0.5.3.tar.gz"],
     )
 
     http_archive(
         name = "ecsact_parse",
-        sha256 = "c4d1c36e8e3914c5505b4114e84b6eeb13075b29ac754c14e835800661dabd9a",
-        strip_prefix = "ecsact_parse-0.1.0",
-        urls = ["https://github.com/ecsact-dev/ecsact_parse/archive/refs/tags/0.1.0.tar.gz"],
+        sha256 = "3e6b6a6bdadf878e303338236103ce0c2456d03ab1fdad5fb0e0d41716aaec4a",
+        strip_prefix = "ecsact_parse-0.3.3",
+        urls = ["https://github.com/ecsact-dev/ecsact_parse/archive/refs/tags/0.3.3.tar.gz"],
     )
 
     http_archive(
         name = "ecsact_lang_cpp",
-        sha256 = "28f94434bc2033df014eaff44fbae92a2a528d9d883090220ae8323261854e68",
-        strip_prefix = "ecsact_lang_cpp-0.1.0",
-        urls = ["https://github.com/ecsact-dev/ecsact_lang_cpp/archive/refs/tags/0.1.0.tar.gz"],
+        sha256 = "444817dda8c2dbd5d056b8e6672784e45c86bbac780e85c5d5042f6322ff448b",
+        strip_prefix = "ecsact_lang_cpp-0.3.3",
+        urls = ["https://github.com/ecsact-dev/ecsact_lang_cpp/archive/refs/tags/0.3.3.tar.gz"],
     )
 
     http_archive(
         name = "ecsact_si_wasm",
-        sha256 = "e208a94d4f4a9c09f32b8a9ea91a4f799492e11c7c852b0329b4a3595a45cee6",
-        strip_prefix = "ecsact_si_wasm-0.1.0",
-        urls = ["https://github.com/ecsact-dev/ecsact_si_wasm/archive/refs/tags/0.1.0.tar.gz"],
+        sha256 = "456e990bfaf0ee976b57a688b3359a90781e9f24bbd9b93931c577e3e4b67433",
+        strip_prefix = "ecsact_si_wasm-0.1.1",
+        urls = ["https://github.com/ecsact-dev/ecsact_si_wasm/archive/refs/tags/0.1.1.tar.gz"],
     )
 
     http_archive(
