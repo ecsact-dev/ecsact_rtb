@@ -80,9 +80,9 @@ def ecsact_rtb_repositories():
         name = "com_github_skypjack_entt",
         patch_args = ["-p1"],
         patches = ["@ecsact_rtb//patches:entt_export_source_files.patch"],
-        sha256 = "0ac010f232d3089200c5e545bcbd6480cf68b705de6930d8ff7cdb0a29f5b47b",
-        strip_prefix = "entt-3.11.1",
-        url = "https://github.com/skypjack/entt/archive/refs/tags/v3.11.1.tar.gz",
+        sha256 = "e31f6e95a30e2977a50449ef9a607a9ff40febe6f9da2a8144a183f8606f7719",
+        strip_prefix = "entt-3.14.0",
+        url = "https://github.com/skypjack/entt/archive/refs/tags/v3.14.0.tar.gz",
     )
 
     http_archive(
